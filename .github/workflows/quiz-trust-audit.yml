@@ -8,9 +8,11 @@ on:
       - 'prototype/quiz-trust.js'
       - 'prototype/kit-trust.js'
       - 'prototype/quiz-distractors.js'
+      - 'prototype/quiz-difficulty.js'
       - 'data/**'
       - 'scripts/quiz-trust-audit.mjs'
       - 'scripts/quiz-quality-audit.mjs'
+      - 'scripts/quiz-difficulty-audit.mjs'
       - '.github/workflows/quiz-trust-audit.yml'
   pull_request:
     paths:
@@ -18,9 +20,11 @@ on:
       - 'prototype/quiz-trust.js'
       - 'prototype/kit-trust.js'
       - 'prototype/quiz-distractors.js'
+      - 'prototype/quiz-difficulty.js'
       - 'data/**'
       - 'scripts/quiz-trust-audit.mjs'
       - 'scripts/quiz-quality-audit.mjs'
+      - 'scripts/quiz-difficulty-audit.mjs'
       - '.github/workflows/quiz-trust-audit.yml'
 
 jobs:
@@ -32,8 +36,20 @@ jobs:
         with:
           node-version: '22'
       - name: Syntax check production prototype
-        run: node --check prototype/app.js
+        run: |
+          node --check prototype/app.js
+          node --check prototype/quiz-difficulty.js
       - name: Run Q0/Q1/Q1.5 trust audit
         run: node scripts/quiz-trust-audit.mjs
       - name: Run Q1.6/Q2 quality audit
         run: node scripts/quiz-quality-audit.mjs
+      - name: Run Q3 structural difficulty audit
+        run: |
+          mkdir -p artifacts
+          node scripts/quiz-difficulty-audit.mjs --out artifacts/q3-difficulty-baseline.json
+      - name: Upload Q3 baseline dataset
+        uses: actions/upload-artifact@v4
+        with:
+          name: q3-difficulty-baseline
+          path: artifacts/q3-difficulty-baseline.json
+          if-no-files-found: error
