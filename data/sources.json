@@ -14,5 +14,69 @@
     "url": "https://www.urawa-reds.co.jp/",
     "source_type": "official",
     "accessed_at": "2026-09-07"
+  },
+  {
+    "source_id": "SRC_URAWA_MATCH_1998_1107",
+    "title": "1998 Jリーグ 2ndステージ 第16節 京都戦 試合速報",
+    "publisher": "浦和レッドダイヤモンズ株式会社",
+    "url": "https://www.urawa-reds.co.jp/en/game/sokuhou_recent/?game=1008",
+    "source_type": "official",
+    "accessed_at": "2026-09-07"
+  },
+  {
+    "source_id": "SRC_URAWA_RFILE_2006_J1",
+    "title": "R-File 2006 Jリーグ",
+    "publisher": "浦和レッドダイヤモンズ株式会社",
+    "url": "https://www.urawa-reds.co.jp/archive/Results/Rising2006/2006j.htm.html",
+    "source_type": "official",
+    "accessed_at": "2026-09-07"
+  },
+  {
+    "source_id": "SRC_URAWA_SQUAD_2006",
+    "title": "2006シーズンの背番号を発表！",
+    "publisher": "浦和レッドダイヤモンズ株式会社",
+    "url": "https://www.urawa-reds.co.jp/topteamtopics/31946/",
+    "source_type": "official",
+    "accessed_at": "2026-09-07"
+  },
+  {
+    "source_id": "SRC_URAWA_SQUAD_2017",
+    "title": "2017シーズン トップチーム選手背番号について",
+    "publisher": "浦和レッドダイヤモンズ株式会社",
+    "url": "https://www.urawa-reds.co.jp/topteamtopics/2017%E3%82%B7%E3%83%BC%E3%82%BA%E3%83%B3-%E3%83%88%E3%83%83%E3%83%97%E3%83%81%E3%83%BC%E3%83%A0%E9%81%B8%E6%89%8B%E8%83%8C%E7%95%AA%E5%8F%B7%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6/",
+    "source_type": "official",
+    "accessed_at": "2026-09-07"
+  },
+  {
+    "source_id": "SRC_URAWA_SQUAD_2023",
+    "title": "2023シーズン トップチーム選手背番号について",
+    "publisher": "浦和レッドダイヤモンズ株式会社",
+    "url": "https://www.urawa-reds.co.jp/topteamtopics/194066/",
+    "source_type": "official",
+    "accessed_at": "2026-09-07"
+  },
+  {
+    "source_id": "SRC_URAWA_KIT_2005_VODAFONE",
+    "title": "浦和レッズ2005シーズン・メインパートナー並びに新ユニホームについて2",
+    "publisher": "浦和レッドダイヤモンズ株式会社",
+    "url": "https://www.urawa-reds.co.jp/topteamtopics/%E6%B5%A6%E5%92%8C%E3%83%AC%E3%83%83%E3%82%BA2005%E3%82%B7%E3%83%BC%E3%82%BA%E3%83%B3%E3%83%BB%E3%83%A1%E3%82%A4%E3%83%B3%E3%83%91%E3%83%BC%E3%83%88%E3%83%8A%E3%83%BC%E4%B8%A6%E3%81%B3%E3%81%AB-2/",
+    "source_type": "official",
+    "accessed_at": "2026-09-07"
+  },
+  {
+    "source_id": "SRC_URAWA_KIT_2007_SAVAS_DHL",
+    "title": "浦和レッズトップパートナー・新ユニホームについて",
+    "publisher": "浦和レッドダイヤモンズ株式会社",
+    "url": "https://www.urawa-reds.co.jp/clubinfo/35045/",
+    "source_type": "official",
+    "accessed_at": "2026-09-07"
+  },
+  {
+    "source_id": "SRC_URAWA_KIT_2013_POLUS",
+    "title": "ユニフォーム＜胸＞新パートナーについて",
+    "publisher": "浦和レッドダイヤモンズ株式会社",
+    "url": "https://prod-stg.urawa-reds.co.jp/clubinfo/55797.html",
+    "source_type": "official",
+    "accessed_at": "2026-09-07"
   }
 ]
