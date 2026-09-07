@@ -1,0 +1,35 @@
+name: Apply Q1.6 and Q2 Migration
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/apply-q1-6-q2.mjs'
+      - '.github/workflows/apply-q1-6-q2.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Apply guarded migration
+        run: node scripts/apply-q1-6-q2.mjs
+      - name: Commit migrated app
+        run: |
+          if git diff --quiet; then
+            echo "No migration changes needed."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add prototype/app.js
+          git commit -m "Integrate Q1.6 kit contexts and Q2 distractors"
+          git push
