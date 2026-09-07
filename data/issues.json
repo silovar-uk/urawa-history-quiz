@@ -1,0 +1,151 @@
+[
+  {
+    "id": "ISSUE_1995_FUKUDA_GOALS",
+    "classification": "CONFIRMED_ERROR",
+    "status": "FIXED",
+    "entity_type": "season/player_season",
+    "entity_id": "1995/ps_1995_fukuda",
+    "field": "summary/key_events/memory_hook",
+    "current_value": "27 goals",
+    "expected_value": "32 goals",
+    "source_ids": [
+      "SRC_JLEAGUE_FUKUDA_1995"
+    ],
+    "notes": "Jリーグ公式プロフィールで50試合32得点、日本人初の得点王を確認。"
+  },
+  {
+    "id": "ISSUE_1996_OKANO_ROOKIE",
+    "classification": "CONFIRMED_ERROR",
+    "status": "FIXED",
+    "entity_type": "season/player_season/uniform",
+    "entity_id": "1996/ps_1996_okano/kit_1996",
+    "field": "award text",
+    "current_value": "岡野雅行が新人王",
+    "expected_value": "新人王は斉藤俊秀。岡野はベストイレブン・フェアプレー個人賞。",
+    "source_ids": [
+      "SRC_JLEAGUE_AWARDS_HISTORY"
+    ],
+    "notes": "複数表示面の誤記を同時修正。"
+  },
+  {
+    "id": "ISSUE_2000_PROMOTION_MATCH",
+    "classification": "CONFIRMED_ERROR",
+    "status": "FIXED",
+    "entity_type": "season/player_season",
+    "entity_id": "2000/ps_2000_tsuchihashi",
+    "field": "opponent/time",
+    "current_value": "水戸戦（鳥栖戦）/延長後半",
+    "expected_value": "鳥栖戦/延長前半5分（95分）",
+    "source_ids": [
+      "SRC_JLEAGUE_2000_TOSU_VGOAL"
+    ],
+    "notes": "Jリーグ公式のVゴール記事で確認。"
+  },
+  {
+    "id": "ISSUE_2006_PLAYER_RELATIONS",
+    "classification": "CONFIRMED_ERROR",
+    "status": "FIXED",
+    "entity_type": "player_season",
+    "entity_id": "ps_2006_washington,ps_2006_yamada,ps_2006_tsuzuki,ps_2006_okano",
+    "field": "shirt_number/position",
+    "current_value": "multiple",
+    "expected_value": "Washington #21; Yamada MF; Tsuzuki #23; Okano #30",
+    "source_ids": [
+      "SRC_URAWA_SQUAD_2006",
+      "SRC_URAWA_RFILE_2006_J1"
+    ],
+    "notes": "base dataを修正しclaim-level provenanceへ昇格。"
+  },
+  {
+    "id": "ISSUE_KIT_2007",
+    "classification": "MODEL_ERROR",
+    "status": "FIXED",
+    "entity_type": "uniform",
+    "entity_id": "kit_2007",
+    "field": "chest_sponsor",
+    "current_value": "DHL as generic season value",
+    "expected_value": "domestic SAVAS / international DHL",
+    "source_ids": [
+      "SRC_URAWA_KIT_2007_SAVAS_DHL"
+    ],
+    "notes": "legacy archiveは国内値SAVASへ修正。Quizはcompetition-aware contextを使用。"
+  },
+  {
+    "id": "ISSUE_KIT_2008",
+    "classification": "MODEL_ERROR",
+    "status": "FIXED",
+    "entity_type": "uniform",
+    "entity_id": "kit_2008",
+    "field": "chest_sponsor",
+    "current_value": "DHL as generic season value",
+    "expected_value": "league domestic SAVAS / international DHL",
+    "source_ids": [
+      "SRC_URAWA_KIT_2008_SAVAS_DHL"
+    ],
+    "notes": "浦和公式販売案内がリーグ戦用SAVASと国際試合用DHLを明示。"
+  },
+  {
+    "id": "ISSUE_KIT_2011",
+    "classification": "CONFIRMED_ERROR",
+    "status": "FIXED",
+    "entity_type": "uniform",
+    "entity_id": "kit_2011",
+    "field": "chest_sponsor",
+    "current_value": "DHL",
+    "expected_value": "SAVAS for domestic 1st",
+    "source_ids": [
+      "SRC_URAWA_KIT_2011_SAVAS"
+    ],
+    "notes": "浦和公式販売案内で1st SAVASを確認。"
+  },
+  {
+    "id": "ISSUE_KIT_2004",
+    "classification": "UNVERIFIED",
+    "status": "BLOCKED",
+    "entity_type": "uniform",
+    "entity_id": "kit_2004",
+    "field": "chest_sponsor",
+    "current_value": "Vodafone",
+    "expected_value": null,
+    "source_ids": [
+      "SRC_URAWA_KIT_2005_VODAFONE"
+    ],
+    "notes": "2005公式発表がVodafoneを新パートナーとするため疑義あり。ただし2004の直接一次資料を今回確保できず、推測修正しない。"
+  },
+  {
+    "id": "ISSUE_KIT_2009_2010_2012",
+    "classification": "UNVERIFIED",
+    "status": "BLOCKED",
+    "entity_type": "uniform",
+    "entity_id": "kit_2009,kit_2010,kit_2012",
+    "field": "chest_sponsor",
+    "current_value": "DHL",
+    "expected_value": null,
+    "source_ids": [],
+    "notes": "SAVASトップパートナー継続を示す公式情報はあるが、このRoundでは各年の国内胸ロゴを直接証明する一次ページを揃え切れていないため変更しない。"
+  },
+  {
+    "id": "ISSUE_MANAGER_TENURES_LEGACY",
+    "classification": "COVERAGE_GAP",
+    "status": "OPEN",
+    "entity_type": "manager_tenure",
+    "entity_id": "1997,1999,2000,2001,2008,2017,2018,2019",
+    "field": "multiple tenures",
+    "current_value": "change information often stored only in notes",
+    "expected_value": "one row per actual tenure/interim period",
+    "source_ids": [],
+    "notes": "2011と2024は今回構造化。残りは年別一次資料Researchを要する。"
+  },
+  {
+    "id": "ISSUE_SOURCE_GRANULARITY",
+    "classification": "COVERAGE_GAP",
+    "status": "OPEN",
+    "entity_type": "season",
+    "entity_id": "1992-2025",
+    "field": "source_ids",
+    "current_value": "many records rely on broad root sources",
+    "expected_value": "claim-specific sources for important textual claims",
+    "source_ids": [],
+    "notes": "source presenceとclaim verificationを分離して継続改善する。"
+  }
+]

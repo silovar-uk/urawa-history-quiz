@@ -101,7 +101,7 @@
     "season_id": "1995",
     "shirt_number": null,
     "position": "FW",
-    "memory_hook": "27ゴールを叩き出し日本人初となるJリーグ得点王に輝いた。"
+    "memory_hook": "32ゴールを叩き出し、日本人初となるJリーグ得点王に輝いた。"
   },
   {
     "id": "ps_1995_okano",
@@ -117,7 +117,7 @@
     "season_id": "1996",
     "shirt_number": null,
     "position": "FW",
-    "memory_hook": "Jリーグ新人王に輝き、日本代表にも定着した躍進の年。"
+    "memory_hook": "快速を武器に躍動し、Jリーグベストイレブン・フェアプレー個人賞を受賞した。"
   },
   {
     "id": "ps_1996_fukuda",
@@ -189,7 +189,7 @@
     "season_id": "2000",
     "shirt_number": 6,
     "position": "MF",
-    "memory_hook": "J2最終節・延長後半に劇的Vゴールを決め、1年でのJ1復帰をもたらした英雄。"
+    "memory_hook": "J2最終節・鳥栖戦の延長前半5分（95分）に劇的Vゴールを決め、1年でのJ1復帰をもたらした英雄。"
   },
   {
     "id": "ps_2000_fukuda",
@@ -283,7 +283,7 @@
     "id": "ps_2006_washington",
     "player_id": "washington",
     "season_id": "2006",
-    "shirt_number": 30,
+    "shirt_number": 21,
     "position": "FW",
     "memory_hook": "26得点でJ1得点王。最終節・G大阪戦で2ゴールを挙げリーグ初優勝をもたらした。"
   },
@@ -348,14 +348,14 @@
     "player_id": "nobuhisa_yamada",
     "season_id": "2006",
     "shirt_number": 6,
-    "position": "DF",
+    "position": "MF",
     "memory_hook": "主将として右サイドを疾走し、優勝決定戦でも貴重な得点を挙げた。"
   },
   {
     "id": "ps_2006_tsuzuki",
     "player_id": "ryota_tsuzuki",
     "season_id": "2006",
-    "shirt_number": 21,
+    "shirt_number": 23,
     "position": "GK",
     "memory_hook": "シーズン終盤の優勝争いで気迫のビッグセーブを連発。"
   },
@@ -363,7 +363,7 @@
     "id": "ps_2006_okano",
     "player_id": "masayuki_okano",
     "season_id": "2006",
-    "shirt_number": 32,
+    "shirt_number": 30,
     "position": "FW",
     "memory_hook": "「野人」としてサポーターから愛され、ベンチからも士気を高めた。"
   },

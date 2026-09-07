@@ -1,3 +1,5 @@
+// GENERATED FILE — DO NOT EDIT MANUALLY.
+// Source of truth: data/*.json. Rebuild with: node scripts/build-data-bundle.mjs
 window.URAWA_DB = {
   "seasons": [
     {
@@ -92,15 +94,16 @@ window.URAWA_DB = {
       "goals_against": 72,
       "goal_difference": 13,
       "titles": [],
-      "summary": "オジェック監督のもと福田正博が日本人初となるJリーグ得点王（27得点）に輝き、サントリーシリーズ3位、年間4位と大躍進。",
+      "summary": "オジェック監督のもと福田正博が日本人初となるJリーグ得点王（32得点）に輝き、サントリーシリーズ3位、年間4位と大躍進。",
       "memory_hook": "「ミスターレッズ」福田正博が日本人初得点王。オジェック体制で年間4位に躍進した。",
       "key_events": [
-        "福田正博が日本人初のJ1得点王（27得点）",
+        "福田正博が日本人初のJリーグ得点王（32得点）",
         "1stステージ（サントリーシリーズ）で3位"
       ],
       "verification_status": "confirmed",
       "source_ids": [
-        "SRC_JLEAGUE_DATA"
+        "SRC_JLEAGUE_DATA",
+        "SRC_JLEAGUE_FUKUDA_1995"
       ]
     },
     {
@@ -121,12 +124,13 @@ window.URAWA_DB = {
       "summary": "1シーズン制で開催されたリーグ戦。岡野雅行のブレイクや強固な守備で安定した戦いを見せ、総合6位に入る。",
       "memory_hook": "「野人」岡野雅行が快速を武器に大ブレイク。安定して上位に食い込んだ。",
       "key_events": [
-        "岡野雅行がJリーグ新人王を受賞",
+        "岡野雅行がJリーグベストイレブン・フェアプレー個人賞を受賞",
         "リーグ戦を6位でフィニッシュ"
       ],
       "verification_status": "confirmed",
       "source_ids": [
-        "SRC_JLEAGUE_DATA"
+        "SRC_JLEAGUE_DATA",
+        "SRC_JLEAGUE_AWARDS_HISTORY"
       ]
     },
     {
@@ -222,15 +226,16 @@ window.URAWA_DB = {
       "goals_against": 40,
       "goal_difference": 42,
       "titles": [],
-      "summary": "「1年でのJ1復帰」を誓ったJ2シーズン。最終節・鳥栖戦の延長後半、土橋正樹の劇的Vゴールで2位となりJ1復帰を果たした。",
+      "summary": "「1年でのJ1復帰」を誓ったJ2シーズン。最終節・鳥栖戦の延長前半5分（95分）、土橋正樹の劇的Vゴールで2位となりJ1復帰を果たした。",
       "memory_hook": "駒場での最終節・土橋正樹の劇的Vゴール。1年でのJ1復帰を成し遂げた不屈のシーズン。",
       "key_events": [
         "阿部敏之らが奮闘",
-        "最終節・水戸戦（鳥栖戦）で土橋正樹のVゴールによりJ1昇格決定"
+        "最終節・鳥栖戦で土橋正樹が延長前半5分（95分）にVゴールを決め、J1昇格決定"
       ],
       "verification_status": "confirmed",
       "source_ids": [
-        "SRC_JLEAGUE_DATA"
+        "SRC_JLEAGUE_DATA",
+        "SRC_JLEAGUE_2000_TOSU_VGOAL"
       ]
     },
     {
@@ -1478,7 +1483,7 @@ window.URAWA_DB = {
       "season_id": "1995",
       "shirt_number": null,
       "position": "FW",
-      "memory_hook": "27ゴールを叩き出し日本人初となるJリーグ得点王に輝いた。"
+      "memory_hook": "32ゴールを叩き出し、日本人初となるJリーグ得点王に輝いた。"
     },
     {
       "id": "ps_1995_okano",
@@ -1494,7 +1499,7 @@ window.URAWA_DB = {
       "season_id": "1996",
       "shirt_number": null,
       "position": "FW",
-      "memory_hook": "Jリーグ新人王に輝き、日本代表にも定着した躍進の年。"
+      "memory_hook": "快速を武器に躍動し、Jリーグベストイレブン・フェアプレー個人賞を受賞した。"
     },
     {
       "id": "ps_1996_fukuda",
@@ -1566,7 +1571,7 @@ window.URAWA_DB = {
       "season_id": "2000",
       "shirt_number": 6,
       "position": "MF",
-      "memory_hook": "J2最終節・延長後半に劇的Vゴールを決め、1年でのJ1復帰をもたらした英雄。"
+      "memory_hook": "J2最終節・鳥栖戦の延長前半5分（95分）に劇的Vゴールを決め、1年でのJ1復帰をもたらした英雄。"
     },
     {
       "id": "ps_2000_fukuda",
@@ -1660,7 +1665,7 @@ window.URAWA_DB = {
       "id": "ps_2006_washington",
       "player_id": "washington",
       "season_id": "2006",
-      "shirt_number": 30,
+      "shirt_number": 21,
       "position": "FW",
       "memory_hook": "26得点でJ1得点王。最終節・G大阪戦で2ゴールを挙げリーグ初優勝をもたらした。"
     },
@@ -1725,14 +1730,14 @@ window.URAWA_DB = {
       "player_id": "nobuhisa_yamada",
       "season_id": "2006",
       "shirt_number": 6,
-      "position": "DF",
+      "position": "MF",
       "memory_hook": "主将として右サイドを疾走し、優勝決定戦でも貴重な得点を挙げた。"
     },
     {
       "id": "ps_2006_tsuzuki",
       "player_id": "ryota_tsuzuki",
       "season_id": "2006",
-      "shirt_number": 21,
+      "shirt_number": 23,
       "position": "GK",
       "memory_hook": "シーズン終盤の優勝争いで気迫のビッグセーブを連発。"
     },
@@ -1740,7 +1745,7 @@ window.URAWA_DB = {
       "id": "ps_2006_okano",
       "player_id": "masayuki_okano",
       "season_id": "2006",
-      "shirt_number": 32,
+      "shirt_number": 30,
       "position": "FW",
       "memory_hook": "「野人」としてサポーターから愛され、ベンチからも士気を高めた。"
     },
@@ -2209,6 +2214,16 @@ window.URAWA_DB = {
       "source_ids": [
         "SRC_JLEAGUE_DATA"
       ]
+    },
+    {
+      "manager_id": "nobuyasu_ikeda",
+      "name": "池田 伸康",
+      "name_en": "Nobuyasu IKEDA",
+      "nationality": "Japan",
+      "birth_date": "1970-05-18",
+      "source_ids": [
+        "SRC_URAWA_MANAGER_2024_IKEDA"
+      ]
     }
   ],
   "managerTenures": [
@@ -2439,9 +2454,10 @@ window.URAWA_DB = {
       "season_id": "2011",
       "role": "監督",
       "titles_won": [],
-      "notes": "低迷によりゼリコ監督解任後、堀孝史監督が引き継ぎ最終節でJ1残留を決める。",
+      "notes": "シーズン開幕から指揮し、10月20日に契約解除。第30節から堀孝史監督へ交代。",
       "source_ids": [
-        "SRC_JLEAGUE_DATA"
+        "SRC_JLEAGUE_DATA",
+        "SRC_URAWA_MANAGER_2011_HORI"
       ]
     },
     {
@@ -2597,9 +2613,10 @@ window.URAWA_DB = {
       "season_id": "2024",
       "role": "監督",
       "titles_won": [],
-      "notes": "ヘグモ体制でスタートし、秋にマチェイ・スコルジャ監督が復帰して指揮を執る。",
+      "notes": "シーズン開幕から指揮し、8月27日に監督職を解除。池田伸康コーチの暫定指揮を経てスコルジャ監督へ交代。",
       "source_ids": [
-        "SRC_JLEAGUE_DATA"
+        "SRC_JLEAGUE_DATA",
+        "SRC_URAWA_MANAGER_2024_SKORZA"
       ]
     },
     {
@@ -2611,6 +2628,39 @@ window.URAWA_DB = {
       "notes": "クラブワールドカップ2025参戦。世界の大舞台に挑む。",
       "source_ids": [
         "SRC_JLEAGUE_DATA"
+      ]
+    },
+    {
+      "tenure_id": "tenure_2011_hori",
+      "manager_id": "takafumi_hori",
+      "season_id": "2011",
+      "role": "監督",
+      "titles_won": [],
+      "notes": "10月20日にトップチーム監督へ就任し、第30節から最終節まで指揮してJ1残留を達成。",
+      "source_ids": [
+        "SRC_URAWA_MANAGER_2011_HORI"
+      ]
+    },
+    {
+      "tenure_id": "tenure_2024_ikeda",
+      "manager_id": "nobuyasu_ikeda",
+      "season_id": "2024",
+      "role": "暫定監督",
+      "titles_won": [],
+      "notes": "8月27日のヘグモ監督職解除後、スコルジャ監督就任まで暫定的にトップチームを指揮。",
+      "source_ids": [
+        "SRC_URAWA_MANAGER_2024_IKEDA"
+      ]
+    },
+    {
+      "tenure_id": "tenure_2024_skorza",
+      "manager_id": "maciej_skorza",
+      "season_id": "2024",
+      "role": "監督",
+      "titles_won": [],
+      "notes": "ヘグモ監督職解除後、池田伸康コーチの暫定指揮を経て監督に復帰。",
+      "source_ids": [
+        "SRC_URAWA_MANAGER_2024_SKORZA"
       ]
     }
   ],
@@ -2673,7 +2723,7 @@ window.URAWA_DB = {
       "accent_color": "#FFFFFF",
       "pants_color": "#FFFFFF",
       "socks_color": "#000000",
-      "description": "岡野雅行が新人王を獲得した1シーズン制イヤーのキット。"
+      "description": "岡野雅行がベストイレブンに選出される活躍を見せた、1シーズン制イヤーのキット。"
     },
     {
       "uniform_id": "kit_1997",
@@ -2800,24 +2850,24 @@ window.URAWA_DB = {
       "season_id": "2007",
       "type": "HOME",
       "supplier": "Nike",
-      "chest_sponsor": "DHL",
+      "chest_sponsor": "SAVAS",
       "main_color": "#E6002D",
       "accent_color": "#FFFFFF",
       "pants_color": "#FFFFFF",
       "socks_color": "#000000",
-      "description": "胸スポンサーがDHLへ変更。アジア初制覇と世界3位のキット。"
+      "description": "国内大会用は胸にSAVAS。ACL等の国際大会ではDHLを掲出し、アジア初制覇と世界3位を達成した。"
     },
     {
       "uniform_id": "kit_2008",
       "season_id": "2008",
       "type": "HOME",
       "supplier": "Nike",
-      "chest_sponsor": "DHL",
+      "chest_sponsor": "SAVAS",
       "main_color": "#E6002D",
       "accent_color": "#FFFFFF",
       "pants_color": "#FFFFFF",
       "socks_color": "#000000",
-      "description": "ACLベスト4まで進出したNike製キット。胸にはDHL。"
+      "description": "リーグ戦用1stは胸にSAVAS。国際試合用はDHLを掲出したNike製キット。"
     },
     {
       "uniform_id": "kit_2009",
@@ -2848,12 +2898,12 @@ window.URAWA_DB = {
       "season_id": "2011",
       "type": "HOME",
       "supplier": "Nike",
-      "chest_sponsor": "DHL",
+      "chest_sponsor": "SAVAS",
       "main_color": "#E6002D",
       "accent_color": "#FFFFFF",
       "pants_color": "#FFFFFF",
       "socks_color": "#000000",
-      "description": "最終節でJ1残留を死守したシーズンのNike製キット。"
+      "description": "国内1stユニフォームは胸にSAVAS。J1残留を懸けた2011シーズンのNike製キット。"
     },
     {
       "uniform_id": "kit_2012",
@@ -3038,6 +3088,142 @@ window.URAWA_DB = {
       "title": "URAWA RED DIAMONDS OFFICIAL WEBSITE",
       "publisher": "浦和レッドダイヤモンズ株式会社",
       "url": "https://www.urawa-reds.co.jp/",
+      "source_type": "official",
+      "accessed_at": "2026-09-07"
+    },
+    {
+      "source_id": "SRC_URAWA_MATCH_1998_1107",
+      "title": "1998 Jリーグ 2ndステージ 第16節 京都戦 試合速報",
+      "publisher": "浦和レッドダイヤモンズ株式会社",
+      "url": "https://www.urawa-reds.co.jp/en/game/sokuhou_recent/?game=1008",
+      "source_type": "official",
+      "accessed_at": "2026-09-07"
+    },
+    {
+      "source_id": "SRC_URAWA_RFILE_2006_J1",
+      "title": "R-File 2006 Jリーグ",
+      "publisher": "浦和レッドダイヤモンズ株式会社",
+      "url": "https://www.urawa-reds.co.jp/archive/Results/Rising2006/2006j.htm.html",
+      "source_type": "official",
+      "accessed_at": "2026-09-07"
+    },
+    {
+      "source_id": "SRC_URAWA_SQUAD_2006",
+      "title": "2006シーズンの背番号を発表！",
+      "publisher": "浦和レッドダイヤモンズ株式会社",
+      "url": "https://www.urawa-reds.co.jp/topteamtopics/31946/",
+      "source_type": "official",
+      "accessed_at": "2026-09-07"
+    },
+    {
+      "source_id": "SRC_URAWA_SQUAD_2017",
+      "title": "2017シーズン トップチーム選手背番号について",
+      "publisher": "浦和レッドダイヤモンズ株式会社",
+      "url": "https://www.urawa-reds.co.jp/topteamtopics/2017%E3%82%B7%E3%83%BC%E3%82%BA%E3%83%B3-%E3%83%88%E3%83%83%E3%83%97%E3%83%81%E3%83%BC%E3%83%A0%E9%81%B8%E6%89%8B%E8%83%8C%E7%95%AA%E5%8F%B7%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6/",
+      "source_type": "official",
+      "accessed_at": "2026-09-07"
+    },
+    {
+      "source_id": "SRC_URAWA_SQUAD_2023",
+      "title": "2023シーズン トップチーム選手背番号について",
+      "publisher": "浦和レッドダイヤモンズ株式会社",
+      "url": "https://www.urawa-reds.co.jp/topteamtopics/194066/",
+      "source_type": "official",
+      "accessed_at": "2026-09-07"
+    },
+    {
+      "source_id": "SRC_URAWA_KIT_2005_VODAFONE",
+      "title": "浦和レッズ2005シーズン・メインパートナー並びに新ユニホームについて2",
+      "publisher": "浦和レッドダイヤモンズ株式会社",
+      "url": "https://www.urawa-reds.co.jp/topteamtopics/%E6%B5%A6%E5%92%8C%E3%83%AC%E3%83%83%E3%82%BA2005%E3%82%B7%E3%83%BC%E3%82%BA%E3%83%B3%E3%83%BB%E3%83%A1%E3%82%A4%E3%83%B3%E3%83%91%E3%83%BC%E3%83%88%E3%83%8A%E3%83%BC%E4%B8%A6%E3%81%B3%E3%81%AB-2/",
+      "source_type": "official",
+      "accessed_at": "2026-09-07"
+    },
+    {
+      "source_id": "SRC_URAWA_KIT_2007_SAVAS_DHL",
+      "title": "浦和レッズトップパートナー・新ユニホームについて",
+      "publisher": "浦和レッドダイヤモンズ株式会社",
+      "url": "https://www.urawa-reds.co.jp/clubinfo/35045/",
+      "source_type": "official",
+      "accessed_at": "2026-09-07"
+    },
+    {
+      "source_id": "SRC_URAWA_KIT_2013_POLUS",
+      "title": "ユニフォーム＜胸＞新パートナーについて",
+      "publisher": "浦和レッドダイヤモンズ株式会社",
+      "url": "https://www.urawa-reds.co.jp/clubinfo/%E3%83%A6%E3%83%8B%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0%EF%BC%9C%E8%83%B8%EF%BC%9E%E6%96%B0%E3%83%91%E3%83%BC%E3%83%88%E3%83%8A%E3%83%BC%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6/",
+      "source_type": "official",
+      "accessed_at": "2026-09-07"
+    },
+    {
+      "source_id": "SRC_URAWA_KIT_2013_ACL",
+      "title": "国内試合＆ACL、レプリカユニフォーム(1st)の追加販売について",
+      "publisher": "浦和レッドダイヤモンズ株式会社",
+      "url": "https://www.urawa-reds.co.jp/clubinfo/60646/",
+      "source_type": "official",
+      "accessed_at": "2026-09-07"
+    },
+    {
+      "source_id": "SRC_JLEAGUE_FUKUDA_1995",
+      "title": "Jリーグアウォーズ司会者紹介（福田正博プロフィール）",
+      "publisher": "公益社団法人日本プロサッカーリーグ",
+      "url": "https://www.jleague.jp/news/article/23628/",
+      "source_type": "official",
+      "accessed_at": "2026-09-07"
+    },
+    {
+      "source_id": "SRC_JLEAGUE_AWARDS_HISTORY",
+      "title": "大会の歴史・Jリーグアウォーズ歴代受賞者",
+      "publisher": "公益社団法人日本プロサッカーリーグ",
+      "url": "https://www.jleague.jp/corporate/about_competitions/tournament_history/",
+      "source_type": "official",
+      "accessed_at": "2026-09-07"
+    },
+    {
+      "source_id": "SRC_JLEAGUE_2000_TOSU_VGOAL",
+      "title": "記憶に残るJリーグのVゴールTOP10（土橋正樹）",
+      "publisher": "公益社団法人日本プロサッカーリーグ",
+      "url": "https://www.jleague.jp/news/article/15590/?mode=pc",
+      "source_type": "official",
+      "accessed_at": "2026-09-07"
+    },
+    {
+      "source_id": "SRC_URAWA_KIT_2008_SAVAS_DHL",
+      "title": "2008レプリカユニホーム販売のお知らせ",
+      "publisher": "浦和レッドダイヤモンズ株式会社",
+      "url": "https://www.urawa-reds.co.jp/clubinfo/33173/",
+      "source_type": "official",
+      "accessed_at": "2026-09-07"
+    },
+    {
+      "source_id": "SRC_URAWA_KIT_2011_SAVAS",
+      "title": "新ユニフォーム、販売開始！",
+      "publisher": "浦和レッドダイヤモンズ株式会社",
+      "url": "https://www.urawa-reds.co.jp/clubinfo/24257/",
+      "source_type": "official",
+      "accessed_at": "2026-09-07"
+    },
+    {
+      "source_id": "SRC_URAWA_MANAGER_2011_HORI",
+      "title": "堀 孝史ユース監督、トップチーム監督就任について",
+      "publisher": "浦和レッドダイヤモンズ株式会社",
+      "url": "https://www.urawa-reds.co.jp/topteamtopics/7734/",
+      "source_type": "official",
+      "accessed_at": "2026-09-07"
+    },
+    {
+      "source_id": "SRC_URAWA_MANAGER_2024_IKEDA",
+      "title": "池田伸康コーチ 暫定監督就任について",
+      "publisher": "浦和レッドダイヤモンズ株式会社",
+      "url": "https://www.urawa-reds.co.jp/topteamtopics/216250/",
+      "source_type": "official",
+      "accessed_at": "2026-09-07"
+    },
+    {
+      "source_id": "SRC_URAWA_MANAGER_2024_SKORZA",
+      "title": "マチェイ スコルジャ氏 監督就任に関する契約合意のお知らせ",
+      "publisher": "浦和レッドダイヤモンズ株式会社",
+      "url": "https://www.urawa-reds.co.jp/topteamtopics/216248/",
       "source_type": "official",
       "accessed_at": "2026-09-07"
     }

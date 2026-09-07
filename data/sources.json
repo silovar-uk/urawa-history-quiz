@@ -86,5 +86,69 @@
     "url": "https://www.urawa-reds.co.jp/clubinfo/60646/",
     "source_type": "official",
     "accessed_at": "2026-09-07"
+  },
+  {
+    "source_id": "SRC_JLEAGUE_FUKUDA_1995",
+    "title": "Jリーグアウォーズ司会者紹介（福田正博プロフィール）",
+    "publisher": "公益社団法人日本プロサッカーリーグ",
+    "url": "https://www.jleague.jp/news/article/23628/",
+    "source_type": "official",
+    "accessed_at": "2026-09-07"
+  },
+  {
+    "source_id": "SRC_JLEAGUE_AWARDS_HISTORY",
+    "title": "大会の歴史・Jリーグアウォーズ歴代受賞者",
+    "publisher": "公益社団法人日本プロサッカーリーグ",
+    "url": "https://www.jleague.jp/corporate/about_competitions/tournament_history/",
+    "source_type": "official",
+    "accessed_at": "2026-09-07"
+  },
+  {
+    "source_id": "SRC_JLEAGUE_2000_TOSU_VGOAL",
+    "title": "記憶に残るJリーグのVゴールTOP10（土橋正樹）",
+    "publisher": "公益社団法人日本プロサッカーリーグ",
+    "url": "https://www.jleague.jp/news/article/15590/?mode=pc",
+    "source_type": "official",
+    "accessed_at": "2026-09-07"
+  },
+  {
+    "source_id": "SRC_URAWA_KIT_2008_SAVAS_DHL",
+    "title": "2008レプリカユニホーム販売のお知らせ",
+    "publisher": "浦和レッドダイヤモンズ株式会社",
+    "url": "https://www.urawa-reds.co.jp/clubinfo/33173/",
+    "source_type": "official",
+    "accessed_at": "2026-09-07"
+  },
+  {
+    "source_id": "SRC_URAWA_KIT_2011_SAVAS",
+    "title": "新ユニフォーム、販売開始！",
+    "publisher": "浦和レッドダイヤモンズ株式会社",
+    "url": "https://www.urawa-reds.co.jp/clubinfo/24257/",
+    "source_type": "official",
+    "accessed_at": "2026-09-07"
+  },
+  {
+    "source_id": "SRC_URAWA_MANAGER_2011_HORI",
+    "title": "堀 孝史ユース監督、トップチーム監督就任について",
+    "publisher": "浦和レッドダイヤモンズ株式会社",
+    "url": "https://www.urawa-reds.co.jp/topteamtopics/7734/",
+    "source_type": "official",
+    "accessed_at": "2026-09-07"
+  },
+  {
+    "source_id": "SRC_URAWA_MANAGER_2024_IKEDA",
+    "title": "池田伸康コーチ 暫定監督就任について",
+    "publisher": "浦和レッドダイヤモンズ株式会社",
+    "url": "https://www.urawa-reds.co.jp/topteamtopics/216250/",
+    "source_type": "official",
+    "accessed_at": "2026-09-07"
+  },
+  {
+    "source_id": "SRC_URAWA_MANAGER_2024_SKORZA",
+    "title": "マチェイ スコルジャ氏 監督就任に関する契約合意のお知らせ",
+    "publisher": "浦和レッドダイヤモンズ株式会社",
+    "url": "https://www.urawa-reds.co.jp/topteamtopics/216248/",
+    "source_type": "official",
+    "accessed_at": "2026-09-07"
   }
 ]
