@@ -1,0 +1,29 @@
+name: Quiz Trust Audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'prototype/app.js'
+      - 'prototype/quiz-trust.js'
+      - 'data/**'
+      - 'scripts/quiz-trust-audit.mjs'
+      - '.github/workflows/quiz-trust-audit.yml'
+  pull_request:
+    paths:
+      - 'prototype/app.js'
+      - 'prototype/quiz-trust.js'
+      - 'data/**'
+      - 'scripts/quiz-trust-audit.mjs'
+      - '.github/workflows/quiz-trust-audit.yml'
+
+jobs:
+  trust-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run quiz trust audit
+        run: node scripts/quiz-trust-audit.mjs
