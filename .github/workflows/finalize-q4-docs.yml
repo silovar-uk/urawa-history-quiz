@@ -22,35 +22,13 @@ jobs:
           from pathlib import Path
           p = Path('docs/quiz-quality-plan.md')
           s = p.read_text()
-
-          old_list = '''5. Q2 Quality Audit
-7. Q3 Structural Difficulty Audit
-8. Q4 deterministic Coverage / Exposure Audit
-9. Q3 artifact upload
-10. Q4 coverage artifact upload'''
-          new_list = '''5. Q2 Quality Audit
-6. Q3 Structural Difficulty Audit
-7. Q4 deterministic Coverage / Exposure Audit
-8. Q3 artifact upload
-9. Q4 coverage artifact upload'''
+          old_list = "5. Q2 Quality Audit\n7. Q3 Structural Difficulty Audit\n8. Q4 deterministic Coverage / Exposure Audit\n9. Q3 artifact upload\n10. Q4 coverage artifact upload"
+          new_list = "5. Q2 Quality Audit\n6. Q3 Structural Difficulty Audit\n7. Q4 deterministic Coverage / Exposure Audit\n8. Q3 artifact upload\n9. Q4 coverage artifact upload"
           if s.count(old_list) != 1:
               raise SystemExit(f'expected one CI numbering block, found {s.count(old_list)}')
           s = s.replace(old_list, new_list)
-
-          old_seq = '''Q5 Significance / Memory Hook        NOW
-↓
-Q6 Learning History
-↓
-Answered History Spine Integration
-↓
-History Browser Refinement'''
-          new_seq = '''Q5 Significance / Memory Hook        NOW
-↓
-Q6 Learning History
-↓
-Exposure weighting / adaptive-light only if justified
-↓
-History Grammar / Browser refinement after UX validation'''
+          old_seq = "Q5 Significance / Memory Hook        NOW\n↓\nQ6 Learning History\n↓\nAnswered History Spine Integration\n↓\nHistory Browser Refinement"
+          new_seq = "Q5 Significance / Memory Hook        NOW\n↓\nQ6 Learning History\n↓\nExposure weighting / adaptive-light only if justified\n↓\nHistory Grammar / Browser refinement after UX validation"
           if s.count(old_seq) != 1:
               raise SystemExit(f'expected one stale sequence block, found {s.count(old_seq)}')
           s = s.replace(old_seq, new_seq)
