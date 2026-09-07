@@ -2,25 +2,35 @@
 
 Updated: 2026-09-07
 
-Status: **NOW**
-
 Canonical project state: `docs/current-state.md`
+
+Current status:
+
+- Q0 Inventory — **DONE**
+- Q1 Correctness / Eligibility — **DONE**
+- Q1.5 Provenance Recovery — **NOW**
+- Q2 Distractor Quality — **NEXT**
+- Q3 Difficulty — LATER
+- Q4 Coverage / Balance — LATER
+- Q5 Significance / Memory Hook — LATER
+- Q6 Learning History — LATER
+
+Detailed Q0/Q1 result:
+`docs/quiz-trust-gate-report.md`
 
 ---
 
 # 0. Goal
 
-Quiz Engineを、
+Quiz Engineを：
 
 `question can be generated`
 
-から、
+から：
 
 `question is safe to show`
 
-へ進める。
-
-その後に、
+へ進め、さらに：
 
 `question is worth learning`
 
@@ -30,305 +40,346 @@ Quiz Engineを、
 
 ---
 
-# 1. Current Generator Matrix
+# 1. Q0 — Inventory — DONE
 
-## PLAYER_NUMBER
+7 generatorの成立条件をmachine-checkableにした。
 
-Question:
-「YEAR年の浦和レッズで背番号Nを背負った選手は？」
+- PLAYER_NUMBER
+- PLAYER_POSITION
+- PLAYER_OVERLAP
+- MANAGER_SEASON
+- SEASON_RANK
+- SEASON_SUMMARY
+- KIT_DETAIL
 
-Current data:
-- player_seasons
-- players
+Rules live in:
 
-Current distractor:
-- same position in same season優先
-- 不足時は他player_seasonsまで拡張
+`prototype/quiz-trust.js`
 
-Risks:
-- 同一seasonで同じ背番号を複数選手が使用したケース
-- season途中の登録変更
-- source / verificationをgenerator側で確認しない
-- distractor pool内で同じplayerが複数season由来で重複し得る
-
-Eligibility requirement:
-- season + shirt numberでplayerが一意
-- target relationship verified
-- distractors are unique players
+Each rule defines:
+- required evidence
+- fail-closed behavior
+- eligibility expectation
 
 ---
 
-## PLAYER_POSITION
+# 2. Q1 — Correctness / Eligibility — DONE
 
-Question:
-「YEAR年シーズンのPLAYERの登録ポジションは？」
+Implemented principles:
 
-Current options:
-GK / DF / MF / FW
+## Fail closed
 
-Risks:
-- raw positionと4-group normalizationの意味差
-- season内でposition変更 / 複数登録がある場合
-- source verification未確認
+成立を証明できないquestionは出さない。
 
-Eligibility requirement:
-- normalized positionが一意
-- definitionを「登録ポジション」等に固定
+## Relationship evidence
+
+Entityにsourceがあっても、relationship factは別に確認する。
+
+Example:
+
+`player exists`
+
+≠
+
+`player wore #17 in 2006`
+
+## Semantic uniqueness
+
+4文字列が違うだけでは足りない。
+
+Normalized option uniquenessとcorrect occurrenceを検査する。
+
+## Safe wording
+
+Data certaintyより強い表現を使わない。
+
+## Observable rejection
+
+Runtime:
+
+`window.URAWA_QUIZ_QA`
+
+CI:
+
+`node scripts/quiz-trust-audit.mjs`
+
+Workflow:
+
+`.github/workflows/quiz-trust-audit.yml`
 
 ---
 
-## PLAYER_OVERLAP
+# 3. Q0/Q1 Audit Result
 
-Question:
-「YEAR年にPLAYERとチームメイトとして在籍していた選手は？」
+Initial CI:
 
-Current logic:
-- same season_id = overlap
+- PLAYER_NUMBER: 0 / 34 eligible
+- PLAYER_POSITION: 0 / 34 eligible
+- PLAYER_OVERLAP: 0 / 34 eligible
+- MANAGER_SEASON: 26 / 34 eligible
+- SEASON_RANK: 32 / 34 eligible
+- SEASON_SUMMARY: 33 / 34 eligible
+- KIT_DETAIL: 0 / 34 eligible
 
-Critical risk:
-- シーズン途中加入 / 退団で実在籍期間が重ならない可能性
+Invariant failures: 0
 
-Decision required:
+Interpretation:
 
-A. overlap = 同一season rosterに登録されたこと
-
-or
-
-B. overlap = calendar / registration periodが実際に重なること
-
-現状dataではBを保証できない。
-
-Until decided:
-- `同時在籍` の強い表現はQuiz Quality Gate上のriskとして扱う。
+Trust layer works.
+Coverage不足はdata provenance不足を示している。
 
 ---
 
-## MANAGER_SEASON
+# 4. Q1.5 — Provenance Recovery — NOW
 
-Question:
-「YEAR年に浦和レッズを率いた監督は？」
+## Purpose
 
-Current logic:
-- `managerTenures.find(season_id)` の最初の1件をcorrectにする
+PLAYER / KITをTrust Gateを弱めず復活させる。
 
-Critical risk:
-- 途中交代年
-- 総監督 / 代行 / 監督のrole差
-- 1 seasonに複数correct answerが成立
+一括source付与は禁止。
 
-Known examples in data notes:
-- 1997
-- 1999
-- 2000
-- 2001
-- 2008
-- 2011
+まずVertical Sliceでsource model自体を検証する。
+
+---
+
+## 4.1 Player relation slice
+
+Candidate anchor seasons:
+
+- 1998
+- 2006
 - 2017
-- 2018
-- 2024
+- 2023
 
-Eligibility requirement:
-- one-manager seasonのみ現在形式で出題
+Verify:
 
-or
-- question wordingをtenure period / role込みに変更
+- player-season membership
+- shirt number
+- registered position
+
+Prefer:
+
+- club official
+- league official
+- competition official
+- official annual records
+
+Add relationship-level provenance only after checking the exact claim.
+
+Schema candidate:
+
+```json
+{
+  "player_id": "...",
+  "season_id": "2006",
+  "shirt_number": 17,
+  "position": "MF",
+  "verification_status": "confirmed",
+  "source_ids": ["..."]
+}
+```
+
+Do not infer source from Player master.
+
+---
+
+## 4.2 Kit provenance slice
+
+Goal:
+
+At least four distinct verified sponsor values available for safe distractor generation.
+
+Representative sponsor eras:
+
+- MITSUBISHI MOTORS
+- Vodafone
+- DHL
+- POLUS
+
+Verify actual HOME kit claims and attach source metadata.
+
+Schema candidate:
+
+```json
+{
+  "uniform_id": "...",
+  "season_id": "...",
+  "type": "HOME",
+  "chest_sponsor": "...",
+  "verification_status": "confirmed",
+  "source_ids": ["..."]
+}
+```
+
+---
+
+## 4.3 PLAYER_OVERLAP remains disabled
+
+Current data does not prove actual overlap interval or roster completeness.
+
+Do not weaken the wording to make the existing generator appear safe.
+
+Future requirements:
+
+- registration_start
+- registration_end
+- or equivalent official interval evidence
+- roster completeness rule
+
+---
+
+## 4.4 Manager ambiguity remains fail-closed
+
+Current gate rejects seasons whose notes suggest:
+
+- mid-season replacement
+- dismissal
+- interim control
+- handover
+
+Do not restore those questions until manager tenure records represent changes explicitly.
+
+---
+
+# 5. Q1.5 Pass Gate
+
+Re-run Trust Audit.
+
+Required:
+
+- PLAYER_NUMBER eligible > 0
+- PLAYER_POSITION eligible > 0
+- KIT_DETAIL eligible > 0
+- invariantFailures = 0
+- no bulk unsupported source stamping
+
+If failed:
+source / schema modelを修正する。
+
+Q2へ急がない。
+
+---
+
+# 6. Q2 — Distractor Quality — NEXT
+
+Correctnessの次に「もっともらしい誤答」を改善する。
+
+Principle:
+
+`plausible enough to require recall`
+
+AND
+
+`clearly false from supported data`
+
+---
+
+## MANAGER
+
+Current safe poolをglobal randomにせず：
+
+1. adjacent era
+2. nearby tenure
+3. same broad historical period
+
+を優先。
 
 ---
 
 ## SEASON_RANK
 
-Question:
-「YEAR年シーズンの浦和レッズのJ1/J2最終順位は？」
+Current:
+valid league range内に限定済み。
 
-Current distractor:
-fixed rank listからrandom
+Next:
+correct rank近傍をdifficulty-awareに選ぶ。
 
-Risks:
-- league format / stage制 / pre-J.League context
-- total teamsを無視したimpossible rankがdistractorになり得る
-- J1/J2という表現が全seasonへ普遍的ではない
+Example:
 
-Eligibility requirement:
-- league_rank exists
-- wording uses actual league_name
-- distractors are valid ranks within total_teams
+correct 6th
+
+better distractors:
+4th / 5th / 7th
+
+rather than:
+1st / 14th / 18th
 
 ---
 
 ## SEASON_SUMMARY
 
-Question:
-summary → year
+Random distant yearをやめる。
 
-Current distractor:
-other seasonsからrandom year
+Candidate similarity:
 
-Strength:
-- History理解と相性がよい
-
-Risks:
-- summary中にyear answer cueが入る可能性
-- random distant-year distractorで簡単すぎる
-- summary claim自体のsource verification
-
-Eligibility requirement:
-- summary contains no direct answer leak
-- summary verified
-- distractors preferably near era / semantically similar seasons
+- nearby year
+- similar title profile
+- similar league rank
+- same manager era
+- similar historical phase
 
 ---
 
-## KIT_DETAIL
+## PLAYER_NUMBER
 
-Question:
-「YEAR年の公式ユニフォームの胸スポンサーは？」
+After provenance recovery:
 
-Current distractor:
-`MITSUBISHI MOTORS / Vodafone / DHL / POLUS` hard-coded
+- same season
+- same / nearby position
+- actual roster member
+- different verified shirt number
 
-Risks:
-- data-derivedでない
-- uniform source metadataが弱い
-- sponsor表記揺れ
-- season / competition / kit variantによる例外
-
-Eligibility requirement:
-- HOME kit fact verified
-- exact sponsor naming normalized
-- distractors generated from verified uniform records
+を優先。
 
 ---
 
-# 2. Q0 — Inventory
+## KIT
 
-## Purpose
+After provenance recovery:
 
-Quizの全generatorと、その成立条件をmachine-checkableな形へ落とす。
+- nearby sponsor era
+- actual verified sponsor values
 
-## Deliverable
-
-各generatorに：
-
-- required fields
-- eligibility
-- rejection reason
-- correct-answer uniqueness rule
-- distractor rule
-
-を定義。
-
-## Rejection reason taxonomy candidate
-
-- UNVERIFIED_FACT
-- MISSING_SOURCE
-- MISSING_REQUIRED_FIELD
-- AMBIGUOUS_CORRECT_ANSWER
-- DUPLICATE_OPTION
-- SEMANTIC_DUPLICATE
-- MULTIPLE_MANAGER_SEASON
-- OVERLAP_UNVERIFIED
-- SHIRT_NUMBER_NOT_UNIQUE
-- INVALID_RANK_RANGE
-- ANSWER_LEAK_IN_STEM
-- INSUFFICIENT_DISTRACTORS
+を使う。
 
 ---
 
-# 3. Q1 — Correctness / Eligibility
+# 7. Q2 Pass Gate
 
-## Rule 1 — Fail closed
+Each eligible generator must satisfy:
 
-成立を証明できないquestionは出さない。
-
-fallbackで推測しない。
-
-## Rule 2 — Verify relationships, not only entities
-
-player自体にsourceがあっても、
-
-`player × season × number`
-
-がverifiedとは限らない。
-
-relationship-level verificationを考える。
-
-## Rule 3 — Semantic uniqueness
-
-`new Set(options).size === 4`
-
-だけでは不十分。
-
-4つの文字列が違っても、正解が複数成立すればFAIL。
-
-## Rule 4 — Wording follows data certainty
-
-Dataがseason-level rosterしか保証しないなら、
-「同時期に在籍」など期間を強く主張しない。
-
-## Rule 5 — No generic VERIFIED badge without proof
-
-UIの `FACT VERIFIED` は、generatorがEligibility Gateを通ったfactだけに使う。
-
-Gate導入前は表示自体を再検討対象とする。
-
----
-
-# 4. Q2 — Distractor Quality
-
-Correctness Gate通過後に着手。
-
-Principles:
-
-- same domain
-- plausible
-- close enough to require recall
-- clearly false
-- data-derived where possible
+- all distractors source-defensible as false
 - no absurd option
-- no equivalent answer
-
-Examples:
-
-YEAR question:
-nearby years / similar achievement years
-
-MANAGER:
-adjacent-era managers
-
-KIT:
-verified sponsor values from nearby seasons
-
-RANK:
-valid ranks near correct within league size
+- no semantic duplicate
+- no obvious era giveaway where avoidable
+- correct answer not conspicuously more specific
+- minimum 4-option quality holds across representative seasons
 
 ---
 
-# 5. Q3 — Difficulty
+# 8. Q3 — Difficulty
 
-Difficultyを「事実のマニアックさ」だけで決めない。
+After Q2 only.
 
-Candidate dimensions:
+Difficulty dimensions:
 
-- temporal distance between distractors
-- similarity of candidates
-- prominence of fact
-- number of connecting clues
-- recency / exposure
+- temporal distance
+- option similarity
+- fact prominence
+- historical context clues
+- exposure count later
 
-Initial levels:
+Initial labels:
 
-EASY
-代表的タイトル / prominent season / broad distinction
+- EASY
+- MEDIUM
+- HARD
 
-MEDIUM
-near-era discrimination / notable players / managers
-
-HARD
-similar seasons / close distractors / less salient but meaningful facts
+Do not define difficulty only by obscurity.
 
 ---
 
-# 6. Q4 — Coverage / Balance
+# 9. Q4 — Coverage / Balance
 
 Measure:
 
@@ -340,39 +391,37 @@ Measure:
 - knowledge cluster
 
 Avoid:
-- 2000s黄金期だけ大量
-- famous playerだけ大量
-- PLAYER category偏重
-- same fact paraphrase repetition
+
+- 2000s golden-era overload
+- famous-player overload
+- PLAYER overload
+- same knowledge paraphrase repetition
 
 ---
 
-# 7. Q5 — Significance / Memory Hook
+# 10. Q5 — Significance / Memory Hook
 
-Question quality has two layers:
+Question must be both:
 
-1. Is it true?
-2. Is it worth remembering?
+1. true
+2. worth remembering
 
-Memory Hook should:
+Memory Hook should connect:
 
-- connect to previous / next season
-- connect player to era
-- connect kit to season memory
-- connect manager to tactical / result era
+- season ↔ adjacent season
+- player ↔ era
+- kit ↔ season memory
+- manager ↔ historical phase
 
-Avoid:
-- correct answerの言い換えだけ
-- unsupported dramatic copy
-- trivia without historical connection
+Avoid answer paraphrase only.
 
 ---
 
-# 8. Q6 — Learning History
+# 11. Q6 — Learning History
 
-Current storage tracks aggregate counts only.
+Current aggregate stats are not enough for true mastery.
 
-Future minimum question history:
+Future question history minimum:
 
 - knowledge_id
 - question_type
@@ -386,66 +435,23 @@ Then derive:
 
 - recently_wrong
 - unseen
-- retry
 - recovery
-- exposure count
+- exposure
 
-Do not call raw accuracy “mastery” without sample context.
-
----
-
-# 9. Test Cases Before Production Integration
-
-At least test:
-
-## Era boundaries
-- 1992
-- 1999 / 2000
-- 2009 / 2010
-- 2019 / 2020
-- 2025
-
-## Manager changes
-- seasons with mid-season change / interim management
-
-## Player relations
-- partial season registration
-- repeated player spell
-- same shirt number candidates
-
-## Data failure
-- missing source
-- missing player relation
-- missing kit
-- duplicate option
-- contradictory fact
+Do not call raw accuracy mastery without sample context.
 
 ---
 
-# 10. Pass Gate
-
-Q0/Q1 passes only when:
-
-- eligibility is explicit per generator
-- unverified facts fail closed
-- correct answer uniqueness is checked semantically
-- known manager-change ambiguity is handled
-- player overlap definition is documented
-- rank distractors obey league bounds
-- kit distractors come from verified data or are otherwise explicitly justified
-- source / verification state reaches the UI question object
-- invalid question rejection is observable in QA
-
----
-
-# 11. Production Sequence After Trust Gate
+# 12. Production sequence
 
 ```text
-Q0 Inventory
+Q0 Inventory — DONE
 ↓
-Q1 Correctness / Eligibility
+Q1 Correctness / Eligibility — DONE
 ↓
-Q2 Distractor Quality
+Q1.5 Provenance Recovery — NOW
+↓
+Q2 Distractor Quality — NEXT
 ↓
 Q3 Difficulty
 ↓
@@ -460,24 +466,16 @@ Answered Spine Production Integration
 History Browser Research
 ```
 
-History Spine research is preserved, not cancelled.
-
-It is deliberately queued behind Quiz Trust.
+History Spine research remains preserved.
 
 ---
 
-# 12. Immediate Next Action
+# 13. Immediate Next Action
 
-**Build the Q0/Q1 audit layer before changing production UI.**
+**Run a provenance vertical slice instead of broad data expansion.**
 
-First implementation batch should be small:
-
-1. Define `isQuizEligible(...)`-style rules or equivalent validation layer.
-2. Give every rejected candidate a reason code.
-3. Run generators against representative seasons.
-4. List every ambiguity / rejection discovered.
-5. Do not change visual design in the same batch.
+Start with representative player-season and kit claims.
 
 Next review question:
 
-> Can every question that reaches the screen be trusted to have exactly one defensible answer from adequately supported data?
+> Can PLAYER / KIT become eligible because their evidence improved, rather than because the Trust Gate became looser?
