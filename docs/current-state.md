@@ -19,19 +19,23 @@ Quiz Quality current status:
 - Q1 Correctness / Eligibility — **DONE**
 - Q1.5 Provenance Recovery — **PARTIAL PASS / FOUNDATION DONE**
 - Q1.6 Uniform Model Repair — **DONE**
-- Q2 Distractor Quality — **DONE (policy / invariant level)**
-- Q3 Difficulty — **NOW**
-- Q4 Coverage / Balance — NEXT
-- Q5 Significance / Memory Hook — LATER
+- Q2 Distractor Quality — **DONE**
+- Q3 Difficulty — **DONE (structural estimate baseline)**
+- Q4 Coverage / Balance — **NOW**
+- Q5 Significance / Memory Hook — NEXT
 - Q6 Learning History — LATER
 
 Q1.6でKITを `season × HOME` の単一値から、`season × HOME × competition_scope` の文脈付きfactへ分離した。
 
 Q2で主要generatorのdistractorをrandom-firstからdomain-aware policyへ変更した。
 
+Q3では107件のtrust-safeな問題構成を観測可能にし、target / distractor関係から **Structural Difficulty Estimate** を決定的に算出できるようにした。
+
+重要：これは実ユーザー正答率から求めるObserved Item Difficultyではない。
+
 **Current Bottleneck:**
 
-> Difficulty calibration — 「近い誤答」を作れるようになったが、その近さがEasy / Medium / Hardとしてどう作用するかはまだ定義・検証していない。
+> Coverage / exposure balance — 安全で難易度構造も観測できるようになったが、現在のgenerator policyで「どの年代・カテゴリ・シーズンが実際に画面へ出やすいか」はまだ測定していない。
 
 History Spine production integrationはQuiz Quality上流Gateの後に再開する。
 
@@ -96,7 +100,7 @@ They remain fail-closed until repaired from evidence.
 
 ## Quiz Engine
 
-**3.5 / 5 — FUNCTIONAL + TRUST GATED + DISTRACTOR POLICY**
+**3.5 / 5 — FUNCTIONAL + TRUST GATED + QUALITY INSTRUMENTED**
 
 Generators:
 
@@ -125,13 +129,13 @@ Runtime diagnostics:
 
 ## Quiz Trust Coverage — latest aligned CI
 
-- PLAYER_NUMBER: **2 / 34 eligible**
-- PLAYER_POSITION: **3 / 34 eligible**
+- PLAYER_NUMBER: **2 / 34 eligible seasons**
+- PLAYER_POSITION: **3 / 34 eligible seasons**
 - PLAYER_OVERLAP: **0 / 34**
 - MANAGER_SEASON: **26 / 34**
 - SEASON_RANK: **32 / 34**
 - SEASON_SUMMARY: **33 / 34**
-- KIT_DETAIL: **3 / 34 eligible**
+- KIT_DETAIL: **3 / 34 eligible seasons**
 
 Latest trust invariants:
 
@@ -139,23 +143,9 @@ Latest trust invariants:
 - provenanceFailures: **0**
 - uniformContexts: **5**
 
-KIT eligible seasons:
-
-- 2005
-- 2007
-- 2013
-
-Detailed Q1.6 / Q2 report:
-
-`docs/q1-6-q2-report.md`
-
-Uniform schema addendum:
-
-`docs/uniform-context-schema.md`
-
 ## Quiz Content Quality
 
-**3 / 5 — DISTRACTOR POLICY DONE, DIFFICULTY NEXT**
+**3.5 / 5 — DISTRACTOR + STRUCTURAL DIFFICULTY BASELINE DONE**
 
 Q2 introduced:
 
@@ -165,17 +155,50 @@ Q2 introduced:
 - SEASON_SUMMARY: temporal / era / title / league similarity
 - KIT_DETAIL: verified historical sponsor values, same competition scope preferred
 
-Q2 quality audit:
+Q3 introduced:
 
-- failures: **0**
+- `prototype/quiz-difficulty.js`
+- `scripts/quiz-difficulty-audit.mjs`
+- CI artifact `q3-difficulty-baseline.json`
 
-Representative summary distractors:
+Q3 does **not** expose difficulty labels in UI.
 
-- 2006 → 2005 / 2007 / 2004
-- 2017 → 2018 / 2015 / 2016
-- 2023 → 2022 / 2021 / 2024
+### Q3 baseline
 
-This does not yet mean difficulty is calibrated.
+Total modeled constructions:
+
+**107**
+
+Provisional structural bands:
+
+- EASY: **4**
+- MEDIUM: **23**
+- HARD: **80**
+
+By generator:
+
+- PLAYER_NUMBER: 11 items / E4 M3 H4 / avg 54.9
+- MANAGER_SEASON: 26 / E0 M13 H13 / avg 73.2
+- SEASON_RANK: 32 / E0 M2 H30 / avg 80.3
+- SEASON_SUMMARY: 33 / E0 M2 H31 / avg 80.0
+- KIT_DETAIL: 5 / E0 M3 H2 / avg 65.2
+
+Interpretation:
+
+The Hard skew is not normalized away. It reveals that Q2 currently selects the closest plausible distractors almost every time.
+
+Q4 must measure how this construction bias interacts with era / category / season exposure.
+
+### Q3 limitations
+
+- Observed item difficulty still requires real user response data.
+- SEASON_SUMMARY semantic clue richness is under-modeled; confidence is lower.
+- PLAYER_POSITION remains unmodeled for structural difficulty rather than inventing fake precision.
+- PLAYER_OVERLAP remains trust-disabled.
+
+Detailed report:
+
+`docs/q3-difficulty-report.md`
 
 ## Learning Model
 
@@ -201,6 +224,8 @@ Raw accuracy is not treated as validated mastery.
 - Next
 - Explore Season
 - `SOURCE CHECKED`
+
+Difficulty is intentionally not shown to the user yet.
 
 History Spine Reveal remains experiment-only.
 
@@ -253,8 +278,6 @@ Verified vertical slice:
 - 2013 domestic HOME → POLUS
 - 2013 ACL HOME → MITSUBISHI MOTORS
 
-Season Detail now labels unverified legacy chest sponsor data instead of presenting it as trusted truth.
-
 ---
 
 # 5. Q2 Distractor Quality — DONE
@@ -267,68 +290,96 @@ Quality audit:
 
 `scripts/quiz-quality-audit.mjs`
 
-CI now checks:
+Latest aligned result:
 
-1. prototype syntax
-2. Q0/Q1/Q1.5/Q1.6 trust eligibility
-3. Q2 distractor policy invariants
-
-Latest aligned CI result:
-
-**SUCCESS**
-
-- KIT_DETAIL: 3 / 34 eligible
 - invariantFailures: 0
 - provenanceFailures: 0
 - Q2 failures: 0
 
 ---
 
-# 6. NOW — Q3 Difficulty
+# 6. Q3 Difficulty — DONE
 
-Central question:
+Status:
 
-> Can Easy / Medium / Hard be defined from measurable relationships between target, clue, and distractors instead of simply using obscure facts?
+**PASS — structural estimate baseline**
 
-Candidate dimensions:
+Model:
 
-- temporal distance
-- distractor similarity
-- same-era density
-- same-position / same-role similarity
-- fact prominence
-- clue richness
-- option homogeneity
+`prototype/quiz-difficulty.js`
 
-First Q3 vertical slice should score existing trusted questions; it should not create new facts.
+Audit:
 
-Pass condition:
+`scripts/quiz-difficulty-audit.mjs`
 
-- difficulty has an explicit scoring rule
-- representative questions can be classified consistently
-- no category is automatically always Easy or always Hard
-- difficulty does not reward obscure / low-value trivia by default
-- Trust Gate remains unchanged
+Baseline CI:
+
+https://github.com/silovar-uk/urawa-history-quiz/actions/runs/34120456643
+
+The CI stores the full item-level baseline as an artifact.
+
+Core decision:
+
+> Structural Difficulty is useful as a pre-calibration feature, but it must never be represented as observed user difficulty until response data exists.
+
+Research confidence:
+
+**MEDIUM**
 
 ---
 
-# 7. NEXT / THEN
+# 7. NOW — Q4 Coverage / Balance
+
+Central question:
+
+> If a user simply presses “next” repeatedly today, what Urawa history are they statistically likely to see, and what history is nearly invisible?
+
+Q4 must distinguish:
+
+1. Data Availability
+2. Quiz Eligibility
+3. Runtime Exposure
+
+Measure at minimum:
+
+- era
+- season
+- category
+- generator
+- structural difficulty
+- player / manager where applicable
+
+Do not impose an arbitrary equal distribution yet.
+
+Plan:
+
+`docs/q4-coverage-balance-plan.md`
+
+First action:
+
+> Build a deterministic eligibility-and-exposure census for every season from 1992–2025 under the current generator policy.
+
+---
+
+# 8. NEXT / THEN
 
 NEXT:
 
-1. Q4 Coverage / Balance
+1. Q5 Significance / Memory Hook
 
 THEN:
 
-2. Q5 Significance / Memory Hook
-3. Q6 Learning History
+2. Q6 Learning History
+3. Question Selection / adaptive-light logic only if justified
 4. Answered History Spine production integration
 5. History Browser refinement
 
 ---
 
-# 8. Do Not Build Yet
+# 9. Do Not Build Yet
 
+- psychometric claims from structural scores
+- user-facing EASY / MEDIUM / HARD badges
 - adaptive learning
 - XP / coins / rankings
 - PLAYER_OVERLAP without interval evidence
@@ -338,21 +389,25 @@ THEN:
 
 ---
 
-# 9. Technical Debt
+# 10. Technical / Research Debt
 
-`data/data-bundle.js` remains a legacy runtime fallback and can drift from canonical JSON.
+## Data runtime
 
-New provenance and uniform-context registries are loaded separately to avoid manual double-editing.
+`data/data-bundle.js` remains a legacy runtime fallback and can drift from canonical source data.
 
-Recommended cleanup after Q3 / before broad data expansion:
+## Difficulty
 
-> make canonical JSON / registries generate runtime data deterministically, or remove the fallback if it is unnecessary.
+- SEASON_SUMMARY needs a better clue-richness model before user-facing use.
+- observed item difficulty requires later response data.
+- PLAYER_POSITION is intentionally unmodeled in Q3.
 
-The one-time Q1.6/Q2 migration script / workflow should also be archived or removed after the current implementation history no longer needs it.
+## One-time migration
+
+The Q1.6/Q2 migration script / workflow can be archived or removed after its historical value is no longer needed.
 
 ---
 
-# 10. Documentation / QA State
+# 11. Documentation / QA State
 
 Canonical:
 
@@ -361,23 +416,26 @@ Canonical:
 - `docs/development-plan.md`
 - `docs/quiz-quality-plan.md`
 
-Reports / schema:
+Reports / plans:
 
 - `docs/quiz-trust-gate-report.md`
 - `docs/provenance-recovery-report.md`
 - `docs/q1-6-q2-report.md`
 - `docs/uniform-context-schema.md`
+- `docs/q3-difficulty-report.md`
+- `docs/q4-coverage-balance-plan.md`
 
 Automated QA:
 
 - `scripts/quiz-trust-audit.mjs`
 - `scripts/quiz-quality-audit.mjs`
+- `scripts/quiz-difficulty-audit.mjs`
 - `.github/workflows/quiz-trust-audit.yml`
 
 ---
 
-# 11. Next Review Gate
+# 12. Next Review Gate
 
-Q3 may advance to Q4 only when:
+Q4 may advance to Q5 only when:
 
-> Difficulty is explainable from measurable features, produces sensible differences across representative Quiz types, and does not weaken correctness or historical significance.
+> The project can separately explain what facts exist, what questions are safe, and what history the current engine actually exposes to a user over repeated sessions — broken down by era, season, category, generator, and structural difficulty.
