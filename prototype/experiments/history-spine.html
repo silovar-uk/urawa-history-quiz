@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>URAWA HISTORY — History Spine Experiment</title>
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#171717">
+  <style>
+    :root {
+      --paper:#fffefb;
+      --bg:#f1efea;
+      --ink:#171717;
+      --muted:#77736c;
+      --line:#d9d5ce;
+      --red:#c3152a;
+      --good:#287a4b;
+      --wrong:#8c4338;
+      --focus:#1e5aa8;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink)}
+    button{font:inherit}
+    button:focus-visible,a:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+    .shell{min-height:100svh;background:var(--paper);max-width:980px;margin:0 auto;border-inline:1px solid var(--line)}
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--line)}
+    .brand{display:flex;align-items:center;gap:9px;font-size:12px;font-weight:900;letter-spacing:.1em}
+    .brand-mark{width:13px;height:13px;background:var(--red);transform:rotate(45deg);position:relative;flex:none}
+    .brand-mark::after{content:"";position:absolute;width:3px;height:17px;background:var(--ink);left:5px;top:-2px;transform:rotate(-45deg)}
+    .lab{font-size:10px;color:var(--muted);letter-spacing:.12em;font-weight:800}
+    .layout{display:grid;grid-template-columns:1fr;min-height:calc(100svh - 49px)}
+    .spine-wrap{border-bottom:1px solid var(--line);padding:14px 0 10px;overflow:hidden;background:#faf8f4}
+    .spine-label{padding:0 18px 8px;font-size:10px;letter-spacing:.13em;color:var(--muted);font-weight:900}
+    .spine{display:flex;gap:0;overflow-x:auto;scrollbar-width:none;padding:8px 18px 14px;position:relative;scroll-snap-type:x proximity}
+    .spine::-webkit-scrollbar{display:none}
+    .spine::before{content:"";position:absolute;left:18px;right:18px;top:23px;height:1px;background:var(--line)}
+    .spine-year{position:relative;z-index:1;min-width:86px;min-height:48px;border:0;background:transparent;color:var(--muted);cursor:pointer;display:grid;place-items:start center;gap:7px;padding:0 8px;scroll-snap-align:center}
+    .spine-year .node{width:12px;height:12px;background:var(--paper);border:2px solid var(--ink);transform:rotate(45deg);transition:transform .15s ease,background .15s ease,border-color .15s ease}
+    .spine-year .year-label{font-size:13px;font-weight:850;letter-spacing:-.02em}
+    .spine-year[aria-current="true"]{color:var(--ink)}
+    .spine-year[aria-current="true"] .node{background:var(--red);border-color:var(--red);transform:rotate(45deg) scale(1.34)}
+    .spine-year:hover .node{border-color:var(--red)}
+    .stage{padding:24px 18px 92px;max-width:660px;width:100%;margin:0 auto}
+    .meta{display:flex;justify-content:space-between;gap:16px;align-items:center;font-size:11px;font-weight:850;letter-spacing:.1em;color:var(--muted)}
+    .meta-current{display:flex;align-items:center;gap:8px;color:var(--red)}
+    .mini-diamond{width:8px;height:8px;background:var(--red);transform:rotate(45deg);display:inline-block}
+    .display-year{font-size:clamp(72px,24vw,132px);line-height:.82;letter-spacing:-.075em;font-weight:950;margin:18px 0 24px}
+    .question{font-size:clamp(26px,7vw,40px);line-height:1.22;letter-spacing:-.035em;margin:0 0 26px;max-width:16em}
+    .options{display:grid;gap:10px}
+    .option{width:100%;min-height:60px;padding:14px 15px;border:1px solid #bdb8b0;background:transparent;text-align:left;display:grid;grid-template-columns:30px 1fr;align-items:center;gap:12px;cursor:pointer;border-radius:4px;color:var(--ink)}
+    .option:hover{border-color:var(--ink)}
+    .option .key{width:28px;height:28px;border:1px solid var(--line);display:grid;place-items:center;font-size:11px;font-weight:900;transform:rotate(45deg)}
+    .option .key span{transform:rotate(-45deg)}
+    .option.correct{border-color:var(--good);background:#f1f7f3}
+    .option.wrong{border-color:var(--wrong);background:#fbf3f1}
+    .feedback{display:none;margin-top:28px;padding-top:20px;border-top:1px solid var(--line)}
+    .feedback.show{display:block}
+    .result{font-size:11px;font-weight:900;letter-spacing:.13em;color:var(--muted)}
+    .result.good{color:var(--good)}
+    .result.bad{color:var(--wrong)}
+    .answer{font-size:30px;line-height:1.1;margin:7px 0 18px;letter-spacing:-.035em}
+    .memory{position:relative;padding:2px 0 2px 22px;font-size:16px;line-height:1.7;max-width:37em}
+    .memory::before{content:"";position:absolute;left:3px;top:9px;width:9px;height:9px;background:var(--red);transform:rotate(45deg)}
+    .memory::after{content:"";position:absolute;left:7px;top:21px;bottom:8px;width:1px;background:var(--line)}
+    .memory-label{font-size:10px;font-weight:900;letter-spacing:.12em;color:var(--red);display:block;margin-bottom:5px}
+    .actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:24px}
+    .primary,.secondary{min-height:48px;padding:0 17px;border-radius:999px;font-weight:850;cursor:pointer}
+    .primary{background:var(--ink);color:white;border:1px solid var(--ink)}
+    .secondary{background:transparent;color:var(--ink);border:1px solid var(--line)}
+    .experiment-note{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-size:12px;line-height:1.65;color:var(--muted)}
+    .experiment-note strong{color:var(--ink)}
+    @media (min-width:840px){
+      body{padding:24px}
+      .shell{min-height:calc(100svh - 48px);border:1px solid var(--line)}
+      .layout{grid-template-columns:164px 1fr;min-height:calc(100svh - 98px)}
+      .spine-wrap{border-bottom:0;border-right:1px solid var(--line);padding:24px 0;overflow:visible}
+      .spine-label{padding:0 20px 18px}
+      .spine{display:flex;flex-direction:column;overflow:visible;padding:0 14px 0 20px;gap:0}
+      .spine::before{left:31px;right:auto;top:8px;bottom:8px;width:1px;height:auto}
+      .spine-year{min-width:0;width:100%;min-height:76px;display:grid;grid-template-columns:24px 1fr;place-items:center start;text-align:left;padding:0;gap:10px}
+      .spine-year .year-label{font-size:14px}
+      .stage{padding:52px 52px 92px;margin:0;max-width:720px}
+      .display-year{font-size:126px}
+    }
+    @media (prefers-reduced-motion:reduce){.spine-year .node{transition:none}}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark" aria-hidden="true"></span>URAWA HISTORY</div>
+      <div class="lab">SHUHARI LAB 01</div>
+    </header>
+    <div class="layout">
+      <aside class="spine-wrap">
+        <div class="spine-label">HISTORY SPINE</div>
+        <nav class="spine" aria-label="年代を移動">
+          <button class="spine-year" data-year="2003"><span class="node" aria-hidden="true"></span><span class="year-label">2003</span></button>
+          <button class="spine-year" data-year="2004"><span class="node" aria-hidden="true"></span><span class="year-label">2004</span></button>
+          <button class="spine-year" data-year="2005"><span class="node" aria-hidden="true"></span><span class="year-label">2005</span></button>
+          <button class="spine-year" data-year="2006" aria-current="true"><span class="node" aria-hidden="true"></span><span class="year-label">2006</span></button>
+          <button class="spine-year" data-year="2007"><span class="node" aria-hidden="true"></span><span class="year-label">2007</span></button>
+        </nav>
+      </aside>
+      <main class="stage">
+        <div class="meta">
+          <span class="meta-current"><span class="mini-diamond" aria-hidden="true"></span><span id="metaYear">2006</span> · SEASON</span>
+          <span>UI EXPERIMENT</span>
+        </div>
+        <div class="display-year" id="displayYear">2006</div>
+        <h1 class="question" id="question">2006年、浦和が初めて獲得したリーグタイトルは？</h1>
+        <div class="options" id="options"></div>
+        <section class="feedback" id="feedback" aria-live="polite">
+          <div class="result" id="result"></div>
+          <h2 class="answer" id="answer"></h2>
+          <div class="memory">
+            <span class="memory-label">MEMORY HOOK</span>
+            <span id="memory"></span>
+          </div>
+          <div class="actions">
+            <button class="primary" id="nextYear">次の年へ</button>
+            <button class="secondary" id="returnQuiz">もう一度この年</button>
+          </div>
+        </section>
+        <div class="experiment-note">
+          <strong>Experiment:</strong> QuizとTimelineを完全に別画面にせず、Yearそのものを常時ナビゲーションにする。Diamondは装飾ではなく「歴史上の現在地」。Mobileでは横、Desktopでは縦のspineとして同じ意味を維持する。
+        </div>
+      </main>
+    </div>
+  </div>
+  <script>
+    const data = {
+      2003:{
+        q:'2003年、浦和がクラブ初の主要タイトルを獲得した大会は？',
+        options:['Jリーグヤマザキナビスコカップ','天皇杯','J1リーグ','AFCチャンピオンズリーグ'],
+        correct:'Jリーグヤマザキナビスコカップ',
+        memory:'2003は最初の大きなタイトル。ここから2004のステージ制覇、2005の天皇杯、2006のリーグ制覇へ、タイトルの記憶が連なっていく。'
+      },
+      2004:{
+        q:'2004年、浦和が獲得したJ1のステージタイトルは？',
+        options:['1stステージ','2ndステージ','年間優勝','J2優勝'],
+        correct:'2ndステージ',
+        memory:'2004は2ndステージを制覇。年間王者には届かなかったが、リーグの頂点へ近づいていく過程として2006へつながる。'
+      },
+      2005:{
+        q:'2005シーズン、浦和が獲得した国内カップタイトルは？',
+        options:['天皇杯','Jリーグカップ','ゼロックススーパーカップ','AFCチャンピオンズリーグ'],
+        correct:'天皇杯',
+        memory:'2005の天皇杯から、翌2006のJ1初制覇へ。単年の出来事ではなく、前後の年を線でつないで覚える。'
+      },
+      2006:{
+        q:'2006年、浦和が初めて獲得したリーグタイトルは？',
+        options:['J1リーグ年間優勝','J1 2ndステージ','J2リーグ優勝','AFCチャンピオンズリーグ'],
+        correct:'J1リーグ年間優勝',
+        memory:'2006は国内リーグの頂点。翌2007にはアジアへ進む。年を点で覚えず、2003→2007のタイトルの連なりとして記憶する。'
+      },
+      2007:{
+        q:'2007年、浦和が初制覇した国際大会は？',
+        options:['AFCチャンピオンズリーグ','FIFAクラブワールドカップ','AFCカップ','Jリーグカップ'],
+        correct:'AFCチャンピオンズリーグ',
+        memory:'2007はACL初制覇。2006の国内リーグ制覇の次にアジアへ到達した、と時間の流れごと覚える。'
+      }
+    };
+    const years = Object.keys(data);
+    let current = '2006';
+
+    const displayYear = document.querySelector('#displayYear');
+    const metaYear = document.querySelector('#metaYear');
+    const question = document.querySelector('#question');
+    const options = document.querySelector('#options');
+    const feedback = document.querySelector('#feedback');
+    const result = document.querySelector('#result');
+    const answer = document.querySelector('#answer');
+    const memory = document.querySelector('#memory');
+
+    function renderYear(year, focusQuestion=false){
+      current = year;
+      const d = data[year];
+      displayYear.textContent = year;
+      metaYear.textContent = year;
+      question.textContent = d.q;
+      feedback.classList.remove('show');
+      document.querySelectorAll('.spine-year').forEach(btn=>{
+        const active = btn.dataset.year === year;
+        if(active) btn.setAttribute('aria-current','true');
+        else btn.removeAttribute('aria-current');
+      });
+      options.innerHTML = d.options.map((opt,i)=>`<button class="option" data-value="${opt}"><span class="key"><span>${String.fromCharCode(65+i)}</span></span><strong>${opt}</strong></button>`).join('');
+      options.querySelectorAll('.option').forEach(btn=>btn.addEventListener('click',()=>answerQuestion(btn)));
+      document.querySelector(`[data-year="${year}"]`)?.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+      if(focusQuestion) question.setAttribute('tabindex','-1'), question.focus();
+    }
+
+    function answerQuestion(selected){
+      const d = data[current];
+      const good = selected.dataset.value === d.correct;
+      options.querySelectorAll('.option').forEach(btn=>{
+        btn.disabled = true;
+        if(btn.dataset.value === d.correct) btn.classList.add('correct');
+        if(btn === selected && !good) btn.classList.add('wrong');
+      });
+      result.textContent = good ? 'CORRECT' : 'NOT THIS TIME';
+      result.className = `result ${good ? 'good' : 'bad'}`;
+      answer.textContent = d.correct;
+      memory.textContent = d.memory;
+      feedback.classList.add('show');
+      feedback.scrollIntoView({behavior:'smooth',block:'nearest'});
+    }
+
+    document.querySelectorAll('.spine-year').forEach(btn=>{
+      btn.addEventListener('click',()=>renderYear(btn.dataset.year,true));
+      btn.addEventListener('keydown',e=>{
+        if(e.key !== 'ArrowLeft' && e.key !== 'ArrowRight' && e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return;
+        e.preventDefault();
+        const direction = (e.key === 'ArrowRight' || e.key === 'ArrowDown') ? 1 : -1;
+        const idx = years.indexOf(btn.dataset.year);
+        const next = years[Math.max(0,Math.min(years.length-1,idx+direction))];
+        const nextBtn = document.querySelector(`[data-year="${next}"]`);
+        nextBtn?.focus();
+      });
+    });
+
+    document.querySelector('#nextYear').addEventListener('click',()=>{
+      const idx = years.indexOf(current);
+      const next = years[(idx+1)%years.length];
+      renderYear(next,true);
+    });
+    document.querySelector('#returnQuiz').addEventListener('click',()=>renderYear(current,true));
+
+    renderYear(current);
+  </script>
+</body>
+</html>
