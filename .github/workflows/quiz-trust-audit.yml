@@ -10,6 +10,8 @@ on:
       - 'prototype/quiz-distractors.js'
       - 'prototype/quiz-difficulty.js'
       - 'data/**'
+      - 'scripts/build-data-bundle.mjs'
+      - 'scripts/data-integrity-audit.mjs'
       - 'scripts/quiz-trust-audit.mjs'
       - 'scripts/quiz-quality-audit.mjs'
       - 'scripts/quiz-difficulty-audit.mjs'
@@ -22,6 +24,8 @@ on:
       - 'prototype/quiz-distractors.js'
       - 'prototype/quiz-difficulty.js'
       - 'data/**'
+      - 'scripts/build-data-bundle.mjs'
+      - 'scripts/data-integrity-audit.mjs'
       - 'scripts/quiz-trust-audit.mjs'
       - 'scripts/quiz-quality-audit.mjs'
       - 'scripts/quiz-difficulty-audit.mjs'
@@ -35,18 +39,29 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+
       - name: Syntax check production prototype
         run: |
           node --check prototype/app.js
           node --check prototype/quiz-difficulty.js
+
+      - name: Verify canonical JSON and runtime bundle are synchronized
+        run: node scripts/build-data-bundle.mjs --check
+
+      - name: Run historical data integrity audit
+        run: node scripts/data-integrity-audit.mjs
+
       - name: Run Q0/Q1/Q1.5 trust audit
         run: node scripts/quiz-trust-audit.mjs
+
       - name: Run Q1.6/Q2 quality audit
         run: node scripts/quiz-quality-audit.mjs
+
       - name: Run Q3 structural difficulty audit
         run: |
           mkdir -p artifacts
           node scripts/quiz-difficulty-audit.mjs --out artifacts/q3-difficulty-baseline.json
+
       - name: Upload Q3 baseline dataset
         uses: actions/upload-artifact@v4
         with:
