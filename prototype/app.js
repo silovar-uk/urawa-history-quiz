@@ -298,7 +298,7 @@
     return finalizeQuestion(generatorId, seasonData, {
       category: 'MANAGER',
       year: seasonData.year,
-      question: `${seasonData.year}年シーズンを通じて浦和レッズの監督として登録されているのは？`,
+      question: `${seasonData.year}年の浦和レッズの監督として登録データに記録されているのは？`,
       options: shuffle([manager.name, ...distractors]),
       correct: manager.name,
       memoryHook: tenure.notes || `${manager.name}監督がチームを指揮した。`,
@@ -483,7 +483,7 @@
       return `
         <div class="question-meta">
           <span>${activeQuiz.category} · ${activeQuiz.year}年</span>
-          <span>FACT VERIFIED</span>
+          <span>SOURCE CHECKED</span>
         </div>
         <h1 class="question">${activeQuiz.question.replace(/\n/g, '<br>')}</h1>
         <div class="options">
