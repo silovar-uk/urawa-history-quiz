@@ -3,36 +3,36 @@
 Last updated: 2026-09-07
 
 > このファイルを「現在地の正本」とする。
-> Product Principlesは `product-principles.md`、長期構想は `development-plan.md`、研究履歴は各research / experiment documentを参照する。
+> Product Principlesは `product-principles.md`、長期構想は `development-plan.md`、個別研究はresearch / experiment docsを参照する。
 
 ---
 
 # 1. Executive Summary
 
-URAWA HISTORYは、初期MVP構築段階を終え、1992〜2025の34シーズンを扱うDB駆動prototypeとして成立している。
+URAWA HISTORYは、1992〜2025の34シーズンを扱うDB駆動prototypeとして成立している。
 
-現在は「機能を増やす段階」ではなく、**何をproduction-qualityとして信用できるかを固める段階**。
+現在は「機能を増やす段階」ではなく、**production-qualityとして信用できるfact / quiz / interactionを固める段階**。
 
-現状の最大の特徴は次の通り。
+2026-09-07にQ0 / Q1 Quiz Trust Gateをproduction Quiz Engineへ導入した。
 
-- Product Principlesは比較的成熟している。
-- 全34シーズンを扱うseasons DBと、選手・監督・ユニフォーム等の関連データが存在する。
-- DBから7系統の4択Quizを動的生成できる。
-- TODAY / QUIZ / HISTORY / SEASON / PLAYER / YOUが動作する。
-- History Spine / Answered Spine Revealという独自UI研究がprototype段階まで進んでいる。
-- 一方で、Quiz Eligibility・問題の一意性・distractor品質・source granularity・途中加入/監督交代などの品質保証は未成熟。
-- Learning Modelは「正答率の表示」までは動くが、「理解度」と呼べるほどの意味設計には達していない。
-- README / data README等に初期計画が残り、documentation driftが発生している。
+現在の最大の変化：
+
+- 問題candidateはTrust Gateを通らない限りscreenへ出ない。
+- reject reasonをmachine-readableに記録する。
+- GitHub Actionsで全34season × 7 generatorを監査する。
+- Q0 / Q1初回auditはSUCCESS。
+- invariant failureは0。
+- ただしsafe coverageはgeneratorごとに大きく異なる。
 
 **Current Bottleneck:**
 
-> Quiz Trust Layer — 「生成できる問題」から「出題して安全で、学習価値のある問題」へ進むためのEligibility / Correctness / Source / Distractor QA。
+> Provenance Recovery — PLAYER / KITをTrust Gateを弱めず復活させるためのrelationship-level source整備。
 
-History Spineのproduction統合は、このGateを通した後に再開する。
+History Spine production integrationはこの品質Gateの後に再開する。
 
 ---
 
-# 2. Product Core
+# 2. Core Product
 
 Core loop:
 
@@ -40,9 +40,9 @@ Core loop:
 
 Goal:
 
-- 年を見て、その年の人物・監督・ユニフォーム・出来事を連想できる。
-- 人物や出来事を見て、その時代へ戻れる。
-- Quizを点の知識で終わらせず、クラブ史の流れへ接続する。
+- 年から人物・監督・ユニフォーム・出来事を連想できる。
+- 人物や出来事から時代へ戻れる。
+- Quizを点の知識で終わらせずクラブ史へ接続する。
 
 Visual grammar:
 
@@ -50,8 +50,6 @@ Visual grammar:
 - Black = structure / typography
 - Red = current / meaningful Urawa action
 - Diamond = node / direction / relation
-
-独自性は装飾ではなくinteraction grammarから作る。
 
 ---
 
@@ -72,637 +70,411 @@ Visual grammar:
 
 ---
 
-# 4. Product Health — 15 Dimensions
+# 4. Product Health Snapshot
 
-## 01 Product Definition
+## Product Definition
 
-**Maturity: 4 / 5 — VALIDATED FOR DEVELOPMENT**
+**4 / 5 — VALIDATED FOR DEVELOPMENT**
 
-Exists:
 - Product Principles
-- Core Loop
 - Mobile First
-- Year as primary visual language
-- Quiz / History integration philosophy
+- Quiz → History philosophy
 - Urawa visual grammar
-- Reduction principle
-
-Gap:
-- 実利用データによる原則の再検証は未実施。
+- Reduce before adding
 
 Next gate:
-- Quiz / History実装がPrinciplesと衝突したときにPrinciplesを盲目的に守らず再評価する。
+実利用・品質監査の結果でPrinciples自体も再評価する。
 
 ---
 
-## 02 Historical Data Coverage
+## Historical Data Coverage
 
-**Maturity: 3 / 5 — FUNCTIONAL**
+**3 / 5 — FUNCTIONAL**
 
 Exists:
-- seasons: 1992〜2025
+- 34 seasons
 - players
 - player_seasons
 - managers
 - manager_tenures
 - uniforms
 - sources
-- data-bundle
-
-Important distinction:
-- 「34シーズンが存在する」は成立。
-- 「全シーズンの全選手・全出来事が完全」は成立していない。
-- Player dataはHistory / Quizに必要な主要人物中心の選択的coverageとして扱う。
-
-Risk:
-- “全34年網羅”という表現が「全データ完全収録」と誤解される可能性。
-
----
-
-## 03 Data Quality / Sources
-
-**Maturity: 2 / 5 — PROTOTYPE / RISK**
-
-Good:
-- seasonにverification_status / source_idsがある。
-- players / manager tenures等にsource_idsが存在する領域もある。
-- Schema specificationが存在。
 
 Gap:
-- sources.jsonは現状、J.LEAGUE Data Site / 浦和公式サイトという大きなsource単位が中心。
-- record / claim単位のURL・根拠追跡が弱い。
-- player_seasonsの実データにはschema例にあるsource_idsが付いていないレコードがある。
-- uniformsにもsource / verification metadataが不足しているレコードがある。
-- season summary / memory hook / key eventの各claimが同じsourceで十分に裏付けられているか未監査。
-- 2000 seasonにはsummaryとkey_eventsで最終節対戦相手表現が揺れており、実データ内矛盾が見つかっている。
-
-Next gate:
-- Quizに使うfactについて、少なくともfact-level eligibilityを判定可能にする。
+coverageとclaim-level provenanceを分離して管理する必要がある。
 
 ---
 
-## 04 Quiz Engine
+## Data Quality / Provenance
 
-**Maturity: 3 / 5 — FUNCTIONAL**
-
-Current generators:
-1. PLAYER_NUMBER
-2. PLAYER_POSITION
-3. PLAYER_OVERLAP
-4. MANAGER_SEASON
-5. SEASON_RANK
-6. SEASON_SUMMARY
-7. KIT_DETAIL
+**2 / 5 — NOW**
 
 Good:
-- DB-driven generation
-- Era filtering
-- 4 unique visible option string check
-- generator fallback
-- answer validation
+- season-level `verification_status`
+- source master
+- entity source_ids
 
-Gap / Risk:
-- Quiz generation時にverification_statusを明示的にEligibilityへ使っていない。
-- 文字列4択がuniqueでも、意味上の正解一意性は保証されない。
-- PLAYER_NUMBERで同一seasonに同じ番号を複数選手が着けたケースのunique answer検査がない。
-- PLAYER_OVERLAPはseason_id一致を「同時在籍」とみなし、途中加入 / 退団の実期間を見ない。
-- MANAGER_SEASONはseasonに複数指揮者が存在する場合でも `find` した1件を正解として扱う構造。
-- SEASON_SUMMARY distractorは全seasonからrandomで、難易度制御が弱い。
-- KIT distractor候補がhard-coded。
-
-Next gate:
-- Quiz Quality Q0 / Q1を通す。
+Current gaps:
+- `player_seasons` relationship-level source不足
+- `uniforms` source不足
+- manager change yearのgranularity不足
+- exact player registration interval不足
+- source masterが粗い単位
 
 ---
 
-## 05 Quiz Content Quality
+## Quiz Engine
 
-**Maturity: 2 / 5 — PROTOTYPE**
+**3 / 5 — FUNCTIONAL + TRUST GATED**
 
-Current strengths:
-- 年代・選手・監督・順位・Kitなど複数カテゴリがある。
-- Memory Hookを返せる。
+7 generators:
+- PLAYER_NUMBER
+- PLAYER_POSITION
+- PLAYER_OVERLAP
+- MANAGER_SEASON
+- SEASON_RANK
+- SEASON_SUMMARY
+- KIT_DETAIL
 
-Not yet validated:
-- answer uniqueness
-- historical significance
-- distractor plausibility
+Q0 / Q1 Trust Gate implemented:
+- `prototype/quiz-trust.js`
+- fail closed
+- reject reason taxonomy
+- normalized option uniqueness
+- source / season verification checks
+- rank bounds
+- manager ambiguity checks
+- answer leak detection
+
+Runtime diagnostics:
+
+`window.URAWA_QUIZ_QA`
+
+---
+
+## Quiz Trust Coverage — CI result
+
+Initial audit:
+
+- PLAYER_NUMBER: **0 / 34 eligible**
+- PLAYER_POSITION: **0 / 34 eligible**
+- PLAYER_OVERLAP: **0 / 34 eligible**
+- MANAGER_SEASON: **26 / 34 eligible**
+- SEASON_RANK: **32 / 34 eligible**
+- SEASON_SUMMARY: **33 / 34 eligible**
+- KIT_DETAIL: **0 / 34 eligible**
+
+Invariant failures: **0**
+
+Interpretation:
+
+Trust Gateは正常。
+PLAYER / KITの0件はsource不足を正しく可視化した結果。
+
+Report:
+`docs/quiz-trust-gate-report.md`
+
+---
+
+## Quiz Content Quality
+
+**2 / 5 — NEXT AFTER PROVENANCE SLICE**
+
+Not solved yet:
+- semantic distractor quality
 - difficulty
-- era balance
-- category balance
-- repeated knowledge clusters
-- trivial / expert-only ratio
-- Memory Hook learning value
+- knowledge significance
+- era / category balance
+- repeated knowledge cluster
+- freshness
 
-Important:
-
-「生成可能問題数」と「学習価値のある問題数」を今後分離する。
+Q2へ進む前にPLAYER / KITの小規模Provenance Recoveryを行う。
 
 ---
 
-## 06 Learning Model
+## Learning Model
 
-**Maturity: 2 / 5 — PROTOTYPE**
+**2 / 5 — FUNCTIONAL SUMMARY, NOT TRUE MASTERY**
 
-Exists:
+Current:
 - total
 - correct
 - recentWrong counter
 - category accuracy
 - era accuracy
-- localStorage
 
-Critical issue:
-- `recentWrong` は「最近間違えた問題一覧」ではない。
-- 誤答で+1、別の問題を正解すると-1するcounterであり、どの問題を間違えたか保持していない。
-- Era / Category masteryはraw accuracyのみで、sample size / exposure / recencyを考慮しない。
-
-Therefore:
-- 現在の表示は「Accuracy Summary」としては機能。
-- 「Mastery / 理解度」という名称には意味上の過剰主張がある。
-
-Next gate:
-- Quiz qualityの後にLearning semanticsを再設計。
+Important limitation:
+`recentWrong` はquestion historyではなくcounter。
+Raw accuracyをそのまま理解度と呼ぶには不足。
 
 ---
 
-## 07 Quiz UX
+## Quiz UX
 
-**Maturity: 3 / 5 — FUNCTIONAL**
+**3 / 5 — FUNCTIONAL**
 
-Production:
 - unanswered
-- answered
-- correct / wrong state
+- correct / incorrect
 - Memory Hook
 - Next
 - Explore Season
 
-Research:
-- History Spine always visible
-- History Spine Reveal after answer
+Trust wording:
 
-Current research decision:
-- Reveal after answerをproduction candidateとする。
+`FACT VERIFIED` → `SOURCE CHECKED`
 
-Blocked by:
-- Quiz Quality Gate。
+理由：source存在とclaim-by-claim完全検証を区別する。
+
+History Spine Revealはまだproduction未統合。
 
 ---
 
-## 08 History Exploration
+## History Exploration
 
-**Maturity: 3 / 5 — FUNCTIONAL + EXPERIMENTAL**
+**3 / 5 — FUNCTIONAL + EXPERIMENTAL RESEARCH**
 
-Functional:
-- 34-year Timeline
+Production:
+- Timeline
 - Season Detail
 - Player Detail
-- Season → Quiz
 
-Incomplete / future:
-- dedicated Manager Detail
-- full Kit Archive
-- richer cross-year relation navigation
-
-Experimental:
+Experiment:
 - History Spine
 - Answered Spine Reveal
 
-Do not classify experimental grammar as production complete.
+Research is preserved but queued behind Quiz Trust / Provenance / Q2.
 
 ---
 
-## 09 Visual / Urawa Identity
+## Visual / Brand System
 
-**Maturity: 2.5 / 5 — SYSTEM DEFINED, PARTIALLY IMPLEMENTED**
+**3 / 5 — PRINCIPLES STRONG, PRODUCTION APPLICATION PARTIAL**
 
-Defined:
-- Archive × Editorial × Football × Urawa
-- White / Black / Red / Diamond semantic grammar
-- Year as anchor
-- Diamond as node
-- favicon derived from History Spine grammar
+- White / Black / Red
+- Diamond semantic concept
+- Year as primary language
+- favicon
+- Shu-Ha-Ri research
 
-Gap:
-- production UI still contains prototype-era styling / inline styles / card patterns.
-- History Spine grammar is not production-integrated.
+Do not expand decoration while Quiz Quality is upstream bottleneck.
 
 ---
 
-## 10 Mobile / Responsive
+## Mobile / Responsive
 
-**Maturity: 3 / 5 — FUNCTIONAL**
+**3 / 5 — FUNCTIONAL, NOT FULLY VALIDATED**
 
-Exists:
-- Mobile-first base
-- ~390px-oriented presentation
-- responsive CSS
-
-Gap:
-- systematic 320 / 390 / tablet / desktop regression audit not complete.
-- desktop still needs its own archive-reading value, not simply a centered mobile column.
+Primary target: ~390px.
+Desktop still requires deeper archive-specific layout work later.
 
 ---
 
-## 11 Accessibility
+## Accessibility
 
-**Maturity: 2 / 5 — PARTIAL**
+**2–3 / 5 — PARTIAL**
 
-Exists:
-- buttons for major interactions
-- some aria-live
-- reduced-motion consideration in experiments
-- focus rules in experiments
+Existing:
+- focus-visible
+- reduced-motion consideration
+- semantic buttons
 
-Gap:
-- production app全体のkeyboard audit
-- modal focus management
-- screen-reader structure
-- touch target audit
-- color-independent state audit
-- dynamic content focus behavior
+Needs systematic screen-reader / modal / extreme-state audit.
 
 ---
 
-## 12 Technical Architecture
+## Technical Architecture
 
-**Maturity: 3 / 5 — FUNCTIONAL**
+**3 / 5 — FUNCTIONAL**
 
-Exists:
+Current:
 - static HTML / CSS / JS
 - JSON DB
-- bundled DB fallback
-- localStorage
-- GitHub Pages-friendly architecture
-
-Good:
-- frameworkなしで現在の規模を扱えている。
-
-Debt:
-- app.jsにData / Quiz Engine / rendering / event wiringが集中。
-- inline styleが多数。
-- data JSONとdata-bundleの同期管理が必要。
-
-Decision:
-- 現時点でframework migrationは不要。
-
----
-
-## 13 Performance / Robustness
-
-**Maturity: 2 / 5 — PARTIAL**
-
-Exists:
 - data-bundle fallback
-- JSON fetch fallback
-- Quiz generation failure screen
+- localStorage
+- GitHub Pages
 
-Gap:
-- corrupted localStorage recovery semantics
-- data consistency failure handling
-- broken image handling
-- large learning history
-- regression checks
-- actual loading / performance budget
+New QA:
+- CLI trust audit
+- GitHub Actions trust audit
+
+Framework migration is not justified now.
 
 ---
 
-## 14 Deployment
+## Deployment / CI
 
-**Maturity: 3 / 5 — FUNCTIONAL**
+**4 / 5 — HEALTHY FOR CURRENT SCALE**
 
-Exists:
-- GitHub Pages structure
-- root redirect to prototype
-- favicon asset / links
+- GitHub Pages
+- favicon
+- automated Quiz Trust Audit
 
-Note:
-- この監査ターンでは外部fetch制約によりLIVEの最新描画状態を自動確認できなかった。
-- Repository上のdeployment構造をCurrent Truthとして扱う。
-
-Next gate:
-- production change時にLIVE smoke testを行う。
+Workflow:
+`.github/workflows/quiz-trust-audit.yml`
 
 ---
 
-## 15 Documentation / Project Management
+## Documentation
 
-**Maturity: 2 / 5 — DRIFT**
+**3 / 5 — IMPROVED**
 
-Good:
-- Product / UI / schema / experiments / plansの文書量は豊富。
+Canonical current state:
+`docs/current-state.md`
 
-Problem:
-- README.mdが初期MVP段階のNextを示したまま。
-- data/README.mdが「将来JSONを置く」「3シーズンから」となっている。
-- UI Next Planが複数世代に分かれ、current nextを探す必要がある。
+Key current docs:
+- `docs/product-principles.md`
+- `docs/development-plan.md`
+- `docs/quiz-quality-plan.md`
+- `docs/quiz-trust-gate-report.md`
+- `docs/ui-shuhari-research.md`
 
-Decision:
-- `docs/current-state.md` を現在地の唯一の正本とする。
-- 過去plan / experimentは履歴として残す。
+Older UI Next docs remain historical / research context and are not the canonical project state.
 
 ---
 
 # 5. DONE
 
-「土台として存在する」という意味でDONE：
-
-- Product Principles
-- GitHub Pages-oriented static architecture
-- 1992〜2025 seasons representation
-- core historical JSON entities
-- DB-driven Quiz generation
-- 7 quiz generator families
-- TODAY / QUIZ / HISTORY / SEASON / PLAYER / YOU
-- basic answer feedback
-- Memory Hook concept
-- localStorage accuracy tracking
-- Urawa Visual Grammar definition
+- Product principles
+- 34-season DB structure
+- DB-driven quiz engine
+- core screens
+- localStorage summary
 - favicon
 - History Spine research prototype
-
-DONEは「品質監査済み」を意味しない。
+- Q0 generator inventory
+- Q1 fail-closed eligibility
+- rejection taxonomy
+- runtime QA diagnostics
+- CLI audit
+- GitHub Actions audit
 
 ---
 
-# 6. Functional but Unvalidated
+# 6. FUNCTIONAL BUT NOT VALIDATED
 
-- generated quiz correctness across all data
+- historical DB completeness
+- manager tenure completeness
+- learning metrics
+- mobile extreme states
+- desktop layout
+- accessibility
+- Memory Hook quality
 - distractor quality
-- manager-change seasons
-- player overlap semantics
-- shirt number uniqueness
-- source eligibility enforcement
-- Memory Hook factual / learning quality
-- Era / Category mastery semantics
-- long-copy / extreme viewport behavior
-- accessibility across production screens
 
 ---
 
-# 7. Experiments
+# 7. INTENTIONALLY DISABLED / BLOCKED
 
-## History Spine
+## PLAYER_NUMBER
+Blocked by missing relationship-level source metadata.
 
-Status: PROTOTYPE
+## PLAYER_POSITION
+Blocked by missing relationship-level source metadata.
 
-Hypothesis:
-- time axisをnavigation backboneにする。
+## PLAYER_OVERLAP
+Blocked by missing exact overlap / roster completeness evidence.
 
-## Answered Spine Reveal
+## KIT_DETAIL
+Blocked by missing uniform-level source metadata.
 
-Status: PROTOTYPE / preferred candidate
-
-Hypothesis:
-- answer前はQuestion focusを守り、answer後だけHistory contextを開く。
-
-Decision:
-- 保持する。
-- Quiz Quality Gate通過後にproduction integrationへ戻る。
+These are not bugs in Trust Gate.
 
 ---
 
-# 8. Quiz Quality Roadmap
+# 8. NOW — Q1.5 Provenance Recovery Vertical Slice
 
-## Q0 — Inventory
+Do not bulk-update all records.
 
-Purpose:
-現在どのgeneratorがどのdataを使い、何を保証していないかを一覧化。
+## Player relation anchors
 
-Deliverable:
-- generator matrix
-- eligible / ineligible conditions
-- known ambiguity cases
+Candidate seasons:
+- 1998
+- 2006
+- 2017
+- 2023
 
-## Q1 — Correctness & Eligibility — NOW
+Verify from primary / official sources:
+- player-season membership
+- shirt number
+- registered position
 
-Purpose:
-複数正解・unverified fact・semantic ambiguityを出題前に除外。
+Then attach relation-level source metadata.
 
-Priority checks:
-- verification status
-- source existence
-- shirt-number duplicate
-- manager multiple-tenure
-- actual player overlap definition
-- duplicate semantic answer
-- missing / contradictory data
+## Kit source anchors
 
-Pass:
-既知のambiguity classがQuiz Eligibilityで排除または明示的に処理される。
+Verify representative sponsor eras sufficient to create at least four distinct verified sponsor values.
 
-## Q2 — Distractor Quality
+Do not stamp sources without checking the actual claim.
 
-- same-domain
-- near-era
-- plausible but clearly false
-- no hard-coded pool where data-derived pool is possible
+## Pass Gate
 
-## Q3 — Difficulty
+Re-run CI and achieve:
 
-Easy / Medium / Hardのルールを定義。
+- PLAYER_NUMBER eligible > 0
+- PLAYER_POSITION eligible > 0
+- KIT_DETAIL eligible > 0
+- invariantFailures = 0
 
-難易度を「マニアックな事実」だけで作らない。
-
-## Q4 — Coverage & Balance
-
-- era
-- category
-- question type
-- entity
-- repeated knowledge
-
-の偏りを測る。
-
-## Q5 — Significance / Memory Hook
-
-- triviaを減らす。
-- answer explanationではなく前後の歴史へつなぐ。
-
-## Q6 — Repetition / Learning History
-
-question identity / knowledge identityを保存し、recent wrong / unseen / retryを意味のある形へ。
-
-## Q7 — Learning Selection
-
-弱い年代・unseen・recent wrongを利用。
-
-## Q8 — Adaptive Learning — LATER
-
-Q0〜Q7の必要性と品質が確認されるまで実装しない。
+PLAYER_OVERLAP remains disabled.
 
 ---
 
-# 9. Quiz Metrics to Build
+# 9. NEXT — Q2 Distractor Quality
 
-Future metrics:
+After provenance slice passes:
 
-- total eligible questions
-- eligible by era
-- eligible by category
-- eligible by generator
-- source-verified rate
-- ambiguity rejected count
-- duplicate knowledge clusters
-- distractor QA failures
-- Memory Hook coverage
-- repeat rate
-- unseen coverage
-- wrong-answer recovery
+- MANAGER: adjacent-era candidates
+- RANK: close valid ranks
+- SUMMARY: nearby / semantically similar seasons
+- PLAYER: same-season plausible roster candidates
+- KIT: nearby verified sponsor eras
 
-現時点で取れない値を推測で埋めない。
+Goal:
+
+`clearly false` + `plausible enough to require recall`
 
 ---
 
-# 10. Dependencies
+# 10. THEN
 
-```text
-Data / Source audit
-        ↓
-Quiz Eligibility / Correctness
-        ↓
-Distractor Quality
-        ↓
-Difficulty / Coverage
-        ↓
-Memory Hook Quality
-        ↓
-Learning History semantics
-        ↓
-Learning-based Selection
-```
-
-UI branch:
-
-```text
-Quiz Quality Gate
-        ↓
-Answered State production integration
-        ↓
-History Spine production test
-        ↓
-Node behavior decision
-        ↓
-History Browser redesign
-```
-
-Visual polish should not outrun Quiz Trust.
+Q3 Difficulty
+→ Q4 Coverage / Balance
+→ Q5 Significance / Memory Hook
+→ Q6 Learning History
+→ Answered Spine Production Integration
+→ History Browser Research
 
 ---
 
-# 11. NOW / NEXT / THEN / LATER
+# 11. LATER
 
-## NOW
-
-### Quiz Quality Round 0–1
-
-- generator inventory
-- eligibility definition
-- ambiguity audit
-- source / verification enforcement design
-- known data contradiction list
-
-Do not redesign History now.
-
-## NEXT
-
-### Quiz Quality Round 2–4
-
-- distractors
-- difficulty
-- coverage / balance
-
-### Data QA fixes required by Quiz
-
-Only fix data that blocks trusted questions first.
-
-## THEN
-
-### Answered UX Production Integration
-
-- Result
-- Correct Answer
-- Memory Hook
-- contextual 5-year History Spine
-- Next / Explore
-
-Use real DB, not experiment fixtures.
-
-### Learning semantics
-
-- recent wrong identity
-- question / knowledge history
-- sample-aware mastery naming / model
-
-## LATER
-
-- History Browser redesign around proven History Spine grammar
+- PLAYER_OVERLAP with real registration interval
 - Manager Detail
-- Kit Archive expansion
-- richer relationship exploration
-- advanced adaptive learning
-- cloud sync / accounts only if need emerges
+- Kit Archive full experience
+- adaptive learning
+- account / cloud sync
+- large framework migration
 
 ---
 
-# 12. What Not To Build Yet
+# 12. Current Bottleneck
 
-- full History redesign
-- 34-year Spine inside Quiz
-- graph navigation
-- complex adaptive algorithm
-- XP / coins / ranking
-- framework migration
-- cloud account system
-- excessive motion
-- UI polish that hides unresolved quiz ambiguity
+**Provenance Recovery without weakening Trust Gate.**
+
+The next work is not to make rejected data pass.
+
+It is to add enough evidence that it deserves to pass.
 
 ---
 
-# 13. First Next Batch
+# 13. Next Review Gate
 
-**Quiz Quality Gate — Q0/Q1**
+Question:
 
-One batch only.
+> PLAYER / KITをsource-backedに復活させても、Trust GateのFail-Closed原則を維持できているか。
 
-Output required:
+If yes:
+Q2 Distractor Qualityへ進む。
 
-1. All generator matrix
-2. Eligibility rule per generator
-3. Known ambiguity scenarios
-4. Data requirements
-5. Rejection reason taxonomy
-6. At least boundary cases for 1990s / 2000s / 2010s / 2020s
-7. Pass / fail result
-
-No new UI.
-
----
-
-# 14. Pass Criteria for Next Gate
-
-History Spine production work can resume only when:
-
-- unverified / unsupported facts can be excluded
-- every generated question has one semantic correct answer by construction or validation
-- manager-change seasons are not falsely represented as single-manager facts
-- player overlap has an explicit definition and data support
-- duplicate shirt-number cases cannot produce ambiguous questions
-- distractor pool does not contain equivalent answers
-- invalid data fails closed rather than guessing
-- rejection reasons are observable for QA
-
----
-
-# 15. Next Review Gate
-
-After Q0/Q1, answer exactly this:
-
-> **Can we trust every question that reaches the UI, even before improving how interesting it is?**
-
-YES → move to Distractor / Difficulty / Coverage.
-
-NO → continue eligibility / data fixes.
-
-Only after Quiz Trust becomes YES should the Answered Spine Reveal return to production work.
+If no:
+data/source modelを先に修正する。
