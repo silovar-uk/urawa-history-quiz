@@ -306,10 +306,10 @@ Every relevant data / quiz change now runs:
 3. historical Data Integrity Audit
 4. Quiz Trust Audit
 5. Q2 Quality Audit
-7. Q3 Structural Difficulty Audit
-8. Q4 deterministic Coverage / Exposure Audit
-9. Q3 artifact upload
-10. Q4 coverage artifact upload
+6. Q3 Structural Difficulty Audit
+7. Q4 deterministic Coverage / Exposure Audit
+8. Q3 artifact upload
+9. Q4 coverage artifact upload
 
 A known repaired historical fact cannot silently regress without failing CI.
 
@@ -436,9 +436,9 @@ Q5 Significance / Memory Hook        NOW
 ↓
 Q6 Learning History
 ↓
-Answered History Spine Integration
+Exposure weighting / adaptive-light only if justified
 ↓
-History Browser Refinement
+History Grammar / Browser refinement after UX validation
 ```
 
 ---
