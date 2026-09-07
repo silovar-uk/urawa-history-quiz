@@ -734,7 +734,10 @@
     const seasons = [...db.seasons].sort((a, b) => a.year - b.year);
     const index = seasons.findIndex(s => s.season_id === question.seasonId);
     if (index < 0) return [];
-    return seasons.slice(Math.max(0, index - 1), Math.min(seasons.length, index + 2));
+    const maxItems = Math.min(3, seasons.length);
+    const maxStart = Math.max(0, seasons.length - maxItems);
+    const start = Math.min(Math.max(0, index - 1), maxStart);
+    return seasons.slice(start, start + maxItems);
   }
 
   function getHistoryEchoText(season) {
