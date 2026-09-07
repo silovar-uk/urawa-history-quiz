@@ -3,7 +3,6 @@ name: Finalize Q4 Canonical Docs
 on:
   push:
     paths:
-      - 'scripts/finalize-q4-docs.mjs'
       - '.github/workflows/finalize-q4-docs.yml'
 
 permissions:
@@ -16,36 +15,57 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
 
-      - name: Correct migration's guarded CI-list token
+      - name: Apply guarded closeout corrections
         run: |
           python - <<'PY'
           from pathlib import Path
-          p = Path('scripts/finalize-q4-docs.mjs')
+          p = Path('docs/quiz-quality-plan.md')
           s = p.read_text()
-          old = "'7. Q3 Structural Difficulty Audit\\n7. Q3 artifact upload'"
-          new = "'6. Q3 Structural Difficulty Audit\\n7. Q3 artifact upload'"
-          if s.count(old) != 1:
-              raise SystemExit(f'expected one migration token, found {s.count(old)}')
-          p.write_text(s.replace(old, new))
+
+          old_list = '''5. Q2 Quality Audit
+7. Q3 Structural Difficulty Audit
+8. Q4 deterministic Coverage / Exposure Audit
+9. Q3 artifact upload
+10. Q4 coverage artifact upload'''
+          new_list = '''5. Q2 Quality Audit
+6. Q3 Structural Difficulty Audit
+7. Q4 deterministic Coverage / Exposure Audit
+8. Q3 artifact upload
+9. Q4 coverage artifact upload'''
+          if s.count(old_list) != 1:
+              raise SystemExit(f'expected one CI numbering block, found {s.count(old_list)}')
+          s = s.replace(old_list, new_list)
+
+          old_seq = '''Q5 Significance / Memory Hook        NOW
+↓
+Q6 Learning History
+↓
+Answered History Spine Integration
+↓
+History Browser Refinement'''
+          new_seq = '''Q5 Significance / Memory Hook        NOW
+↓
+Q6 Learning History
+↓
+Exposure weighting / adaptive-light only if justified
+↓
+History Grammar / Browser refinement after UX validation'''
+          if s.count(old_seq) != 1:
+              raise SystemExit(f'expected one stale sequence block, found {s.count(old_seq)}')
+          s = s.replace(old_seq, new_seq)
+          p.write_text(s)
           PY
 
-      - name: Run guarded canonical documentation sync
-        run: node scripts/finalize-q4-docs.mjs
-
-      - name: Restore temporary script and verify scope
+      - name: Verify correction scope
         run: |
-          git checkout -- scripts/finalize-q4-docs.mjs
-          git diff -- docs/current-state.md docs/quiz-quality-plan.md docs/q4-coverage-balance-plan.md
-          test -z "$(git status --short | grep -vE 'docs/(current-state\.md|quiz-quality-plan\.md|q4-coverage-balance-plan\.md)$')"
+          git diff -- docs/quiz-quality-plan.md
+          test -z "$(git status --short | grep -vE 'docs/quiz-quality-plan\.md$')"
 
-      - name: Commit canonical Q4 closeout
+      - name: Commit closeout corrections
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/current-state.md docs/quiz-quality-plan.md docs/q4-coverage-balance-plan.md
-          git commit -m "Close Q4 and advance canonical plan to Q5" || exit 0
+          git add docs/quiz-quality-plan.md
+          git commit -m "Polish Q4 closeout sequence" || exit 0
           git push
