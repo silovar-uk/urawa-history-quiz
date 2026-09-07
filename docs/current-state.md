@@ -3,7 +3,7 @@
 Last updated: 2026-09-07
 
 > このファイルを「現在地の正本」とする。
-> Product Principlesは `product-principles.md`、長期構想は `development-plan.md`、個別研究はresearch / experiment docsを参照する。
+> Product Principlesは `product-principles.md`、長期構想は `development-plan.md`、個別検証は各report / experiment docsを参照する。
 
 ---
 
@@ -11,24 +11,23 @@ Last updated: 2026-09-07
 
 URAWA HISTORYは、1992〜2025の34シーズンを扱うDB駆動prototypeとして成立している。
 
-現在は「機能を増やす段階」ではなく、**production-qualityとして信用できるfact / quiz / interactionを固める段階**。
+現在は新機能追加より、**production-qualityとして信用できるfact / quiz / interactionを固める段階**。
 
-2026-09-07にQ0 / Q1 Quiz Trust Gateをproduction Quiz Engineへ導入した。
+Quiz Qualityは以下まで進行した。
 
-現在の最大の変化：
+- Q0 Inventory — DONE
+- Q1 Correctness / Eligibility — DONE
+- Q1.5 Provenance Recovery — **PARTIAL PASS**
+- Q1.6 Uniform Model Repair — **NOW**
+- Q2 Distractor Quality — NEXT
 
-- 問題candidateはTrust Gateを通らない限りscreenへ出ない。
-- reject reasonをmachine-readableに記録する。
-- GitHub Actionsで全34season × 7 generatorを監査する。
-- Q0 / Q1初回auditはSUCCESS。
-- invariant failureは0。
-- ただしsafe coverageはgeneratorごとに大きく異なる。
+Q1.5でclaim-level provenance registryを導入し、Trust Gateを弱めずPLAYER系の一部を復活させた。
 
 **Current Bottleneck:**
 
-> Provenance Recovery — PLAYER / KITをTrust Gateを弱めず復活させるためのrelationship-level source整備。
+> Uniform semantics — 国内大会と国際大会で異なる胸スポンサーを、season単位1値の現在modelでは安全に表現できない。
 
-History Spine production integrationはこの品質Gateの後に再開する。
+History Spine production integrationはQuiz Trust / Quiz Quality上流Gateの後に再開する。
 
 ---
 
@@ -53,81 +52,53 @@ Visual grammar:
 
 ---
 
-# 3. Maturity Scale
-
-- 0 — NOT STARTED
-- 1 — CONCEPT
-- 2 — PROTOTYPE
-- 3 — FUNCTIONAL
-- 4 — VALIDATED
-- 5 — STABLE
-
-`FUNCTIONAL ≠ DONE`
-
-`DATA EXISTS ≠ VERIFIED`
-
-`QUIZ GENERATED ≠ GOOD QUIZ`
-
----
-
-# 4. Product Health Snapshot
+# 3. Product Health Snapshot
 
 ## Product Definition
 
 **4 / 5 — VALIDATED FOR DEVELOPMENT**
 
-- Product Principles
-- Mobile First
-- Quiz → History philosophy
-- Urawa visual grammar
-- Reduce before adding
-
-Next gate:
-実利用・品質監査の結果でPrinciples自体も再評価する。
-
----
+思想は十分明確。大規模な再定義は現在不要。
 
 ## Historical Data Coverage
 
 **3 / 5 — FUNCTIONAL**
 
-Exists:
-- 34 seasons
-- players
-- player_seasons
-- managers
-- manager_tenures
-- uniforms
-- sources
+34 seasonsと主要entity群は存在する。
 
-Gap:
-coverageとclaim-level provenanceを分離して管理する必要がある。
+ただし：
 
----
+`DATA EXISTS ≠ VERIFIED`
+
+を維持する。
 
 ## Data Quality / Provenance
 
-**2 / 5 — NOW**
+**2.5 / 5 — NOW**
 
-Good:
-- season-level `verification_status`
-- source master
-- entity source_ids
+Q1.5で追加：
 
-Current gaps:
-- `player_seasons` relationship-level source不足
-- `uniforms` source不足
-- manager change yearのgranularity不足
-- exact player registration interval不足
-- source masterが粗い単位
+- `data/provenance-claims.js`
+- specific official source records in `data/sources.json`
+- claim value / source ID CI validation
 
----
+Current issues discovered:
+
+- 2006 Washington shirt number: current 30 / official 21
+- 2006 Nobuhisa Yamada position: current DF / official R-File MF
+- 2006 Ryota Tsuzuki shirt number: current 21 / official 23
+- 2006 Masayuki Okano shirt number: current 32 / official 30
+- 2007 domestic chest sponsor: current DHL / official domestic SAVAS; DHL is international context
+- 2004 chest sponsor value also needs repair / stronger historical normalization
+
+These contradictions remain fail-closed.
 
 ## Quiz Engine
 
 **3 / 5 — FUNCTIONAL + TRUST GATED**
 
-7 generators:
+7 generators remain defined:
+
 - PLAYER_NUMBER
 - PLAYER_POSITION
 - PLAYER_OVERLAP
@@ -136,78 +107,75 @@ Current gaps:
 - SEASON_SUMMARY
 - KIT_DETAIL
 
-Q0 / Q1 Trust Gate implemented:
-- `prototype/quiz-trust.js`
+Trust Gate:
+
 - fail closed
 - reject reason taxonomy
+- source / claim checks
 - normalized option uniqueness
-- source / season verification checks
 - rank bounds
-- manager ambiguity checks
+- manager ambiguity exclusion
 - answer leak detection
 
 Runtime diagnostics:
 
 `window.URAWA_QUIZ_QA`
 
----
+## Quiz Trust Coverage — Q1.5 CI
 
-## Quiz Trust Coverage — CI result
+Before → After:
 
-Initial audit:
+- PLAYER_NUMBER: **0 → 2 / 34**
+- PLAYER_POSITION: **0 → 3 / 34**
+- PLAYER_OVERLAP: 0 / 34
+- MANAGER_SEASON: 26 / 34
+- SEASON_RANK: 32 / 34
+- SEASON_SUMMARY: 33 / 34
+- KIT_DETAIL: 0 / 34
 
-- PLAYER_NUMBER: **0 / 34 eligible**
-- PLAYER_POSITION: **0 / 34 eligible**
-- PLAYER_OVERLAP: **0 / 34 eligible**
-- MANAGER_SEASON: **26 / 34 eligible**
-- SEASON_RANK: **32 / 34 eligible**
-- SEASON_SUMMARY: **33 / 34 eligible**
-- KIT_DETAIL: **0 / 34 eligible**
+Q1.5 CI:
 
-Invariant failures: **0**
+- invariantFailures: **0**
+- provenanceFailures: **0**
+- provenanceClaims: 15
+- knownDataIssues: 6
+
+Detailed report:
+`docs/provenance-recovery-report.md`
 
 Interpretation:
 
-Trust Gateは正常。
-PLAYER / KITの0件はsource不足を正しく可視化した結果。
-
-Report:
-`docs/quiz-trust-gate-report.md`
-
----
+PLAYER recovery succeeded as a vertical slice.
+KIT did not fail because the Gate is too strict; it exposed a real data-model ambiguity.
 
 ## Quiz Content Quality
 
-**2 / 5 — NEXT AFTER PROVENANCE SLICE**
+**2 / 5 — QUEUED**
 
-Not solved yet:
-- semantic distractor quality
+Not yet solved:
+
+- distractor plausibility
 - difficulty
 - knowledge significance
 - era / category balance
-- repeated knowledge cluster
-- freshness
+- repeated knowledge clusters
+- question freshness
 
-Q2へ進む前にPLAYER / KITの小規模Provenance Recoveryを行う。
-
----
+Do not start Q2 before Q1.6 is decided.
 
 ## Learning Model
 
 **2 / 5 — FUNCTIONAL SUMMARY, NOT TRUE MASTERY**
 
 Current:
+
 - total
 - correct
 - recentWrong counter
 - category accuracy
 - era accuracy
 
-Important limitation:
-`recentWrong` はquestion historyではなくcounter。
-Raw accuracyをそのまま理解度と呼ぶには不足。
-
----
+Raw accuracy is not treated as validated mastery.
 
 ## Quiz UX
 
@@ -218,263 +186,147 @@ Raw accuracyをそのまま理解度と呼ぶには不足。
 - Memory Hook
 - Next
 - Explore Season
+- `SOURCE CHECKED` trust wording
 
-Trust wording:
-
-`FACT VERIFIED` → `SOURCE CHECKED`
-
-理由：source存在とclaim-by-claim完全検証を区別する。
-
-History Spine Revealはまだproduction未統合。
-
----
+History Spine Reveal remains experiment-only.
 
 ## History Exploration
 
 **3 / 5 — FUNCTIONAL + EXPERIMENTAL RESEARCH**
 
 Production:
+
 - Timeline
 - Season Detail
 - Player Detail
 
 Experiment:
+
 - History Spine
 - Answered Spine Reveal
-
-Research is preserved but queued behind Quiz Trust / Provenance / Q2.
-
----
 
 ## Visual / Brand System
 
 **3 / 5 — PRINCIPLES STRONG, PRODUCTION APPLICATION PARTIAL**
 
 - White / Black / Red
-- Diamond semantic concept
-- Year as primary language
+- Diamond semantic grammar
+- Year as primary visual language
 - favicon
 - Shu-Ha-Ri research
 
-Do not expand decoration while Quiz Quality is upstream bottleneck.
+Do not expand cosmetic work while Quiz Quality remains upstream bottleneck.
 
 ---
 
-## Mobile / Responsive
+# 4. Documentation / QA State
 
-**3 / 5 — FUNCTIONAL, NOT FULLY VALIDATED**
+Current canonical files:
 
-Primary target: ~390px.
-Desktop still requires deeper archive-specific layout work later.
+- `docs/current-state.md` — current truth
+- `docs/product-principles.md` — product principles
+- `docs/development-plan.md` — long-term roadmap
+- `docs/quiz-quality-plan.md` — quiz quality sequence
+- `docs/quiz-trust-gate-report.md` — Q0/Q1 result
+- `docs/provenance-recovery-report.md` — Q1.5 result
 
----
+Automated QA:
 
-## Accessibility
+- `scripts/quiz-trust-audit.mjs`
+- `.github/workflows/quiz-trust-audit.yml`
 
-**2–3 / 5 — PARTIAL**
-
-Existing:
-- focus-visible
-- reduced-motion consideration
-- semantic buttons
-
-Needs systematic screen-reader / modal / extreme-state audit.
-
----
-
-## Technical Architecture
-
-**3 / 5 — FUNCTIONAL**
-
-Current:
-- static HTML / CSS / JS
-- JSON DB
-- data-bundle fallback
-- localStorage
-- GitHub Pages
-
-New QA:
-- CLI trust audit
-- GitHub Actions trust audit
-
-Framework migration is not justified now.
+Latest Q1.5 audit run:
+https://github.com/silovar-uk/urawa-history-quiz/actions/runs/34117692993
 
 ---
 
-## Deployment / CI
+# 5. NOW — Q1.6 Uniform Model Repair
 
-**4 / 5 — HEALTHY FOR CURRENT SCALE**
+Central question:
 
-- GitHub Pages
-- favicon
-- automated Quiz Trust Audit
+> 胸スポンサーfactは `season × HOME` の1値で十分か、それともcompetition scopeを持つ必要があるか？
 
-Workflow:
-`.github/workflows/quiz-trust-audit.yml`
+Evidence already shows competition-specific variation in 2007.
 
----
+Minimum investigation slice:
 
-## Documentation
+- 2004
+- 2005
+- 2007
+- 2013
 
-**3 / 5 — IMPROVED**
+Candidate model:
 
-Canonical current state:
-`docs/current-state.md`
+`season_id × kit_type × competition_scope × chest_sponsor × provenance`
 
-Key current docs:
-- `docs/product-principles.md`
-- `docs/development-plan.md`
-- `docs/quiz-quality-plan.md`
-- `docs/quiz-trust-gate-report.md`
-- `docs/ui-shuhari-research.md`
+Examples of `competition_scope`:
 
-Older UI Next docs remain historical / research context and are not the canonical project state.
+- domestic
+- ACL / international
 
----
+Pass condition:
 
-# 5. DONE
-
-- Product principles
-- 34-season DB structure
-- DB-driven quiz engine
-- core screens
-- localStorage summary
-- favicon
-- History Spine research prototype
-- Q0 generator inventory
-- Q1 fail-closed eligibility
-- rejection taxonomy
-- runtime QA diagnostics
-- CLI audit
-- GitHub Actions audit
-
----
-
-# 6. FUNCTIONAL BUT NOT VALIDATED
-
-- historical DB completeness
-- manager tenure completeness
-- learning metrics
-- mobile extreme states
-- desktop layout
-- accessibility
-- Memory Hook quality
-- distractor quality
-
----
-
-# 7. INTENTIONALLY DISABLED / BLOCKED
-
-## PLAYER_NUMBER
-Blocked by missing relationship-level source metadata.
-
-## PLAYER_POSITION
-Blocked by missing relationship-level source metadata.
-
-## PLAYER_OVERLAP
-Blocked by missing exact overlap / roster completeness evidence.
-
-## KIT_DETAIL
-Blocked by missing uniform-level source metadata.
-
-These are not bugs in Trust Gate.
-
----
-
-# 8. NOW — Q1.5 Provenance Recovery Vertical Slice
-
-Do not bulk-update all records.
-
-## Player relation anchors
-
-Candidate seasons:
-- 1998
-- 2006
-- 2017
-- 2023
-
-Verify from primary / official sources:
-- player-season membership
-- shirt number
-- registered position
-
-Then attach relation-level source metadata.
-
-## Kit source anchors
-
-Verify representative sponsor eras sufficient to create at least four distinct verified sponsor values.
-
-Do not stamp sources without checking the actual claim.
-
-## Pass Gate
-
-Re-run CI and achieve:
-
-- PLAYER_NUMBER eligible > 0
-- PLAYER_POSITION eligible > 0
-- KIT_DETAIL eligible > 0
+- existing wrong / ambiguous base values are repaired or safely superseded
+- domestic question wording becomes unambiguous
+- at least four distinct source-backed domestic chest sponsor values can support KIT_DETAIL
 - invariantFailures = 0
-
-PLAYER_OVERLAP remains disabled.
-
----
-
-# 9. NEXT — Q2 Distractor Quality
-
-After provenance slice passes:
-
-- MANAGER: adjacent-era candidates
-- RANK: close valid ranks
-- SUMMARY: nearby / semantically similar seasons
-- PLAYER: same-season plausible roster candidates
-- KIT: nearby verified sponsor eras
-
-Goal:
-
-`clearly false` + `plausible enough to require recall`
+- provenanceFailures = 0
 
 ---
 
-# 10. THEN
+# 6. NEXT — Q2 Distractor Quality
 
-Q3 Difficulty
-→ Q4 Coverage / Balance
-→ Q5 Significance / Memory Hook
-→ Q6 Learning History
-→ Answered Spine Production Integration
-→ History Browser Research
+Only after Q1.6 passes.
+
+Move from:
+
+`correct + three technically false values`
+
+to:
+
+`correct + three plausible but defensibly false values`
+
+Generator-specific strategies should then be designed and measured.
 
 ---
 
-# 11. LATER
+# 7. THEN
 
-- PLAYER_OVERLAP with real registration interval
-- Manager Detail
-- Kit Archive full experience
+1. Q3 Difficulty
+2. Q4 Coverage / Balance
+3. Q5 Significance / Memory Hook
+4. Q6 Learning History
+5. Answered History Spine production integration
+6. History Browser refinement
+
+---
+
+# 8. Do Not Build Yet
+
 - adaptive learning
-- account / cloud sync
-- large framework migration
+- XP / coins / rankings
+- PLAYER_OVERLAP without interval evidence
+- full History redesign
+- large UI polish round
+- framework migration
+- manual dual-edit workflow for JSON + data-bundle
 
 ---
 
-# 12. Current Bottleneck
+# 9. Technical Debt
 
-**Provenance Recovery without weakening Trust Gate.**
+`data/data-bundle.js` is a legacy runtime fallback and can drift from canonical JSON.
 
-The next work is not to make rejected data pass.
+Q1.5 avoided manually duplicating claim edits into the bundle by loading claim provenance separately.
 
-It is to add enough evidence that it deserves to pass.
+Next technical cleanup after the data model stabilizes:
+
+> generate `data-bundle.js` deterministically from JSON, or remove it if the fallback is unnecessary.
 
 ---
 
-# 13. Next Review Gate
+# 10. Next Review Gate
 
-Question:
+Q1.6 passes only when:
 
-> PLAYER / KITをsource-backedに復活させても、Trust GateのFail-Closed原則を維持できているか。
-
-If yes:
-Q2 Distractor Qualityへ進む。
-
-If no:
-data/source modelを先に修正する。
+> A KIT question can state its competition context precisely enough that the screen has exactly one source-backed answer, with three source-backed alternative sponsor values available for distractors.
