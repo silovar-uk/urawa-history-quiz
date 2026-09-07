@@ -13,29 +13,24 @@ URAWA HISTORYは、1992〜2025の34シーズンを扱うDB駆動prototypeとし�
 
 現在は新機能追加より、**production-qualityとして信用でき、かつ学習価値のあるQuizを固める段階**。
 
-Quiz Quality current status:
+Quiz / Data Quality current status:
 
 - Q0 Inventory — **DONE**
 - Q1 Correctness / Eligibility — **DONE**
-- Q1.5 Provenance Recovery — **PARTIAL PASS / FOUNDATION DONE**
+- Q1.5 Provenance Recovery — **FOUNDATION DONE / COVERAGE PARTIAL**
 - Q1.6 Uniform Model Repair — **DONE**
 - Q2 Distractor Quality — **DONE**
 - Q3 Difficulty — **DONE (structural estimate baseline)**
+- Data Content Repair / Integrity Gate — **DONE / PASS**
 - Q4 Coverage / Balance — **NOW**
-- Q5 Significance / Memory Hook — NEXT
-- Q6 Learning History — LATER
+- Q5 Significance / Memory Hook — **NEXT**
+- Q6 Learning History — **LATER**
 
-Q1.6でKITを `season × HOME` の単一値から、`season × HOME × competition_scope` の文脈付きfactへ分離した。
-
-Q2で主要generatorのdistractorをrandom-firstからdomain-aware policyへ変更した。
-
-Q3では107件のtrust-safeな問題構成を観測可能にし、target / distractor関係から **Structural Difficulty Estimate** を決定的に算出できるようにした。
-
-重要：これは実ユーザー正答率から求めるObserved Item Difficultyではない。
+2026-09-07のData Content Repair Roundでは、一次情報を再調査してから確定誤りのみを修正し、同時にruntime driftと再発を防ぐData Integrity Gateを常設した。
 
 **Current Bottleneck:**
 
-> Coverage / exposure balance — 安全で難易度構造も観測できるようになったが、現在のgenerator policyで「どの年代・カテゴリ・シーズンが実際に画面へ出やすいか」はまだ測定していない。
+> Coverage / runtime exposure balance — データの既知誤りを修正し、Integrity / Trust / Distractor / Difficultyの各Gateが通った現在、ユーザーが「次の問題」を繰り返したときに、どの年代・カテゴリ・シーズンが実際に多く露出するのかを測る段階。
 
 History Spine production integrationはQuiz Quality上流Gateの後に再開する。
 
@@ -62,7 +57,130 @@ Visual grammar:
 
 ---
 
-# 3. Product Health Snapshot
+# 3. Data Integrity Repair — DONE / PASS
+
+Research-first repair completed.
+
+Evidence ledger:
+
+`docs/data-repair-evidence.md`
+
+Data contract:
+
+`docs/data-contract.md`
+
+Integrity report:
+
+`docs/data-integrity-report.md`
+
+Issue registry:
+
+`data/issues.json`
+
+## Confirmed errors repaired
+
+- 1995 福田正博得点王：27 → **32 goals**
+- 1996 岡野雅行「新人王」誤記を除去
+- 2000 J1復帰決定：**鳥栖戦 / 延長前半5分（95分）**へ修正
+- 2006 player-season relations:
+  - Washington #21
+  - 都築龍太 #23
+  - 岡野雅行 #30
+  - 山田暢久 registered position MF（2006 official season table）
+- legacy uniform archive:
+  - 2007 domestic chest → SAVAS / international → DHL
+  - 2008 domestic chest → SAVAS / international → DHL
+  - 2011 domestic chest → SAVAS
+- manager tenure structure:
+  - 2011 堀孝史 tenureを追加
+  - 2024 池田伸康 interim / スコルジャ復帰 tenureを追加
+
+## Intentionally unresolved
+
+推測修正はしていない。
+
+- 2004 legacy chest sponsor — direct 2004 primary evidence still required
+- 2009 / 2010 / 2012 legacy chest sponsor — year-specific direct primary evidence still required
+- manager tenure reconstruction still needed for 1997 / 1999 / 2000 / 2001 / 2008 / 2017
+- broad season prose source granularity remains incomplete
+
+These are tracked as OPEN / BLOCKED issues rather than silently filled.
+
+---
+
+# 4. Canonical Data / Runtime Contract
+
+Canonical source data:
+
+- `data/seasons.json`
+- `data/players.json`
+- `data/player_seasons.json`
+- `data/managers.json`
+- `data/manager_tenures.json`
+- `data/uniforms.json`
+- `data/sources.json`
+- `data/issues.json`
+- `data/provenance-claims.js`
+- `data/uniform-contexts.js`
+
+Runtime fallback:
+
+`data/data-bundle.js`
+
+`data/data-bundle.js` is now a **generated artifact**.
+
+Builder:
+
+`node scripts/build-data-bundle.mjs`
+
+Drift check:
+
+`node scripts/build-data-bundle.mjs --check`
+
+Manual double-editing of canonical JSON and bundle is no longer accepted.
+
+---
+
+# 5. Latest Data Integrity Census
+
+Latest status:
+
+**PASS — 0 integrity errors**
+
+Current census:
+
+- Seasons: **34**
+- Seasons marked confirmed: **34**
+- Seasons relying only on broad root sources: **31**
+- Players: **38**
+- Player-season relations: **79**
+- Player-season relations with shirt number: **62**
+- Claim-backed player-season entities: **17**
+- Managers: **21**
+- Manager tenure rows: **37**
+- Seasons currently modeled with multiple tenure rows: **2**
+- Legacy uniform rows: **34**
+- Verified competition-aware uniform contexts: **8**
+- Seasons with verified uniform context: **5**
+- Source records: **19**
+- Data issues: **11 total / 7 FIXED / 4 OPEN or BLOCKED**
+
+Known warning categories:
+
+1. `BROAD_SOURCE_ONLY_SEASONS`
+2. `SPARSE_PLAYER_SEASONS`
+3. `UNIFORM_CONTEXT_GAPS`
+4. `MANAGER_CHANGE_ONLY_IN_NOTES`
+
+Important:
+
+`INTEGRITY PASS ≠ COMPLETE HISTORICAL VERIFICATION`
+
+PASS means structural errors / known regression errors are absent and the current known-unknowns are explicitly tracked.
+
+---
+
+# 6. Product Health Snapshot
 
 ## Product Definition
 
@@ -76,27 +194,25 @@ Visual grammar:
 
 34 seasonsと主要entity群は存在する。
 
-ただし：
-
-`DATA EXISTS ≠ VERIFIED`
-
-を維持する。
+ただしplayer coverage / uniform context / manager tenure / claim-level source coverageは不均一。
 
 ## Data Quality / Provenance
 
-**3 / 5 — FUNCTIONAL FOUNDATION, COVERAGE PARTIAL**
+**3.5 / 5 — INTEGRITY GATED, COVERAGE PARTIAL**
 
 Implemented:
 
-- `data/provenance-claims.js`
-- specific official source records in `data/sources.json`
-- claim value / source ID CI validation
-- `data/uniform-contexts.js`
-- competition-aware uniform context provenance
+- claim-level player-season provenance
+- competition-aware uniform provenance
+- evidence ledger
+- issue registry
+- data contract
+- deterministic runtime bundle builder
+- data integrity audit
+- regression fixtures
+- permanent CI gate
 
-Known base-data issues remain quarantined, including several 2006 player fields and legacy kit sponsor values.
-
-They remain fail-closed until repaired from evidence.
+Known unknowns are warnings/issues rather than guessed values.
 
 ## Quiz Engine
 
@@ -112,95 +228,69 @@ Generators:
 - SEASON_SUMMARY
 - KIT_DETAIL
 
-Trust Gate:
-
-- fail closed
-- reject reason taxonomy
-- source / claim checks
-- normalized option uniqueness
-- rank bounds
-- manager ambiguity exclusion
-- answer leak detection
-- competition-aware KIT context
+`PLAYER_OVERLAP` remains deliberately disabled until interval evidence exists.
 
 Runtime diagnostics:
 
 `window.URAWA_QUIZ_QA`
 
-## Quiz Trust Coverage — latest aligned CI
+---
+
+# 7. Quiz Trust Coverage — latest aligned CI
 
 - PLAYER_NUMBER: **2 / 34 eligible seasons**
-- PLAYER_POSITION: **3 / 34 eligible seasons**
+- PLAYER_POSITION: **3 / 34**
 - PLAYER_OVERLAP: **0 / 34**
 - MANAGER_SEASON: **26 / 34**
 - SEASON_RANK: **32 / 34**
 - SEASON_SUMMARY: **33 / 34**
-- KIT_DETAIL: **3 / 34 eligible seasons**
+- KIT_DETAIL: **5 / 34 eligible seasons**
 
 Latest trust invariants:
 
 - invariantFailures: **0**
 - provenanceFailures: **0**
-- uniformContexts: **5**
+- provenance claim entities: **19**
+- claim-level fields: **36**
+- verified uniform contexts: **8**
 
-## Quiz Content Quality
+---
+
+# 8. Quiz Content Quality
 
 **3.5 / 5 — DISTRACTOR + STRUCTURAL DIFFICULTY BASELINE DONE**
 
-Q2 introduced:
+Q2 introduced domain-aware distractors rather than random-first distractors.
 
-- PLAYER_NUMBER: same position / close number preference
-- MANAGER: same decade / close season preference
-- SEASON_RANK: nearest valid rank
-- SEASON_SUMMARY: temporal / era / title / league similarity
-- KIT_DETAIL: verified historical sponsor values, same competition scope preferred
+Q3 provides a Structural Difficulty Estimate only; it is not observed psychometric difficulty.
 
-Q3 introduced:
-
-- `prototype/quiz-difficulty.js`
-- `scripts/quiz-difficulty-audit.mjs`
-- CI artifact `q3-difficulty-baseline.json`
-
-Q3 does **not** expose difficulty labels in UI.
-
-### Q3 baseline
+## Latest post-repair Q3 baseline
 
 Total modeled constructions:
 
-**107**
+**114**
 
-Provisional structural bands:
+Structural bands:
 
 - EASY: **4**
-- MEDIUM: **23**
-- HARD: **80**
+- MEDIUM: **29**
+- HARD: **81**
 
 By generator:
 
-- PLAYER_NUMBER: 11 items / E4 M3 H4 / avg 54.9
-- MANAGER_SEASON: 26 / E0 M13 H13 / avg 73.2
-- SEASON_RANK: 32 / E0 M2 H30 / avg 80.3
-- SEASON_SUMMARY: 33 / E0 M2 H31 / avg 80.0
-- KIT_DETAIL: 5 / E0 M3 H2 / avg 65.2
+- PLAYER_NUMBER: **15** / E4 M6 H5 / avg 57.4
+- MANAGER_SEASON: **26** / E0 M13 H13 / avg 73.2
+- SEASON_RANK: **32** / E0 M2 H30 / avg 80.3
+- SEASON_SUMMARY: **33** / E0 M2 H31 / avg 80.0
+- KIT_DETAIL: **8** / E0 M6 H2 / avg 61.6
 
-Interpretation:
+The post-repair baseline increased because repaired player claims and new verified kit contexts create additional safe constructions.
 
-The Hard skew is not normalized away. It reveals that Q2 currently selects the closest plausible distractors almost every time.
+Do not normalize away the Hard skew merely to make the chart look balanced.
 
-Q4 must measure how this construction bias interacts with era / category / season exposure.
+---
 
-### Q3 limitations
-
-- Observed item difficulty still requires real user response data.
-- SEASON_SUMMARY semantic clue richness is under-modeled; confidence is lower.
-- PLAYER_POSITION remains unmodeled for structural difficulty rather than inventing fake precision.
-- PLAYER_OVERLAP remains trust-disabled.
-
-Detailed report:
-
-`docs/q3-difficulty-report.md`
-
-## Learning Model
+# 9. Learning Model
 
 **2 / 5 — FUNCTIONAL SUMMARY, NOT TRUE MASTERY**
 
@@ -214,6 +304,10 @@ Current:
 
 Raw accuracy is not treated as validated mastery.
 
+---
+
+# 10. Quiz UX / History / Visual
+
 ## Quiz UX
 
 **3 / 5 — FUNCTIONAL**
@@ -226,8 +320,6 @@ Raw accuracy is not treated as validated mastery.
 - `SOURCE CHECKED`
 
 Difficulty is intentionally not shown to the user yet.
-
-History Spine Reveal remains experiment-only.
 
 ## History Exploration
 
@@ -254,81 +346,38 @@ Experiment:
 - favicon
 - Shu-Ha-Ri research
 
-Do not expand cosmetic work while Quiz Quality remains upstream bottleneck.
+Large cosmetic work remains behind Quiz Quality gates.
 
 ---
 
-# 4. Uniform Semantics — Q1.6 DONE
+# 11. Permanent Automated QA
 
-Quiz-safe chest sponsor facts no longer depend on the one-value-per-season legacy field.
+Normal Quiz CI now runs:
 
-Authoritative quiz context:
+1. production JS syntax
+2. canonical JSON ↔ runtime bundle sync
+3. Data Integrity Audit
+4. Quiz Trust Audit
+5. Q2 Quality Audit
+6. Q3 Structural Difficulty Audit
+7. Q3 baseline artifact upload
 
-`data/uniform-contexts.js`
+Files:
 
-Logical key:
+- `scripts/build-data-bundle.mjs`
+- `scripts/data-integrity-audit.mjs`
+- `scripts/quiz-trust-audit.mjs`
+- `scripts/quiz-quality-audit.mjs`
+- `scripts/quiz-difficulty-audit.mjs`
+- `.github/workflows/quiz-trust-audit.yml`
 
-`season_id × type × competition_scope`
-
-Verified vertical slice:
-
-- 2005 domestic HOME → Vodafone
-- 2007 domestic HOME → SAVAS
-- 2007 international HOME → DHL
-- 2013 domestic HOME → POLUS
-- 2013 ACL HOME → MITSUBISHI MOTORS
-
----
-
-# 5. Q2 Distractor Quality — DONE
-
-Policy module:
-
-`prototype/quiz-distractors.js`
-
-Quality audit:
-
-`scripts/quiz-quality-audit.mjs`
-
-Latest aligned result:
-
-- invariantFailures: 0
-- provenanceFailures: 0
-- Q2 failures: 0
+Data changes that reintroduce known repaired facts or bundle drift fail CI.
 
 ---
 
-# 6. Q3 Difficulty — DONE
+# 12. NOW — Q4 Coverage / Balance
 
-Status:
-
-**PASS — structural estimate baseline**
-
-Model:
-
-`prototype/quiz-difficulty.js`
-
-Audit:
-
-`scripts/quiz-difficulty-audit.mjs`
-
-Baseline CI:
-
-https://github.com/silovar-uk/urawa-history-quiz/actions/runs/34120456643
-
-The CI stores the full item-level baseline as an artifact.
-
-Core decision:
-
-> Structural Difficulty is useful as a pre-calibration feature, but it must never be represented as observed user difficulty until response data exists.
-
-Research confidence:
-
-**MEDIUM**
-
----
-
-# 7. NOW — Q4 Coverage / Balance
+Q4 resumes after the Data Integrity Gate PASS.
 
 Central question:
 
@@ -351,17 +400,15 @@ Measure at minimum:
 
 Do not impose an arbitrary equal distribution yet.
 
-Plan:
-
-`docs/q4-coverage-balance-plan.md`
-
 First action:
 
-> Build a deterministic eligibility-and-exposure census for every season from 1992–2025 under the current generator policy.
+> Build a deterministic eligibility-and-exposure census for every season from 1992–2025 under the repaired current generator policy.
+
+Q4 must keep the Data Integrity warnings visible so a data-coverage gap is not mistaken for an editorial preference.
 
 ---
 
-# 8. NEXT / THEN
+# 13. NEXT / THEN
 
 NEXT:
 
@@ -376,7 +423,7 @@ THEN:
 
 ---
 
-# 9. Do Not Build Yet
+# 14. Do Not Build Yet
 
 - psychometric claims from structural scores
 - user-facing EASY / MEDIUM / HARD badges
@@ -386,56 +433,12 @@ THEN:
 - full History redesign
 - large UI polish round
 - framework migration
+- inferred historical facts to improve coverage metrics
 
 ---
 
-# 10. Technical / Research Debt
-
-## Data runtime
-
-`data/data-bundle.js` remains a legacy runtime fallback and can drift from canonical source data.
-
-## Difficulty
-
-- SEASON_SUMMARY needs a better clue-richness model before user-facing use.
-- observed item difficulty requires later response data.
-- PLAYER_POSITION is intentionally unmodeled in Q3.
-
-## One-time migration
-
-The Q1.6/Q2 migration script / workflow can be archived or removed after its historical value is no longer needed.
-
----
-
-# 11. Documentation / QA State
-
-Canonical:
-
-- `docs/current-state.md`
-- `docs/product-principles.md`
-- `docs/development-plan.md`
-- `docs/quiz-quality-plan.md`
-
-Reports / plans:
-
-- `docs/quiz-trust-gate-report.md`
-- `docs/provenance-recovery-report.md`
-- `docs/q1-6-q2-report.md`
-- `docs/uniform-context-schema.md`
-- `docs/q3-difficulty-report.md`
-- `docs/q4-coverage-balance-plan.md`
-
-Automated QA:
-
-- `scripts/quiz-trust-audit.mjs`
-- `scripts/quiz-quality-audit.mjs`
-- `scripts/quiz-difficulty-audit.mjs`
-- `.github/workflows/quiz-trust-audit.yml`
-
----
-
-# 12. Next Review Gate
+# 15. Next Review Gate
 
 Q4 may advance to Q5 only when:
 
-> The project can separately explain what facts exist, what questions are safe, and what history the current engine actually exposes to a user over repeated sessions — broken down by era, season, category, generator, and structural difficulty.
+> The project can separately explain what facts exist, what questions are safe, and what history the current engine actually exposes to a user over repeated sessions — broken down by era, season, category, generator, and structural difficulty — while distinguishing editorial exposure bias from unresolved data coverage debt.
