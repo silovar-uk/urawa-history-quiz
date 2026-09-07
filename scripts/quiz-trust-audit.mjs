@@ -22,17 +22,23 @@ const db = {
 const sandbox = { window: {}, console };
 vm.createContext(sandbox);
 
-const provenanceCode = fs.readFileSync(path.join(root, 'data/provenance-claims.js'), 'utf8');
-vm.runInContext(provenanceCode, sandbox, { filename: 'provenance-claims.js' });
-
-const trustCode = fs.readFileSync(path.join(root, 'prototype/quiz-trust.js'), 'utf8');
-vm.runInContext(trustCode, sandbox, { filename: 'quiz-trust.js' });
+for (const rel of [
+  'data/provenance-claims.js',
+  'data/uniform-contexts.js',
+  'prototype/quiz-trust.js',
+  'prototype/kit-trust.js'
+]) {
+  const code = fs.readFileSync(path.join(root, rel), 'utf8');
+  vm.runInContext(code, sandbox, { filename: rel });
+}
 
 const trust = sandbox.window.URAWA_QUIZ_TRUST;
 const provenance = sandbox.window.URAWA_CLAIM_PROVENANCE;
+const kitTrust = sandbox.window.URAWA_KIT_TRUST;
+const uniformRegistry = sandbox.window.URAWA_UNIFORM_CONTEXTS;
 
-if (!trust || !provenance) {
-  console.error('Quiz Trust Gate or claim provenance registry could not be loaded.');
+if (!trust || !provenance || !kitTrust || !uniformRegistry) {
+  console.error('Quiz Trust Gate, provenance registry, or kit context registry could not be loaded.');
   process.exit(1);
 }
 
@@ -68,12 +74,8 @@ function baseQuestionIsValid(id, seasonId, question) {
 }
 
 function entityForClaim(claim) {
-  if (claim.entityType === 'player_season') {
-    return db.playerSeasons.find(x => x.id === claim.entityId);
-  }
-  if (claim.entityType === 'uniform') {
-    return db.uniforms.find(x => x.uniform_id === claim.entityId);
-  }
+  if (claim.entityType === 'player_season') return db.playerSeasons.find(x => x.id === claim.entityId);
+  if (claim.entityType === 'uniform') return db.uniforms.find(x => x.uniform_id === claim.entityId);
   return null;
 }
 
@@ -105,19 +107,31 @@ function auditProvenanceRegistry() {
         continue;
       }
       const unknown = field.sourceIds.filter(id => !knownSources.has(id));
-      if (unknown.length) {
-        provenanceFailures.push({ type: 'CLAIM_SOURCE_UNKNOWN', key, fieldName, unknown });
-      }
+      if (unknown.length) provenanceFailures.push({ type: 'CLAIM_SOURCE_UNKNOWN', key, fieldName, unknown });
       if (normalize(entity[fieldName]) !== normalize(field.value)) {
         provenanceFailures.push({
-          type: 'CLAIM_VALUE_MISMATCH',
-          key,
-          fieldName,
-          baseValue: entity[fieldName],
-          claimValue: field.value
+          type: 'CLAIM_VALUE_MISMATCH', key, fieldName,
+          baseValue: entity[fieldName], claimValue: field.value
         });
       }
     }
+  }
+}
+
+function auditUniformContextRegistry() {
+  const knownSources = new Set(db.sources.map(s => s.source_id));
+  const seen = new Set();
+  for (const ctx of uniformRegistry.contexts || []) {
+    const checked = kitTrust.validateContext(ctx);
+    if (!checked.ok) {
+      provenanceFailures.push({ type: 'KIT_CONTEXT_INVALID', contextId: ctx.context_id, reason: checked.reason, detail: checked.detail });
+      continue;
+    }
+    const key = `${ctx.season_id}:${ctx.type}:${ctx.competition_scope}`;
+    if (seen.has(key)) provenanceFailures.push({ type: 'KIT_CONTEXT_DUPLICATE', key });
+    seen.add(key);
+    const unknown = (ctx.source_ids || []).filter(id => !knownSources.has(id));
+    if (unknown.length) provenanceFailures.push({ type: 'KIT_CONTEXT_SOURCE_UNKNOWN', contextId: ctx.context_id, unknown });
   }
 }
 
@@ -128,9 +142,7 @@ function auditPlayerNumber(season) {
   if (!sourced.length) return reject(id, 'MISSING_RELATION_SOURCE', season.season_id);
 
   const uniqueTargets = sourced.filter(target => {
-    const wearers = new Set(
-      sourced.filter(x => String(x.shirt_number) === String(target.shirt_number)).map(x => x.player_id)
-    );
+    const wearers = new Set(sourced.filter(x => String(x.shirt_number) === String(target.shirt_number)).map(x => x.player_id));
     return wearers.size === 1;
   });
   if (!uniqueTargets.length) return reject(id, 'SHIRT_NUMBER_NOT_UNIQUE', season.season_id);
@@ -157,7 +169,6 @@ function auditPlayerNumber(season) {
     };
     if (baseQuestionIsValid(id, season.season_id, q)) return pass(id);
   }
-
   return reject(id, 'INSUFFICIENT_DISTRACTORS', season.season_id);
 }
 
@@ -234,12 +245,7 @@ function auditSummary(season) {
   const id = 'SEASON_SUMMARY';
   const check = trust.validateSummaryFact(season, db);
   if (!check.ok) return reject(id, check.reason, season.season_id, check.detail);
-  const others = db.seasons.filter(s =>
-    s.season_id !== season.season_id &&
-    trust.isConfirmedSeason(s, db).ok &&
-    s.summary &&
-    !trust.summaryLeaksYear(s)
-  );
+  const others = db.seasons.filter(s => s.season_id !== season.season_id && trust.isConfirmedSeason(s, db).ok && s.summary && !trust.summaryLeaksYear(s));
   if (others.length < 3) return reject(id, 'INSUFFICIENT_DISTRACTORS', season.season_id);
 
   const q = {
@@ -253,27 +259,27 @@ function auditSummary(season) {
 
 function auditKit(season) {
   const id = 'KIT_DETAIL';
-  const kit = db.uniforms.find(u => u.season_id === season.season_id && u.type === 'HOME');
-  if (!kit || !kit.chest_sponsor) return reject(id, 'MISSING_REQUIRED_FIELD', season.season_id);
-  if (!trust.hasKnownSources(kit, db)) return reject(id, 'MISSING_SOURCE', season.season_id);
+  const contexts = kitTrust.eligibleContextsForSeason(season.season_id);
+  if (!contexts.length) return reject(id, 'MISSING_KIT_CONTEXT', season.season_id);
 
-  const sponsors = [...new Set(
-    db.uniforms
-      .filter(u => u.type === 'HOME' && u.chest_sponsor && trust.hasKnownSources(u, db))
-      .map(u => u.chest_sponsor)
-  )].filter(x => x !== kit.chest_sponsor);
-  if (sponsors.length < 3) return reject(id, 'INSUFFICIENT_DISTRACTORS', season.season_id);
-
-  const q = {
-    question: `${season.year}年シーズンのHOMEユニフォームの胸スポンサーは？`,
-    options: [kit.chest_sponsor, ...sponsors.slice(0, 3)],
-    correct: kit.chest_sponsor
-  };
-  if (baseQuestionIsValid(id, season.season_id, q)) return pass(id);
-  return reject(id, 'AMBIGUOUS_CORRECT_ANSWER', season.season_id);
+  const allContexts = kitTrust.allEligibleContexts();
+  for (const target of contexts) {
+    const sponsors = [...new Set(allContexts
+      .filter(ctx => ctx.context_id !== target.context_id && ctx.chest_sponsor !== target.chest_sponsor)
+      .map(ctx => ctx.chest_sponsor))];
+    if (sponsors.length < 3) continue;
+    const q = {
+      question: `${season.year}年シーズンの${target.competition_label}用HOMEユニフォームの胸スポンサーは？`,
+      options: [target.chest_sponsor, ...sponsors.slice(0, 3)],
+      correct: target.chest_sponsor
+    };
+    if (baseQuestionIsValid(id, season.season_id, q)) return pass(id);
+  }
+  return reject(id, 'INSUFFICIENT_DISTRACTORS', season.season_id);
 }
 
 auditProvenanceRegistry();
+auditUniformContextRegistry();
 
 for (const season of db.seasons) {
   const seasonCheck = trust.isConfirmedSeason(season, db);
@@ -293,9 +299,11 @@ for (const season of db.seasons) {
 const report = {
   trustVersion: trust.version,
   provenanceVersion: provenance.version,
+  uniformContextVersion: uniformRegistry.version,
   seasons: db.seasons.length,
   sources: db.sources.length,
   provenanceClaims: (provenance.claims || []).length,
+  uniformContexts: (uniformRegistry.contexts || []).length,
   knownDataIssues: (provenance.issues || []).length,
   generators: results,
   rejectionReasons,
@@ -304,5 +312,4 @@ const report = {
 };
 
 console.log(JSON.stringify(report, null, 2));
-
 if (invariantFailures.length || provenanceFailures.length) process.exit(1);
