@@ -150,6 +150,12 @@ button:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
   display: flex;
   justify-content: space-between;
   align-items: center;
+  cursor: pointer;
+  transition: border-color .15s ease, transform .15s ease;
+}
+.squad-item:hover {
+  border-color: var(--brand);
+  transform: translateY(-1px);
 }
 .squad-num {
   font-weight: 900;
@@ -166,6 +172,59 @@ button:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
   font-size: 11px;
   color: var(--muted);
   font-weight: 700;
+}
+.era-filters {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 4px 0 16px;
+  -webkit-overflow-scrolling: touch;
+}
+.filter-pill {
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--muted);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.filter-pill.active {
+  background: var(--ink);
+  color: #fff;
+  border-color: var(--ink);
+}
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.modal-sheet {
+  background: var(--paper);
+  width: 100%;
+  max-width: 600px;
+  border-radius: 20px 20px 0 0;
+  padding: 24px 20px 36px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 -8px 30px rgba(0,0,0,0.2);
+}
+.tag {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 800;
+  border-radius: 4px;
+  background: #eee;
+  color: #444;
+  margin-right: 6px;
 }
 .bottom-nav {
   position: sticky; bottom:0; z-index:10;

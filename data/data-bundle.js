@@ -62,24 +62,29 @@ window.URAWA_DB = {
       ]
     },
     {
-      "season_id": "2025",
-      "year": 2025,
+      "season_id": "2023",
+      "year": 2023,
       "league_name": "J1",
-      "league_rank": null,
-      "total_teams": 20,
-      "points": null,
-      "matches": 38,
-      "wins": null,
-      "draws": null,
-      "losses": null,
-      "goals_for": null,
-      "goals_against": null,
-      "goal_difference": null,
-      "titles": [],
-      "summary": "マチェイ・スコルジャ体制。FIFAクラブワールドカップ2025出場を見据え、新世代の浦和を築くシーズン。",
-      "memory_hook": "クラブワールドカップ2025参戦。世界の大舞台へ挑んだシーズン。",
+      "league_rank": 4,
+      "total_teams": 18,
+      "points": 57,
+      "matches": 34,
+      "wins": 15,
+      "draws": 12,
+      "losses": 7,
+      "goals_for": 42,
+      "goals_against": 27,
+      "goal_difference": 15,
+      "titles": [
+        "AFCチャンピオンズリーグ2022 優勝"
+      ],
+      "summary": "マチェイ・スコルジャ監督就任1年目。堅固な守備網でJ1最少失点（27失点）を誇り、5月には埼玉スタジアムでアル・ヒラルを破り通算3度目のアジア王者に輝いた。",
+      "memory_hook": "埼玉スタジアムでアル・ヒラルを撃破し3度目のACL制覇。J1最少失点の鉄壁を築いた。",
       "key_events": [
-        "FIFAクラブワールドカップ2025参戦"
+        "ACL 2022制覇（決勝でアル・ヒラルに勝利し通算3度目のアジア王者）",
+        "J1リーグ最少失点（27失点）を記録し4位",
+        "JリーグYBCルヴァンカップ準優勝",
+        "ショルツ、酒井宏樹、伊藤敦樹がJリーグベストイレブンを受賞"
       ],
       "verification_status": "confirmed",
       "source_ids": [
@@ -89,6 +94,90 @@ window.URAWA_DB = {
     }
   ],
   "players": [
+    {
+      "player_id": "hisashi_tsuchida",
+      "name": "土田 尚史",
+      "name_kana": "ツチダ ヒサシ",
+      "name_en": "Hisashi TSUCHIDA",
+      "nationality": "Japan",
+      "birth_date": "1967-02-01",
+      "primary_position": "GK",
+      "source_ids": [
+        "SRC_JLEAGUE_DATA"
+      ]
+    },
+    {
+      "player_id": "yoshinori_taguchi",
+      "name": "田口 禎則",
+      "name_kana": "タグチ ヨシノリ",
+      "name_en": "Yoshinori TAGUCHI",
+      "nationality": "Japan",
+      "birth_date": "1965-09-14",
+      "primary_position": "DF",
+      "source_ids": [
+        "SRC_JLEAGUE_DATA"
+      ]
+    },
+    {
+      "player_id": "player_guido_buchwald",
+      "name": "ギド・ブッフバルト",
+      "name_kana": "ギド ブッフバルト",
+      "name_en": "Guido BUCHWALD",
+      "nationality": "Germany",
+      "birth_date": "1961-01-24",
+      "primary_position": "DF",
+      "source_ids": [
+        "SRC_JLEAGUE_DATA"
+      ]
+    },
+    {
+      "player_id": "osamu_hirose",
+      "name": "広瀬 治",
+      "name_kana": "ヒロセ オサム",
+      "name_en": "Osamu HIROSE",
+      "nationality": "Japan",
+      "birth_date": "1965-06-06",
+      "primary_position": "MF",
+      "source_ids": [
+        "SRC_JLEAGUE_DATA"
+      ]
+    },
+    {
+      "player_id": "uwe_bein",
+      "name": "ウベ・バイン",
+      "name_kana": "ウベ バイン",
+      "name_en": "Uwe BEIN",
+      "nationality": "Germany",
+      "birth_date": "1960-09-26",
+      "primary_position": "MF",
+      "source_ids": [
+        "SRC_JLEAGUE_DATA"
+      ]
+    },
+    {
+      "player_id": "masahiro_fukuda",
+      "name": "福田 正博",
+      "name_kana": "フクダ マサヒロ",
+      "name_en": "Masahiro FUKUDA",
+      "nationality": "Japan",
+      "birth_date": "1966-12-27",
+      "primary_position": "FW",
+      "source_ids": [
+        "SRC_JLEAGUE_DATA"
+      ]
+    },
+    {
+      "player_id": "masayuki_okano",
+      "name": "岡野 雅行",
+      "name_kana": "オカノ マサユキ",
+      "name_en": "Masayuki OKANO",
+      "nationality": "Japan",
+      "birth_date": "1972-07-25",
+      "primary_position": "FW",
+      "source_ids": [
+        "SRC_JLEAGUE_DATA"
+      ]
+    },
     {
       "player_id": "norihiro_yamagishi",
       "name": "山岸 範宏",
@@ -330,24 +419,120 @@ window.URAWA_DB = {
       ]
     },
     {
-      "player_id": "masayuki_okano",
-      "name": "岡野 雅行",
-      "name_kana": "オカノ マサユキ",
-      "name_en": "Masayuki OKANO",
+      "player_id": "shusaku_nishikawa",
+      "name": "西川 周作",
+      "name_kana": "ニシカワ シュウサク",
+      "name_en": "Shusaku NISHIKAWA",
       "nationality": "Japan",
-      "birth_date": "1972-07-25",
+      "birth_date": "1986-06-18",
+      "primary_position": "GK",
+      "source_ids": [
+        "SRC_JLEAGUE_DATA"
+      ]
+    },
+    {
+      "player_id": "hiroki_sakai",
+      "name": "酒井 宏樹",
+      "name_kana": "サカイ ヒロキ",
+      "name_en": "Hiroki SAKAI",
+      "nationality": "Japan",
+      "birth_date": "1990-04-12",
+      "primary_position": "DF",
+      "source_ids": [
+        "SRC_JLEAGUE_DATA"
+      ]
+    },
+    {
+      "player_id": "alexander_scholz",
+      "name": "アレクサンダー・ショルツ",
+      "name_kana": "アレクサンダー ショルツ",
+      "name_en": "Alexander SCHOLZ",
+      "nationality": "Denmark",
+      "birth_date": "1992-10-24",
+      "primary_position": "DF",
+      "source_ids": [
+        "SRC_JLEAGUE_DATA"
+      ]
+    },
+    {
+      "player_id": "marius_hoibraten",
+      "name": "マリウス・ホイブラーテン",
+      "name_kana": "マリウス ホイブラーテン",
+      "name_en": "Marius HOIBRATEN",
+      "nationality": "Norway",
+      "birth_date": "1995-01-23",
+      "primary_position": "DF",
+      "source_ids": [
+        "SRC_JLEAGUE_DATA"
+      ]
+    },
+    {
+      "player_id": "atsuki_ito",
+      "name": "伊藤 敦樹",
+      "name_kana": "イトウ アツキ",
+      "name_en": "Atsuki ITO",
+      "nationality": "Japan",
+      "birth_date": "1998-08-11",
+      "primary_position": "MF",
+      "source_ids": [
+        "SRC_JLEAGUE_DATA"
+      ]
+    },
+    {
+      "player_id": "ken_iwao",
+      "name": "岩尾 憲",
+      "name_kana": "イワオ ケン",
+      "name_en": "Ken IWAO",
+      "nationality": "Japan",
+      "birth_date": "1988-04-18",
+      "primary_position": "MF",
+      "source_ids": [
+        "SRC_JLEAGUE_DATA"
+      ]
+    },
+    {
+      "player_id": "yoshio_koizumi",
+      "name": "小泉 佳穂",
+      "name_kana": "コイズミ ヨシオ",
+      "name_en": "Yoshio KOIZUMI",
+      "nationality": "Japan",
+      "birth_date": "1996-10-05",
+      "primary_position": "MF",
+      "source_ids": [
+        "SRC_JLEAGUE_DATA"
+      ]
+    },
+    {
+      "player_id": "takahiro_sekine",
+      "name": "関根 貴大",
+      "name_kana": "セキネ タカヒロ",
+      "name_en": "Takahiro SEKINE",
+      "nationality": "Japan",
+      "birth_date": "1995-04-19",
+      "primary_position": "MF",
+      "source_ids": [
+        "SRC_JLEAGUE_DATA"
+      ]
+    },
+    {
+      "player_id": "shinzo_koroki",
+      "name": "興梠 慎三",
+      "name_kana": "コオロギ シンゾウ",
+      "name_en": "Shinzo KOROKI",
+      "nationality": "Japan",
+      "birth_date": "1986-07-31",
       "primary_position": "FW",
       "source_ids": [
         "SRC_JLEAGUE_DATA"
       ]
     },
     {
-      "player_id": "masahiro_fukuda",
-      "name": "福田 正博",
-      "name_kana": "フクダ マサヒロ",
-      "name_en": "Masahiro FUKUDA",
-      "nationality": "Japan",
-      "birth_date": "1966-12-27",
+      "player_id": "jose_kante",
+      "name": "ホセ・カンテ",
+      "name_kana": "ホセ カンテ",
+      "name_en": "Jose KANTE",
+      "nationality": "Guinea",
+      "birth_date": "1990-09-27",
       "primary_position": "FW",
       "source_ids": [
         "SRC_JLEAGUE_DATA"
@@ -355,6 +540,97 @@ window.URAWA_DB = {
     }
   ],
   "playerSeasons": [
+    {
+      "id": "ps_1995_tsuchida",
+      "player_id": "hisashi_tsuchida",
+      "season_id": "1995",
+      "shirt_number": null,
+      "position": "GK",
+      "league_matches": 47,
+      "league_goals": 0,
+      "memory_hook": "守護神としてゴールを守り抜き、サントリーシリーズでの3位躍進を支えた。",
+      "source_ids": [
+        "SRC_JLEAGUE_DATA"
+      ]
+    },
+    {
+      "id": "ps_1995_taguchi",
+      "player_id": "yoshinori_taguchi",
+      "season_id": "1995",
+      "shirt_number": null,
+      "position": "DF",
+      "league_matches": 36,
+      "league_goals": 4,
+      "memory_hook": "気迫あふれる守備と空中戦で最終ラインを牽引した。",
+      "source_ids": [
+        "SRC_JLEAGUE_DATA"
+      ]
+    },
+    {
+      "id": "ps_1995_buchwald",
+      "player_id": "player_guido_buchwald",
+      "season_id": "1995",
+      "shirt_number": null,
+      "position": "DF",
+      "league_matches": 26,
+      "league_goals": 4,
+      "memory_hook": "W杯優勝DFの威厳をピッチで示し、統率力と知性で浦和の守備を劇的に変革した。",
+      "source_ids": [
+        "SRC_JLEAGUE_DATA"
+      ]
+    },
+    {
+      "id": "ps_1995_hirose",
+      "player_id": "osamu_hirose",
+      "season_id": "1995",
+      "shirt_number": null,
+      "position": "MF",
+      "league_matches": 49,
+      "league_goals": 2,
+      "memory_hook": "精密なフリーキックと卓越したキック精度でチャンスを演出した浦和の古豪。",
+      "source_ids": [
+        "SRC_JLEAGUE_DATA"
+      ]
+    },
+    {
+      "id": "ps_1995_bein",
+      "player_id": "uwe_bein",
+      "season_id": "1995",
+      "shirt_number": null,
+      "position": "MF",
+      "league_matches": 38,
+      "league_goals": 18,
+      "memory_hook": "「左足の魔術師」と呼ばれ、18ゴールと無数の決定的なラストパスを供給した。",
+      "source_ids": [
+        "SRC_JLEAGUE_DATA"
+      ]
+    },
+    {
+      "id": "ps_1995_fukuda",
+      "player_id": "masahiro_fukuda",
+      "season_id": "1995",
+      "shirt_number": null,
+      "position": "FW",
+      "league_matches": 50,
+      "league_goals": 27,
+      "memory_hook": "27ゴールを叩き出し、日本人選手として初となるJリーグ得点王に輝いた。",
+      "source_ids": [
+        "SRC_JLEAGUE_DATA"
+      ]
+    },
+    {
+      "id": "ps_1995_okano",
+      "player_id": "masayuki_okano",
+      "season_id": "1995",
+      "shirt_number": null,
+      "position": "FW",
+      "league_matches": 44,
+      "league_goals": 5,
+      "memory_hook": "圧倒的な俊足で相手守備陣を切り裂き「野人」旋風を巻き起こした。",
+      "source_ids": [
+        "SRC_JLEAGUE_DATA"
+      ]
+    },
     {
       "id": "ps_2006_yamagishi",
       "player_id": "norihiro_yamagishi",
@@ -629,27 +905,131 @@ window.URAWA_DB = {
       ]
     },
     {
-      "id": "ps_1995_fukuda",
-      "player_id": "masahiro_fukuda",
-      "season_id": "1995",
-      "shirt_number": 9,
-      "position": "FW",
-      "league_matches": 50,
-      "league_goals": 27,
-      "memory_hook": "27ゴールを叩き出し、日本人選手として初となるJリーグ得点王に輝いた。",
+      "id": "ps_2023_nishikawa",
+      "player_id": "shusaku_nishikawa",
+      "season_id": "2023",
+      "shirt_number": 1,
+      "position": "GK",
+      "league_matches": 34,
+      "league_goals": 0,
+      "memory_hook": "全試合フルタイム出場で最少失点（27失点）に貢献し、自身6度目のJリーグベストイレブンを受賞。",
       "source_ids": [
         "SRC_JLEAGUE_DATA"
       ]
     },
     {
-      "id": "ps_1995_okano",
-      "player_id": "masayuki_okano",
-      "season_id": "1995",
+      "id": "ps_2023_sakai",
+      "player_id": "hiroki_sakai",
+      "season_id": "2023",
+      "shirt_number": 2,
+      "position": "DF",
+      "league_matches": 25,
+      "league_goals": 2,
+      "memory_hook": "キャプテンとしてACL優勝のトロフィーを掲げ、ベストイレブンにも選出された鉄人サイドバック。",
+      "source_ids": [
+        "SRC_JLEAGUE_DATA"
+      ]
+    },
+    {
+      "id": "ps_2023_hoibraten",
+      "player_id": "marius_hoibraten",
+      "season_id": "2023",
+      "shirt_number": 5,
+      "position": "DF",
+      "league_matches": 33,
+      "league_goals": 1,
+      "memory_hook": "ノルウェーから新加入し、的確なカバーリングと空中戦でショルツとともに鉄壁のCBコンビを形成。",
+      "source_ids": [
+        "SRC_JLEAGUE_DATA"
+      ]
+    },
+    {
+      "id": "ps_2023_scholz",
+      "player_id": "alexander_scholz",
+      "season_id": "2023",
+      "shirt_number": 28,
+      "position": "DF",
+      "league_matches": 34,
+      "league_goals": 7,
+      "memory_hook": "高い守備力に加え、PK職人として7ゴールを挙げベストイレブンに輝いたデンマーク人DF。",
+      "source_ids": [
+        "SRC_JLEAGUE_DATA"
+      ]
+    },
+    {
+      "id": "ps_2023_ito",
+      "player_id": "atsuki_ito",
+      "season_id": "2023",
+      "shirt_number": 3,
+      "position": "MF",
+      "league_matches": 33,
+      "league_goals": 2,
+      "memory_hook": "アカデミー出身のダイナモとして中盤を制圧し、日本代表にも選出されベストイレブンを受賞。",
+      "source_ids": [
+        "SRC_JLEAGUE_DATA"
+      ]
+    },
+    {
+      "id": "ps_2023_koizumi",
+      "player_id": "yoshio_koizumi",
+      "season_id": "2023",
+      "shirt_number": 8,
+      "position": "MF",
+      "league_matches": 28,
+      "league_goals": 1,
+      "memory_hook": "両足を遜色なく使い、巧みなポジショニングと献身的なプレスでACL制覇に貢献。",
+      "source_ids": [
+        "SRC_JLEAGUE_DATA"
+      ]
+    },
+    {
+      "id": "ps_2023_sekine",
+      "player_id": "takahiro_sekine",
+      "season_id": "2023",
       "shirt_number": 14,
+      "position": "MF",
+      "league_matches": 32,
+      "league_goals": 1,
+      "memory_hook": "浦和魂を体現するアタッカーとして、ACL決勝でも泥臭く戦い抜いた。",
+      "source_ids": [
+        "SRC_JLEAGUE_DATA"
+      ]
+    },
+    {
+      "id": "ps_2023_iwao",
+      "player_id": "ken_iwao",
+      "season_id": "2023",
+      "shirt_number": 19,
+      "position": "MF",
+      "league_matches": 33,
+      "league_goals": 1,
+      "memory_hook": "ピッチ上の戦術家としてプレースキックとゲームコントロールを一手に担った。",
+      "source_ids": [
+        "SRC_JLEAGUE_DATA"
+      ]
+    },
+    {
+      "id": "ps_2023_kante",
+      "player_id": "jose_kante",
+      "season_id": "2023",
+      "shirt_number": 11,
       "position": "FW",
-      "league_matches": 44,
-      "league_goals": 5,
-      "memory_hook": "ルーキーイヤーの翌年、圧倒的な俊足で相手守備陣を切り裂いた。",
+      "league_matches": 24,
+      "league_goals": 8,
+      "memory_hook": "理不尽とも言える強烈なシュートで貴重なゴールを量産し、シーズン終了後に鮮烈な印象を残して引退。",
+      "source_ids": [
+        "SRC_JLEAGUE_DATA"
+      ]
+    },
+    {
+      "id": "ps_2023_koroki",
+      "player_id": "shinzo_koroki",
+      "season_id": "2023",
+      "shirt_number": 30,
+      "position": "FW",
+      "league_matches": 29,
+      "league_goals": 4,
+      "memory_hook": "浦和復帰シーズン。ACL決勝第1戦アウェイで貴重な同点ゴールを叩き込んだ歴代最高峰のストライカー。",
       "source_ids": [
         "SRC_JLEAGUE_DATA"
       ]
@@ -715,7 +1095,7 @@ window.URAWA_DB = {
       "role": "監督",
       "tenure_type": "full_season",
       "titles_won": [],
-      "notes": "1995年に就任しチームをサントリーシリーズ3位に導く。",
+      "notes": "1995年に就任し規律を植え付け、チームをサントリーシリーズ3位に導く。",
       "source_ids": [
         "SRC_JLEAGUE_DATA"
       ]
@@ -737,13 +1117,15 @@ window.URAWA_DB = {
       ]
     },
     {
-      "tenure_id": "tenure_skorza_2025",
+      "tenure_id": "tenure_skorza_2023",
       "manager_id": "maciej_skorza",
-      "season_id": "2025",
+      "season_id": "2023",
       "role": "監督",
       "tenure_type": "full_season",
-      "titles_won": [],
-      "notes": "2023年にACLを制覇し一度退任後、2024年秋に再就任して指揮を執る。",
+      "titles_won": [
+        "ACL 2022"
+      ],
+      "notes": "就任1年目でACLを制覇し、リーグ最少失点の堅守を構築してシーズン後に惜しまれつつ退任（翌年秋に復帰）。",
       "source_ids": [
         "SRC_JLEAGUE_DATA"
       ]
@@ -758,7 +1140,7 @@ window.URAWA_DB = {
       "chest_sponsor": "MITSUBISHI MOTORS",
       "main_color": "#E6002D",
       "accent_color": "#FFFFFF",
-      "description": "赤のグラデーションに白いダイヤモンドの幾何学模様が散りばめられた、Jリーグ初期のアイコニックなデザイン。",
+      "description": "赤のグラデーションに白いダイヤモンド幾何学模様が散りばめられた、Jリーグ創成期のアイコニックなデザイン。",
       "image_url": "",
       "image_status": "placeholder",
       "source_ids": [
@@ -783,16 +1165,16 @@ window.URAWA_DB = {
       ]
     },
     {
-      "uniform_id": "kit_2006_away",
-      "season_id": "2006",
-      "type": "AWAY",
+      "uniform_id": "kit_2023_home",
+      "season_id": "2023",
+      "type": "HOME",
       "supplier": "Nike",
-      "chest_sponsor": "Vodafone",
-      "main_color": "#FFFFFF",
-      "accent_color": "#E6002D",
-      "pants_color": "#000000",
-      "socks_color": "#FFFFFF",
-      "description": "白シャツに黒のパンツ。シンプルかつ精悍なアウェイキット。",
+      "chest_sponsor": "POLUS",
+      "main_color": "#E6002D",
+      "accent_color": "#000000",
+      "pants_color": "#FFFFFF",
+      "socks_color": "#000000",
+      "description": "クラブ伝統の赤白黒を基調に、ストライプパターンを取り入れたNike製キット。胸スポンサーはPOLUS。",
       "image_url": "",
       "image_status": "placeholder",
       "source_ids": [

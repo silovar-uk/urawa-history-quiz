@@ -6,7 +6,7 @@
     "role": "監督",
     "tenure_type": "full_season",
     "titles_won": [],
-    "notes": "1995年に就任しチームをサントリーシリーズ3位に導く。",
+    "notes": "1995年に就任し規律を植え付け、チームをサントリーシリーズ3位に導く。",
     "source_ids": ["SRC_JLEAGUE_DATA"]
   },
   {
@@ -20,13 +20,13 @@
     "source_ids": ["SRC_JLEAGUE_DATA"]
   },
   {
-    "tenure_id": "tenure_skorza_2025",
+    "tenure_id": "tenure_skorza_2023",
     "manager_id": "maciej_skorza",
-    "season_id": "2025",
+    "season_id": "2023",
     "role": "監督",
     "tenure_type": "full_season",
-    "titles_won": [],
-    "notes": "2023年にACLを制覇し一度退任後、2024年秋に再就任して指揮を執る。",
+    "titles_won": ["ACL 2022"],
+    "notes": "就任1年目でACLを制覇し、リーグ最少失点の堅守を構築してシーズン後に惜しまれつつ退任（翌年秋に復帰）。",
     "source_ids": ["SRC_JLEAGUE_DATA"]
   }
 ]

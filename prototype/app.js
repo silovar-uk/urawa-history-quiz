@@ -1,4 +1,4 @@
-// URAWA HISTORY QUIZ — Application Core & Quiz Engine
+// URAWA HISTORY QUIZ — Application Core & Multi-era Quiz Engine
 
 (function () {
   'use strict';
@@ -83,7 +83,7 @@
   }
 
   // --------------------------------------------------
-  // 3. Dynamic Quiz Generator (Quiz Engine MVP)
+  // 3. Multi-era Quiz Generator (Quiz Engine MVP)
   // --------------------------------------------------
   function shuffle(arr) {
     const copy = [...arr];
@@ -94,24 +94,37 @@
     return copy;
   }
 
-  function generateQuiz(targetSeasonId = null) {
+  function getSeasonForFilter(selectedEra, specificSeasonId) {
+    if (specificSeasonId) {
+      return db.seasons.find(s => s.season_id === specificSeasonId) || db.seasons[0];
+    }
+    if (!selectedEra || selectedEra === 'ALL') {
+      return db.seasons[Math.floor(Math.random() * db.seasons.length)];
+    }
+    if (selectedEra === '1990s') return db.seasons.find(s => s.year < 2000) || db.seasons[0];
+    if (selectedEra === '2000s') return db.seasons.find(s => s.year >= 2000 && s.year < 2010) || db.seasons[0];
+    if (selectedEra === '2020s') return db.seasons.find(s => s.year >= 2020) || db.seasons[0];
+    return db.seasons[0];
+  }
+
+  function generateQuiz(targetSeasonId = null, filterEra = 'ALL') {
     if (!db) return null;
 
-    const availableSeason = targetSeasonId || '2006';
-    const seasonData = db.seasons.find(s => s.season_id === availableSeason) || db.seasons[0];
-    const psList = db.playerSeasons.filter(ps => ps.season_id === availableSeason);
+    const seasonData = getSeasonForFilter(filterEra, targetSeasonId);
+    const seasonId = seasonData.season_id;
+    const psList = db.playerSeasons.filter(ps => ps.season_id === seasonId);
 
     const generators = [
-      // 1. PLAYER_NUMBER: 背番号から選手を当てる
+      // 1. PLAYER_NUMBER (背番号問題: 背番号が存在するシーズンのみ)
       () => {
-        if (!psList.length) return null;
-        const targetPS = psList[Math.floor(Math.random() * psList.length)];
+        const withNumber = psList.filter(ps => ps.shirt_number !== null);
+        if (!withNumber.length) return null;
+        const targetPS = withNumber[Math.floor(Math.random() * withNumber.length)];
         const targetPlayer = db.players.find(p => p.player_id === targetPS.player_id);
         if (!targetPlayer) return null;
 
-        // 同ポジションまたは近接番号の選手を誤答にする
-        const samePos = psList.filter(ps => ps.player_id !== targetPS.player_id && ps.position === targetPS.position);
-        let distractorPool = samePos.length >= 3 ? samePos : psList.filter(ps => ps.player_id !== targetPS.player_id);
+        const samePos = withNumber.filter(ps => ps.player_id !== targetPS.player_id && ps.position === targetPS.position);
+        let distractorPool = samePos.length >= 3 ? samePos : withNumber.filter(ps => ps.player_id !== targetPS.player_id);
         const distractors = shuffle(distractorPool)
           .slice(0, 3)
           .map(ps => {
@@ -131,7 +144,7 @@
         };
       },
 
-      // 2. PLAYER_POSITION: 選手のポジションを当てる
+      // 2. PLAYER_POSITION (ポジション問題)
       () => {
         if (!psList.length) return null;
         const targetPS = psList[Math.floor(Math.random() * psList.length)];
@@ -149,14 +162,52 @@
           question: `${seasonData.year}年シーズンの ${targetPlayer.name} の登録ポジションは？`,
           options,
           correct: correctPos,
-          memoryHook: targetPS.memory_hook || `${targetPlayer.name}は背番号${targetPS.shirt_number}の${correctPos}として活躍。`,
+          memoryHook: targetPS.memory_hook || `${targetPlayer.name}は${correctPos}として活躍。`,
           seasonId: seasonData.season_id
         };
       },
 
-      // 3. MANAGER_SEASON: シーズンの監督を当てる
+      // 3. PLAYER_OVERLAP (同時在籍問題: 異年代の選手を誤答にして出題)
       () => {
-        const tenure = db.managerTenures.find(mt => mt.season_id === availableSeason);
+        if (psList.length < 2) return null;
+        const targetPS = psList[Math.floor(Math.random() * psList.length)];
+        const targetPlayer = db.players.find(p => p.player_id === targetPS.player_id);
+        if (!targetPlayer) return null;
+
+        // 同一シーズンに在籍していた正解選手
+        const coPlayers = psList.filter(ps => ps.player_id !== targetPS.player_id);
+        const correctPS = coPlayers[Math.floor(Math.random() * coPlayers.length)];
+        const correctPlayer = db.players.find(p => p.player_id === correctPS.player_id);
+        if (!correctPlayer) return null;
+
+        // 同一シーズンに在籍していなかった異年代の選手をディストラクターにする
+        const coPlayerIds = new Set(psList.map(ps => ps.player_id));
+        const diffEraPS = db.playerSeasons.filter(ps => !coPlayerIds.has(ps.player_id));
+        const distinctDiffPlayers = [...new Set(diffEraPS.map(ps => ps.player_id))];
+        if (distinctDiffPlayers.length < 3) return null;
+
+        const distractors = shuffle(distinctDiffPlayers)
+          .slice(0, 3)
+          .map(pid => {
+            const p = db.players.find(x => x.player_id === pid);
+            return p ? p.name : '選手';
+          });
+
+        const options = shuffle([correctPlayer.name, ...distractors]);
+        return {
+          category: 'PLAYER',
+          year: seasonData.year,
+          question: `${seasonData.year}年シーズンに ${targetPlayer.name} とチームメイトとして在籍していた選手は？`,
+          options,
+          correct: correctPlayer.name,
+          memoryHook: `${targetPlayer.name} と ${correctPlayer.name} は${seasonData.year}年の浦和レッズで共闘した。`,
+          seasonId: seasonData.season_id
+        };
+      },
+
+      // 4. MANAGER_SEASON (監督問題)
+      () => {
+        const tenure = db.managerTenures.find(mt => mt.season_id === seasonId);
         if (!tenure) return null;
         const manager = db.managers.find(m => m.manager_id === tenure.manager_id);
         if (!manager) return null;
@@ -177,11 +228,11 @@
         };
       },
 
-      // 4. SEASON_RANK: リーグ順位を当てる
+      // 5. SEASON_RANK (順位・戦績問題)
       () => {
         if (!seasonData.league_rank) return null;
         const correct = `${seasonData.league_rank}位`;
-        const possible = [1, 2, 3, 4, 6].filter(r => r !== seasonData.league_rank);
+        const possible = [1, 2, 3, 4, 6, 8].filter(r => r !== seasonData.league_rank);
         const distractors = shuffle(possible).slice(0, 3).map(r => `${r}位`);
         const options = shuffle([correct, ...distractors]);
 
@@ -196,12 +247,12 @@
         };
       },
 
-      // 5. SEASON_SUMMARY: 要約からシーズンを当てる
+      // 6. SEASON_SUMMARY (シーズン要約問題)
       () => {
-        const otherSeasons = db.seasons.filter(s => s.season_id !== availableSeason);
+        const otherSeasons = db.seasons.filter(s => s.season_id !== seasonId);
         const distractors = otherSeasons.map(s => `${s.year}年`);
         while (distractors.length < 3) {
-          const fakeYear = 2000 + Math.floor(Math.random() * 20);
+          const fakeYear = 2000 + Math.floor(Math.random() * 24);
           if (fakeYear !== seasonData.year && !distractors.includes(`${fakeYear}年`)) {
             distractors.push(`${fakeYear}年`);
           }
@@ -220,9 +271,9 @@
         };
       },
 
-      // 6. KIT_DETAIL: ユニフォーム胸スポンサーやサプライヤーを当てる
+      // 7. KIT_DETAIL (ユニフォーム胸スポンサー問題)
       () => {
-        const kit = db.uniforms.find(u => u.season_id === availableSeason && u.type === 'HOME');
+        const kit = db.uniforms.find(u => u.season_id === seasonId && u.type === 'HOME');
         if (!kit) return null;
         const correct = kit.chest_sponsor;
         const pool = ['MITSUBISHI MOTORS', 'Vodafone', 'POLUS', 'DHL'].filter(s => s !== correct);
@@ -259,6 +310,7 @@
   let currentScreen = 'today';
   let activeQuiz = null;
   let selectedSeasonId = '2006';
+  let activeEraFilter = 'ALL';
 
   const screens = {
     today: () => {
@@ -269,18 +321,26 @@
         <div class="year">2006</div>
         <h1 class="display-title">1問から、浦和の歴史へ。</h1>
         <p class="lead">単なるクイズではなく、歴史データベースと連携して「解く → 覚える → 年代へ潜る」学習サイクルを体験できます。</p>
+
+        <div class="era-filters" aria-label="出題年代フィルター">
+          <button class="filter-pill ${activeEraFilter === 'ALL' ? 'active' : ''}" data-era="ALL">全年代</button>
+          <button class="filter-pill ${activeEraFilter === '1990s' ? 'active' : ''}" data-era="1990s">1990年代</button>
+          <button class="filter-pill ${activeEraFilter === '2000s' ? 'active' : ''}" data-era="2000s">2000年代</button>
+          <button class="filter-pill ${activeEraFilter === '2020s' ? 'active' : ''}" data-era="2020s">2020年代</button>
+        </div>
+
         <button class="primary" data-action="start-quiz">今日の1問を解く</button>
         <hr class="rule">
         <div class="section-label">CONTINUE</div>
         <div class="stat-line"><span>最近間違えた問題</span><strong>${stats.recentWrong}</strong></div>
         <div class="stat-line"><span>学習した問題数</span><strong>${stats.total}問 / 正答率 ${accuracy}%</strong></div>
-        <div class="stat-line"><span>現在の基準シーズン</span><strong>2006年（初優勝）</strong></div>
+        <div class="stat-line"><span>収録年代</span><strong>1995年 / 2006年 / 2023年</strong></div>
       `;
     },
 
     quiz: () => {
       if (!activeQuiz) {
-        activeQuiz = generateQuiz(selectedSeasonId);
+        activeQuiz = generateQuiz(selectedSeasonId, activeEraFilter);
       }
       if (!activeQuiz) {
         return `
@@ -319,7 +379,7 @@
             <div class="timeline-item" data-action="view-season" data-season="${s.season_id}">
               <div class="timeline-year">${s.year}</div>
               <div class="timeline-note">
-                <strong>${s.titles && s.titles.length ? s.titles.join(' / ') : (s.league_rank ? `J1 ${s.league_rank}位` : 'シーズン')}</strong><br>
+                <strong style="color:var(--brand);">${s.titles && s.titles.length ? s.titles.join(' / ') : (s.league_rank ? `J1 ${s.league_rank}位` : 'シーズン')}</strong><br>
                 ${s.summary}
               </div>
             </div>
@@ -345,7 +405,7 @@
         <div class="section-label">RECORD & TITLES</div>
         <div class="stat-line"><span>最終順位</span><strong>${s.league_rank ? `J1 ${s.league_rank}位` : '—'}</strong></div>
         ${s.points ? `<div class="stat-line"><span>勝点 / 戦績</span><strong>勝点${s.points}（${s.wins}勝 ${s.draws}分 ${s.losses}敗）</strong></div>` : ''}
-        ${s.titles && s.titles.length ? `<div class="stat-line"><span>獲得タイトル</span><strong>${s.titles.join('、')}</strong></div>` : ''}
+        ${s.titles && s.titles.length ? `<div class="stat-line"><span>獲得タイトル</span><strong style="color:var(--brand);">${s.titles.join('、')}</strong></div>` : ''}
 
         <hr class="rule">
         <div class="section-label">MANAGER</div>
@@ -353,29 +413,29 @@
           <span>監督</span>
           <strong>${manager ? manager.name : '—'}</strong>
         </div>
-        ${tenure ? `<p style="font-size:0.875rem; color:var(--text-secondary,#666); margin:4px 0 0 0;">${tenure.notes}</p>` : ''}
+        ${tenure ? `<p style="font-size:0.875rem; color:var(--muted); margin:4px 0 0 0;">${tenure.notes}</p>` : ''}
 
         <hr class="rule">
         <div class="section-label">KIT</div>
         <div class="kit-card">
           <div style="display:flex; align-items:center; gap:12px;">
-            <div style="width:36px; height:36px; background:${kit ? kit.main_color : '#E6002D'}; border:1px solid #ddd; border-radius:4px; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:10px; color:#fff;">KIT</div>
+            <div style="width:38px; height:38px; background:${kit ? kit.main_color : '#E6002D'}; border:1px solid #ddd; border-radius:4px; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:10px; color:#fff;">KIT</div>
             <div>
-              <strong>${kit ? kit.supplier : 'Nike'} (${kit ? kit.chest_sponsor : 'Vodafone'})</strong>
+              <strong>${kit ? kit.supplier : 'Nike'} (${kit ? kit.chest_sponsor : ''})</strong>
               <div style="font-size:0.8125rem; color:var(--muted);">${kit ? kit.description : '公式ユニフォーム'}</div>
             </div>
           </div>
         </div>
 
         <hr class="rule">
-        <div class="section-label">KEY SQUAD (${psList.length}名登録)</div>
+        <div class="section-label">KEY SQUAD (${psList.length}名登録 · タップで選手詳細)</div>
         <div class="squad-list">
           ${psList.map(ps => {
             const p = db.players.find(x => x.player_id === ps.player_id);
             return `
-              <div class="squad-item">
+              <div class="squad-item" data-action="view-player" data-player="${ps.player_id}">
                 <div>
-                  <span class="squad-num">#${ps.shirt_number}</span>
+                  <span class="squad-num">${ps.shirt_number ? '#' + ps.shirt_number : '—'}</span>
                   <span class="squad-name">${p ? p.name : ''}</span>
                 </div>
                 <span class="squad-pos">${ps.position}</span>
@@ -395,10 +455,9 @@
       const stats = getStats();
       const accuracy = stats.total > 0 ? Math.round((stats.correct / stats.total) * 100) : 0;
       const eras = [
-        { key: '1990s', label: '1990年代' },
-        { key: '2000s', label: '2000年代' },
-        { key: '2010s', label: '2010年代' },
-        { key: '2020s', label: '2020年代' }
+        { key: '1990s', label: '1990年代 (1995年)' },
+        { key: '2000s', label: '2000年代 (2006年)' },
+        { key: '2020s', label: '2020年代 (2023年)' }
       ];
       const categories = [
         { key: 'PLAYER', label: '選手' },
@@ -457,6 +516,55 @@
     }
   };
 
+  function showPlayerDetail(playerId) {
+    const player = db.players.find(p => p.player_id === playerId);
+    if (!player) return;
+    const history = db.playerSeasons.filter(ps => ps.player_id === playerId);
+
+    let modal = document.querySelector('#player-modal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'player-modal';
+      modal.className = 'modal-backdrop';
+      document.body.appendChild(modal);
+    }
+
+    modal.innerHTML = `
+      <div class="modal-sheet">
+        <div class="eyebrow">PLAYER DETAIL</div>
+        <h2 style="font-size:1.75rem; margin:6px 0 2px;">${player.name}</h2>
+        <p style="color:var(--muted); font-size:0.875rem; margin:0 0 16px;">
+          ${player.name_kana} / ${player.primary_position} / ${player.nationality}
+        </p>
+
+        <div class="section-label">RECORD IN URAWA</div>
+        ${history.map(h => `
+          <div class="stat-line" style="align-items:center;">
+            <div>
+              <span class="tag">${h.season_id}年</span>
+              <strong>${h.shirt_number ? '#' + h.shirt_number : '—'} ${h.position}</strong>
+              <div style="font-size:0.8125rem; color:var(--muted); margin-top:2px;">
+                ${h.memory_hook}
+              </div>
+            </div>
+          </div>
+        `).join('')}
+
+        <div class="actions" style="margin-top:20px;">
+          <button class="secondary" data-action="close-modal" style="width:100%;">閉じる</button>
+        </div>
+      </div>
+    `;
+
+    modal.style.display = 'flex';
+    modal.querySelector('[data-action="close-modal"]').addEventListener('click', () => {
+      modal.style.display = 'none';
+    });
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.style.display = 'none';
+    });
+  }
+
   function render(screenName) {
     currentScreen = screenName;
     app.innerHTML = screens[screenName]();
@@ -471,16 +579,24 @@
     document.querySelectorAll('[data-screen]').forEach(el => {
       el.addEventListener('click', () => {
         if (el.dataset.screen === 'quiz') {
-          activeQuiz = generateQuiz(selectedSeasonId);
+          activeQuiz = generateQuiz(selectedSeasonId, activeEraFilter);
         }
         render(el.dataset.screen);
+      });
+    });
+
+    // Era Filters on TODAY screen
+    document.querySelectorAll('[data-era]').forEach(el => {
+      el.addEventListener('click', () => {
+        activeEraFilter = el.dataset.era;
+        render('today');
       });
     });
 
     // Start Quiz
     document.querySelectorAll('[data-action="start-quiz"]').forEach(el => {
       el.addEventListener('click', () => {
-        activeQuiz = generateQuiz(selectedSeasonId);
+        activeQuiz = generateQuiz(null, activeEraFilter);
         render('quiz');
       });
     });
@@ -497,8 +613,15 @@
     document.querySelectorAll('[data-action="quiz-this-season"]').forEach(el => {
       el.addEventListener('click', () => {
         selectedSeasonId = el.dataset.season;
-        activeQuiz = generateQuiz(selectedSeasonId);
+        activeQuiz = generateQuiz(selectedSeasonId, 'ALL');
         render('quiz');
+      });
+    });
+
+    // View Player Detail modal
+    document.querySelectorAll('[data-action="view-player"]').forEach(el => {
+      el.addEventListener('click', () => {
+        showPlayerDetail(el.dataset.player);
       });
     });
 
@@ -553,7 +676,7 @@
         `;
 
         feedbackEl.querySelector('[data-action="next-question"]').addEventListener('click', () => {
-          activeQuiz = generateQuiz(selectedSeasonId);
+          activeQuiz = generateQuiz(null, activeEraFilter);
           render('quiz');
         });
 

@@ -1,5 +1,75 @@
 [
   {
+    "player_id": "hisashi_tsuchida",
+    "name": "土田 尚史",
+    "name_kana": "ツチダ ヒサシ",
+    "name_en": "Hisashi TSUCHIDA",
+    "nationality": "Japan",
+    "birth_date": "1967-02-01",
+    "primary_position": "GK",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "player_id": "yoshinori_taguchi",
+    "name": "田口 禎則",
+    "name_kana": "タグチ ヨシノリ",
+    "name_en": "Yoshinori TAGUCHI",
+    "nationality": "Japan",
+    "birth_date": "1965-09-14",
+    "primary_position": "DF",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "player_id": "player_guido_buchwald",
+    "name": "ギド・ブッフバルト",
+    "name_kana": "ギド ブッフバルト",
+    "name_en": "Guido BUCHWALD",
+    "nationality": "Germany",
+    "birth_date": "1961-01-24",
+    "primary_position": "DF",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "player_id": "osamu_hirose",
+    "name": "広瀬 治",
+    "name_kana": "ヒロセ オサム",
+    "name_en": "Osamu HIROSE",
+    "nationality": "Japan",
+    "birth_date": "1965-06-06",
+    "primary_position": "MF",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "player_id": "uwe_bein",
+    "name": "ウベ・バイン",
+    "name_kana": "ウベ バイン",
+    "name_en": "Uwe BEIN",
+    "nationality": "Germany",
+    "birth_date": "1960-09-26",
+    "primary_position": "MF",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "player_id": "masahiro_fukuda",
+    "name": "福田 正博",
+    "name_kana": "フクダ マサヒロ",
+    "name_en": "Masahiro FUKUDA",
+    "nationality": "Japan",
+    "birth_date": "1966-12-27",
+    "primary_position": "FW",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "player_id": "masayuki_okano",
+    "name": "岡野 雅行",
+    "name_kana": "オカノ マサユキ",
+    "name_en": "Masayuki OKANO",
+    "nationality": "Japan",
+    "birth_date": "1972-07-25",
+    "primary_position": "FW",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
     "player_id": "norihiro_yamagishi",
     "name": "山岸 範宏",
     "name_kana": "ヤマギシ ノリヒロ",
@@ -200,22 +270,102 @@
     "source_ids": ["SRC_JLEAGUE_DATA"]
   },
   {
-    "player_id": "masayuki_okano",
-    "name": "岡野 雅行",
-    "name_kana": "オカノ マサユキ",
-    "name_en": "Masayuki OKANO",
+    "player_id": "shusaku_nishikawa",
+    "name": "西川 周作",
+    "name_kana": "ニシカワ シュウサク",
+    "name_en": "Shusaku NISHIKAWA",
     "nationality": "Japan",
-    "birth_date": "1972-07-25",
+    "birth_date": "1986-06-18",
+    "primary_position": "GK",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "player_id": "hiroki_sakai",
+    "name": "酒井 宏樹",
+    "name_kana": "サカイ ヒロキ",
+    "name_en": "Hiroki SAKAI",
+    "nationality": "Japan",
+    "birth_date": "1990-04-12",
+    "primary_position": "DF",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "player_id": "alexander_scholz",
+    "name": "アレクサンダー・ショルツ",
+    "name_kana": "アレクサンダー ショルツ",
+    "name_en": "Alexander SCHOLZ",
+    "nationality": "Denmark",
+    "birth_date": "1992-10-24",
+    "primary_position": "DF",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "player_id": "marius_hoibraten",
+    "name": "マリウス・ホイブラーテン",
+    "name_kana": "マリウス ホイブラーテン",
+    "name_en": "Marius HOIBRATEN",
+    "nationality": "Norway",
+    "birth_date": "1995-01-23",
+    "primary_position": "DF",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "player_id": "atsuki_ito",
+    "name": "伊藤 敦樹",
+    "name_kana": "イトウ アツキ",
+    "name_en": "Atsuki ITO",
+    "nationality": "Japan",
+    "birth_date": "1998-08-11",
+    "primary_position": "MF",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "player_id": "ken_iwao",
+    "name": "岩尾 憲",
+    "name_kana": "イワオ ケン",
+    "name_en": "Ken IWAO",
+    "nationality": "Japan",
+    "birth_date": "1988-04-18",
+    "primary_position": "MF",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "player_id": "yoshio_koizumi",
+    "name": "小泉 佳穂",
+    "name_kana": "コイズミ ヨシオ",
+    "name_en": "Yoshio KOIZUMI",
+    "nationality": "Japan",
+    "birth_date": "1996-10-05",
+    "primary_position": "MF",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "player_id": "takahiro_sekine",
+    "name": "関根 貴大",
+    "name_kana": "セキネ タカヒロ",
+    "name_en": "Takahiro SEKINE",
+    "nationality": "Japan",
+    "birth_date": "1995-04-19",
+    "primary_position": "MF",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "player_id": "shinzo_koroki",
+    "name": "興梠 慎三",
+    "name_kana": "コオロギ シンゾウ",
+    "name_en": "Shinzo KOROKI",
+    "nationality": "Japan",
+    "birth_date": "1986-07-31",
     "primary_position": "FW",
     "source_ids": ["SRC_JLEAGUE_DATA"]
   },
   {
-    "player_id": "masahiro_fukuda",
-    "name": "福田 正博",
-    "name_kana": "フクダ マサヒロ",
-    "name_en": "Masahiro FUKUDA",
-    "nationality": "Japan",
-    "birth_date": "1966-12-27",
+    "player_id": "jose_kante",
+    "name": "ホセ・カンテ",
+    "name_kana": "ホセ カンテ",
+    "name_en": "Jose KANTE",
+    "nationality": "Guinea",
+    "birth_date": "1990-09-27",
     "primary_position": "FW",
     "source_ids": ["SRC_JLEAGUE_DATA"]
   }
