@@ -1,0 +1,51 @@
+name: Finalize Q4 Canonical Docs
+
+on:
+  push:
+    paths:
+      - 'scripts/finalize-q4-docs.mjs'
+      - '.github/workflows/finalize-q4-docs.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Correct migration's guarded CI-list token
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('scripts/finalize-q4-docs.mjs')
+          s = p.read_text()
+          old = "'7. Q3 Structural Difficulty Audit\\n7. Q3 artifact upload'"
+          new = "'6. Q3 Structural Difficulty Audit\\n7. Q3 artifact upload'"
+          if s.count(old) != 1:
+              raise SystemExit(f'expected one migration token, found {s.count(old)}')
+          p.write_text(s.replace(old, new))
+          PY
+
+      - name: Run guarded canonical documentation sync
+        run: node scripts/finalize-q4-docs.mjs
+
+      - name: Restore temporary script and verify scope
+        run: |
+          git checkout -- scripts/finalize-q4-docs.mjs
+          git diff -- docs/current-state.md docs/quiz-quality-plan.md docs/q4-coverage-balance-plan.md
+          test -z "$(git status --short | grep -vE 'docs/(current-state\.md|quiz-quality-plan\.md|q4-coverage-balance-plan\.md)$')"
+
+      - name: Commit canonical Q4 closeout
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/current-state.md docs/quiz-quality-plan.md docs/q4-coverage-balance-plan.md
+          git commit -m "Close Q4 and advance canonical plan to Q5" || exit 0
+          git push
