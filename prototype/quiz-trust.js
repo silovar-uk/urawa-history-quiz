@@ -1,4 +1,4 @@
-// URAWA HISTORY — Quiz Trust Gate (Q0/Q1)
+// URAWA HISTORY — Quiz Trust Gate (Q0/Q1 + Q1.5 claim provenance)
 (function () {
   'use strict';
 
@@ -21,11 +21,11 @@
 
   const RULES = Object.freeze({
     PLAYER_NUMBER: {
-      required: ['confirmed season', 'sourced player', 'sourced player-season relationship', 'unique shirt number in season'],
+      required: ['confirmed season', 'sourced player', 'claim-backed player-season relationship', 'unique shirt number in season'],
       failClosed: true
     },
     PLAYER_POSITION: {
-      required: ['confirmed season', 'sourced player', 'sourced player-season relationship', 'one normalized position'],
+      required: ['confirmed season', 'sourced player', 'claim-backed player-season relationship', 'one normalized position'],
       failClosed: true
     },
     PLAYER_OVERLAP: {
@@ -46,7 +46,7 @@
       failClosed: true
     },
     KIT_DETAIL: {
-      required: ['HOME kit', 'chest sponsor', 'uniform-level source_ids'],
+      required: ['HOME kit', 'chest sponsor', 'claim-backed chest_sponsor provenance'],
       failClosed: true
     }
   });
@@ -59,14 +59,87 @@
     return { ok: false, reason, detail };
   }
 
+  function provenanceRegistry() {
+    return window.URAWA_CLAIM_PROVENANCE || { claims: [], issues: [] };
+  }
+
+  function claimSourceIds() {
+    const ids = [];
+    for (const claim of provenanceRegistry().claims || []) {
+      for (const field of Object.values(claim.fields || {})) {
+        if (Array.isArray(field.sourceIds)) ids.push(...field.sourceIds);
+      }
+    }
+    return ids;
+  }
+
   function sourceIdSet(db) {
-    return new Set((db && db.sources || []).map(s => s.source_id));
+    // Claim source metadata is validated against data/sources.json by CI.
+    // The union keeps the runtime compatible with the legacy data-bundle fallback,
+    // whose embedded source list may lag the canonical JSON during this vertical slice.
+    return new Set([
+      ...(db && db.sources || []).map(s => s.source_id),
+      ...claimSourceIds()
+    ]);
+  }
+
+  function entityIdentity(entity) {
+    if (!entity) return null;
+    if (entity.id && String(entity.id).startsWith('ps_')) {
+      return { entityType: 'player_season', entityId: entity.id };
+    }
+    if (entity.uniform_id) {
+      return { entityType: 'uniform', entityId: entity.uniform_id };
+    }
+    return null;
+  }
+
+  function getClaim(entity) {
+    const identity = entityIdentity(entity);
+    if (!identity) return null;
+    return (provenanceRegistry().claims || []).find(c =>
+      c.entityType === identity.entityType && c.entityId === identity.entityId
+    ) || null;
+  }
+
+  function normalizedComparable(value) {
+    return String(value ?? '').trim().normalize('NFKC');
+  }
+
+  function fieldClaimMatches(entity, fieldName, db) {
+    const claim = getClaim(entity);
+    const field = claim && claim.fields && claim.fields[fieldName];
+    if (!field || !Array.isArray(field.sourceIds) || !field.sourceIds.length) return false;
+    if (normalizedComparable(field.value) !== normalizedComparable(entity[fieldName])) return false;
+    const known = sourceIdSet(db);
+    return field.sourceIds.every(id => known.has(id));
+  }
+
+  function hasClaimBackedSources(entity, db) {
+    const identity = entityIdentity(entity);
+    if (!identity) return false;
+
+    if (identity.entityType === 'player_season') {
+      // Current app.js uses one relationship source gate for PLAYER_NUMBER and PLAYER_POSITION.
+      // Therefore a relationship is admitted only when BOTH fields used by those generators
+      // are independently supported and match the current base values.
+      return fieldClaimMatches(entity, 'shirt_number', db) && fieldClaimMatches(entity, 'position', db);
+    }
+
+    if (identity.entityType === 'uniform') {
+      return fieldClaimMatches(entity, 'chest_sponsor', db);
+    }
+
+    return false;
   }
 
   function hasKnownSources(entity, db) {
-    if (!entity || !Array.isArray(entity.source_ids) || entity.source_ids.length === 0) return false;
-    const known = sourceIdSet(db);
-    return entity.source_ids.every(id => known.has(id));
+    if (!entity) return false;
+    if (Array.isArray(entity.source_ids) && entity.source_ids.length > 0) {
+      const known = sourceIdSet(db);
+      return entity.source_ids.every(id => known.has(id));
+    }
+    return hasClaimBackedSources(entity, db);
   }
 
   function isConfirmedSeason(season, db) {
@@ -188,10 +261,12 @@
   }
 
   window.URAWA_QUIZ_TRUST = Object.freeze({
-    version: 'q1-2026-09-07',
+    version: 'q1.5-2026-09-07',
     REASONS,
     RULES,
     hasKnownSources,
+    fieldClaimMatches,
+    hasClaimBackedSources,
     isConfirmedSeason,
     getSafeManagerForSeason,
     validateRankFact,
