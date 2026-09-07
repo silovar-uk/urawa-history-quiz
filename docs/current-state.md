@@ -11,23 +11,29 @@ Last updated: 2026-09-07
 
 URAWA HISTORYは、1992〜2025の34シーズンを扱うDB駆動prototypeとして成立している。
 
-現在は新機能追加より、**production-qualityとして信用できるfact / quiz / interactionを固める段階**。
+現在は新機能追加より、**production-qualityとして信用でき、かつ学習価値のあるQuizを固める段階**。
 
-Quiz Qualityは以下まで進行した。
+Quiz Quality current status:
 
-- Q0 Inventory — DONE
-- Q1 Correctness / Eligibility — DONE
-- Q1.5 Provenance Recovery — **PARTIAL PASS**
-- Q1.6 Uniform Model Repair — **NOW**
-- Q2 Distractor Quality — NEXT
+- Q0 Inventory — **DONE**
+- Q1 Correctness / Eligibility — **DONE**
+- Q1.5 Provenance Recovery — **PARTIAL PASS / FOUNDATION DONE**
+- Q1.6 Uniform Model Repair — **DONE**
+- Q2 Distractor Quality — **DONE (policy / invariant level)**
+- Q3 Difficulty — **NOW**
+- Q4 Coverage / Balance — NEXT
+- Q5 Significance / Memory Hook — LATER
+- Q6 Learning History — LATER
 
-Q1.5でclaim-level provenance registryを導入し、Trust Gateを弱めずPLAYER系の一部を復活させた。
+Q1.6でKITを `season × HOME` の単一値から、`season × HOME × competition_scope` の文脈付きfactへ分離した。
+
+Q2で主要generatorのdistractorをrandom-firstからdomain-aware policyへ変更した。
 
 **Current Bottleneck:**
 
-> Uniform semantics — 国内大会と国際大会で異なる胸スポンサーを、season単位1値の現在modelでは安全に表現できない。
+> Difficulty calibration — 「近い誤答」を作れるようになったが、その近さがEasy / Medium / Hardとしてどう作用するかはまだ定義・検証していない。
 
-History Spine production integrationはQuiz Trust / Quiz Quality上流Gateの後に再開する。
+History Spine production integrationはQuiz Quality上流Gateの後に再開する。
 
 ---
 
@@ -74,30 +80,25 @@ Visual grammar:
 
 ## Data Quality / Provenance
 
-**2.5 / 5 — NOW**
+**3 / 5 — FUNCTIONAL FOUNDATION, COVERAGE PARTIAL**
 
-Q1.5で追加：
+Implemented:
 
 - `data/provenance-claims.js`
 - specific official source records in `data/sources.json`
 - claim value / source ID CI validation
+- `data/uniform-contexts.js`
+- competition-aware uniform context provenance
 
-Current issues discovered:
+Known base-data issues remain quarantined, including several 2006 player fields and legacy kit sponsor values.
 
-- 2006 Washington shirt number: current 30 / official 21
-- 2006 Nobuhisa Yamada position: current DF / official R-File MF
-- 2006 Ryota Tsuzuki shirt number: current 21 / official 23
-- 2006 Masayuki Okano shirt number: current 32 / official 30
-- 2007 domestic chest sponsor: current DHL / official domestic SAVAS; DHL is international context
-- 2004 chest sponsor value also needs repair / stronger historical normalization
-
-These contradictions remain fail-closed.
+They remain fail-closed until repaired from evidence.
 
 ## Quiz Engine
 
-**3 / 5 — FUNCTIONAL + TRUST GATED**
+**3.5 / 5 — FUNCTIONAL + TRUST GATED + DISTRACTOR POLICY**
 
-7 generators remain defined:
+Generators:
 
 - PLAYER_NUMBER
 - PLAYER_POSITION
@@ -116,52 +117,65 @@ Trust Gate:
 - rank bounds
 - manager ambiguity exclusion
 - answer leak detection
+- competition-aware KIT context
 
 Runtime diagnostics:
 
 `window.URAWA_QUIZ_QA`
 
-## Quiz Trust Coverage — Q1.5 CI
+## Quiz Trust Coverage — latest aligned CI
 
-Before → After:
+- PLAYER_NUMBER: **2 / 34 eligible**
+- PLAYER_POSITION: **3 / 34 eligible**
+- PLAYER_OVERLAP: **0 / 34**
+- MANAGER_SEASON: **26 / 34**
+- SEASON_RANK: **32 / 34**
+- SEASON_SUMMARY: **33 / 34**
+- KIT_DETAIL: **3 / 34 eligible**
 
-- PLAYER_NUMBER: **0 → 2 / 34**
-- PLAYER_POSITION: **0 → 3 / 34**
-- PLAYER_OVERLAP: 0 / 34
-- MANAGER_SEASON: 26 / 34
-- SEASON_RANK: 32 / 34
-- SEASON_SUMMARY: 33 / 34
-- KIT_DETAIL: 0 / 34
-
-Q1.5 CI:
+Latest trust invariants:
 
 - invariantFailures: **0**
 - provenanceFailures: **0**
-- provenanceClaims: 15
-- knownDataIssues: 6
+- uniformContexts: **5**
 
-Detailed report:
-`docs/provenance-recovery-report.md`
+KIT eligible seasons:
 
-Interpretation:
+- 2005
+- 2007
+- 2013
 
-PLAYER recovery succeeded as a vertical slice.
-KIT did not fail because the Gate is too strict; it exposed a real data-model ambiguity.
+Detailed Q1.6 / Q2 report:
+
+`docs/q1-6-q2-report.md`
+
+Uniform schema addendum:
+
+`docs/uniform-context-schema.md`
 
 ## Quiz Content Quality
 
-**2 / 5 — QUEUED**
+**3 / 5 — DISTRACTOR POLICY DONE, DIFFICULTY NEXT**
 
-Not yet solved:
+Q2 introduced:
 
-- distractor plausibility
-- difficulty
-- knowledge significance
-- era / category balance
-- repeated knowledge clusters
-- question freshness
+- PLAYER_NUMBER: same position / close number preference
+- MANAGER: same decade / close season preference
+- SEASON_RANK: nearest valid rank
+- SEASON_SUMMARY: temporal / era / title / league similarity
+- KIT_DETAIL: verified historical sponsor values, same competition scope preferred
 
-Do not start Q2 before Q1.6 is decided.
+Q2 quality audit:
+
+- failures: **0**
+
+Representative summary distractors:
+
+- 2006 → 2005 / 2007 / 2004
+- 2017 → 2018 / 2015 / 2016
+- 2023 → 2022 / 2021 / 2024
+
+This does not yet mean difficulty is calibrated.
 
 ## Learning Model
 
@@ -186,7 +200,7 @@ Raw accuracy is not treated as validated mastery.
 - Memory Hook
 - Next
 - Explore Season
-- `SOURCE CHECKED` trust wording
+- `SOURCE CHECKED`
 
 History Spine Reveal remains experiment-only.
 
@@ -219,85 +233,97 @@ Do not expand cosmetic work while Quiz Quality remains upstream bottleneck.
 
 ---
 
-# 4. Documentation / QA State
+# 4. Uniform Semantics — Q1.6 DONE
 
-Current canonical files:
+Quiz-safe chest sponsor facts no longer depend on the one-value-per-season legacy field.
 
-- `docs/current-state.md` — current truth
-- `docs/product-principles.md` — product principles
-- `docs/development-plan.md` — long-term roadmap
-- `docs/quiz-quality-plan.md` — quiz quality sequence
-- `docs/quiz-trust-gate-report.md` — Q0/Q1 result
-- `docs/provenance-recovery-report.md` — Q1.5 result
+Authoritative quiz context:
 
-Automated QA:
+`data/uniform-contexts.js`
 
-- `scripts/quiz-trust-audit.mjs`
-- `.github/workflows/quiz-trust-audit.yml`
+Logical key:
 
-Latest Q1.5 audit run:
-https://github.com/silovar-uk/urawa-history-quiz/actions/runs/34117692993
+`season_id × type × competition_scope`
+
+Verified vertical slice:
+
+- 2005 domestic HOME → Vodafone
+- 2007 domestic HOME → SAVAS
+- 2007 international HOME → DHL
+- 2013 domestic HOME → POLUS
+- 2013 ACL HOME → MITSUBISHI MOTORS
+
+Season Detail now labels unverified legacy chest sponsor data instead of presenting it as trusted truth.
 
 ---
 
-# 5. NOW — Q1.6 Uniform Model Repair
+# 5. Q2 Distractor Quality — DONE
+
+Policy module:
+
+`prototype/quiz-distractors.js`
+
+Quality audit:
+
+`scripts/quiz-quality-audit.mjs`
+
+CI now checks:
+
+1. prototype syntax
+2. Q0/Q1/Q1.5/Q1.6 trust eligibility
+3. Q2 distractor policy invariants
+
+Latest aligned CI result:
+
+**SUCCESS**
+
+- KIT_DETAIL: 3 / 34 eligible
+- invariantFailures: 0
+- provenanceFailures: 0
+- Q2 failures: 0
+
+---
+
+# 6. NOW — Q3 Difficulty
 
 Central question:
 
-> 胸スポンサーfactは `season × HOME` の1値で十分か、それともcompetition scopeを持つ必要があるか？
+> Can Easy / Medium / Hard be defined from measurable relationships between target, clue, and distractors instead of simply using obscure facts?
 
-Evidence already shows competition-specific variation in 2007.
+Candidate dimensions:
 
-Minimum investigation slice:
+- temporal distance
+- distractor similarity
+- same-era density
+- same-position / same-role similarity
+- fact prominence
+- clue richness
+- option homogeneity
 
-- 2004
-- 2005
-- 2007
-- 2013
-
-Candidate model:
-
-`season_id × kit_type × competition_scope × chest_sponsor × provenance`
-
-Examples of `competition_scope`:
-
-- domestic
-- ACL / international
+First Q3 vertical slice should score existing trusted questions; it should not create new facts.
 
 Pass condition:
 
-- existing wrong / ambiguous base values are repaired or safely superseded
-- domestic question wording becomes unambiguous
-- at least four distinct source-backed domestic chest sponsor values can support KIT_DETAIL
-- invariantFailures = 0
-- provenanceFailures = 0
+- difficulty has an explicit scoring rule
+- representative questions can be classified consistently
+- no category is automatically always Easy or always Hard
+- difficulty does not reward obscure / low-value trivia by default
+- Trust Gate remains unchanged
 
 ---
 
-# 6. NEXT — Q2 Distractor Quality
+# 7. NEXT / THEN
 
-Only after Q1.6 passes.
+NEXT:
 
-Move from:
+1. Q4 Coverage / Balance
 
-`correct + three technically false values`
+THEN:
 
-to:
-
-`correct + three plausible but defensibly false values`
-
-Generator-specific strategies should then be designed and measured.
-
----
-
-# 7. THEN
-
-1. Q3 Difficulty
-2. Q4 Coverage / Balance
-3. Q5 Significance / Memory Hook
-4. Q6 Learning History
-5. Answered History Spine production integration
-6. History Browser refinement
+2. Q5 Significance / Memory Hook
+3. Q6 Learning History
+4. Answered History Spine production integration
+5. History Browser refinement
 
 ---
 
@@ -309,24 +335,49 @@ Generator-specific strategies should then be designed and measured.
 - full History redesign
 - large UI polish round
 - framework migration
-- manual dual-edit workflow for JSON + data-bundle
 
 ---
 
 # 9. Technical Debt
 
-`data/data-bundle.js` is a legacy runtime fallback and can drift from canonical JSON.
+`data/data-bundle.js` remains a legacy runtime fallback and can drift from canonical JSON.
 
-Q1.5 avoided manually duplicating claim edits into the bundle by loading claim provenance separately.
+New provenance and uniform-context registries are loaded separately to avoid manual double-editing.
 
-Next technical cleanup after the data model stabilizes:
+Recommended cleanup after Q3 / before broad data expansion:
 
-> generate `data-bundle.js` deterministically from JSON, or remove it if the fallback is unnecessary.
+> make canonical JSON / registries generate runtime data deterministically, or remove the fallback if it is unnecessary.
+
+The one-time Q1.6/Q2 migration script / workflow should also be archived or removed after the current implementation history no longer needs it.
 
 ---
 
-# 10. Next Review Gate
+# 10. Documentation / QA State
 
-Q1.6 passes only when:
+Canonical:
 
-> A KIT question can state its competition context precisely enough that the screen has exactly one source-backed answer, with three source-backed alternative sponsor values available for distractors.
+- `docs/current-state.md`
+- `docs/product-principles.md`
+- `docs/development-plan.md`
+- `docs/quiz-quality-plan.md`
+
+Reports / schema:
+
+- `docs/quiz-trust-gate-report.md`
+- `docs/provenance-recovery-report.md`
+- `docs/q1-6-q2-report.md`
+- `docs/uniform-context-schema.md`
+
+Automated QA:
+
+- `scripts/quiz-trust-audit.mjs`
+- `scripts/quiz-quality-audit.mjs`
+- `.github/workflows/quiz-trust-audit.yml`
+
+---
+
+# 11. Next Review Gate
+
+Q3 may advance to Q4 only when:
+
+> Difficulty is explainable from measurable features, produces sensible differences across representative Quiz types, and does not weaken correctness or historical significance.
