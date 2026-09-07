@@ -1,0 +1,55 @@
+name: Data Content Repair
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/apply-data-content-repair.mjs'
+      - 'scripts/build-data-bundle.mjs'
+      - 'scripts/data-integrity-audit.mjs'
+      - '.github/workflows/data-content-repair.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Apply researched canonical data repairs
+        run: node scripts/apply-data-content-repair.mjs
+
+      - name: Rebuild runtime data bundle
+        run: node scripts/build-data-bundle.mjs
+
+      - name: Verify deterministic bundle sync
+        run: node scripts/build-data-bundle.mjs --check
+
+      - name: Run data integrity audit
+        run: node scripts/data-integrity-audit.mjs --report docs/data-integrity-report.md
+
+      - name: Run existing quiz safety audits
+        run: |
+          node scripts/quiz-trust-audit.mjs
+          node scripts/quiz-quality-audit.mjs
+          node scripts/quiz-difficulty-audit.mjs --out /tmp/q3-difficulty-baseline.json
+
+      - name: Commit repaired canonical data and generated report
+        run: |
+          if git diff --quiet && git diff --cached --quiet; then
+            echo 'No repair changes to commit.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data docs/data-integrity-report.md
+          git commit -m 'Apply researched historical data repairs'
+          git push
