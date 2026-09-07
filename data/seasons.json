@@ -1,0 +1,76 @@
+[
+  {
+    "season_id": "1995",
+    "year": 1995,
+    "league_name": "Jリーグ",
+    "league_rank": 4,
+    "total_teams": 14,
+    "points": 90,
+    "matches": 52,
+    "wins": 29,
+    "draws": 0,
+    "losses": 23,
+    "goals_for": 85,
+    "goals_against": 72,
+    "goal_difference": 13,
+    "titles": [],
+    "summary": "ホルガー・オジェック監督のもと、福田正博が日本人初のJリーグ得点王（27得点）に輝き、サントリーシリーズで3位と躍進したシーズン。",
+    "memory_hook": "「ミスターレッズ」福田正博が日本人初のJリーグ得点王に輝いた飛躍の年。",
+    "key_events": [
+      "福田正博が日本人初となるJリーグ得点王（27得点）を獲得",
+      "1stステージ（サントリーシリーズ）でクラブ史上最高の3位に躍進",
+      "ホルガー・オジェック監督が就任しチーム規律を確立"
+    ],
+    "verification_status": "confirmed",
+    "source_ids": ["SRC_JLEAGUE_DATA", "SRC_URAWA_OFFICIAL"]
+  },
+  {
+    "season_id": "2006",
+    "year": 2006,
+    "league_name": "J1",
+    "league_rank": 1,
+    "total_teams": 18,
+    "points": 68,
+    "matches": 34,
+    "wins": 22,
+    "draws": 6,
+    "losses": 6,
+    "goals_for": 67,
+    "goals_against": 28,
+    "goal_difference": 39,
+    "titles": ["J1リーグ優勝", "天皇杯優勝", "ゼロックススーパーカップ優勝"],
+    "summary": "ギド・ブッフバルト体制3年目。最終節でガンバ大阪との直接対決を制し、クラブ史上悲願のJ1リーグ初優勝を達成した伝説のシーズン。",
+    "memory_hook": "最終節・超満員の埼玉スタジアムでワシントンが2得点。悲願のJ1初戴冠と天皇杯連覇を成し遂げた。",
+    "key_events": [
+      "クラブ史上悲願のJ1リーグ初制覇（勝点68）",
+      "ワシントンが得点王（26得点）を獲得",
+      "田中マルクス闘莉王が最優秀選手賞（MVP）を受賞",
+      "天皇杯全日本サッカー選手権大会連覇（元日決勝でG大阪に勝利）"
+    ],
+    "verification_status": "confirmed",
+    "source_ids": ["SRC_JLEAGUE_DATA", "SRC_URAWA_OFFICIAL"]
+  },
+  {
+    "season_id": "2025",
+    "year": 2025,
+    "league_name": "J1",
+    "league_rank": null,
+    "total_teams": 20,
+    "points": null,
+    "matches": 38,
+    "wins": null,
+    "draws": null,
+    "losses": null,
+    "goals_for": null,
+    "goals_against": null,
+    "goal_difference": null,
+    "titles": [],
+    "summary": "マチェイ・スコルジャ体制。FIFAクラブワールドカップ2025出場を見据え、新世代の浦和を築くシーズン。",
+    "memory_hook": "クラブワールドカップ2025参戦。世界の大舞台へ挑んだシーズン。",
+    "key_events": [
+      "FIFAクラブワールドカップ2025参戦"
+    ],
+    "verification_status": "confirmed",
+    "source_ids": ["SRC_JLEAGUE_DATA", "SRC_URAWA_OFFICIAL"]
+  }
+]

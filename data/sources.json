@@ -1,0 +1,18 @@
+[
+  {
+    "source_id": "SRC_JLEAGUE_DATA",
+    "title": "J.LEAGUE Data Site",
+    "publisher": "公益社団法人日本プロサッカーリーグ",
+    "url": "https://data.j-league.or.jp/",
+    "source_type": "official",
+    "accessed_at": "2026-09-07"
+  },
+  {
+    "source_id": "SRC_URAWA_OFFICIAL",
+    "title": "URAWA RED DIAMONDS OFFICIAL WEBSITE",
+    "publisher": "浦和レッドダイヤモンズ株式会社",
+    "url": "https://www.urawa-reds.co.jp/",
+    "source_type": "official",
+    "accessed_at": "2026-09-07"
+  }
+]

@@ -128,6 +128,45 @@ button:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
   content:""; position:absolute; inset:18px 49px auto; height:30px;
   background:var(--paper); border-radius:0 0 18px 18px;
 }
+.kit-card {
+  border: 1px solid var(--line);
+  background: #fbf9f5;
+  padding: 14px 16px;
+  border-radius: var(--radius);
+  margin-top: 8px;
+}
+.squad-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+.squad-item {
+  border: 1px solid var(--line);
+  background: var(--paper);
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.squad-num {
+  font-weight: 900;
+  color: var(--brand);
+  margin-right: 6px;
+}
+.squad-name {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.squad-pos {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 700;
+}
 .bottom-nav {
   position: sticky; bottom:0; z-index:10;
   display:grid; grid-template-columns: repeat(4,1fr);

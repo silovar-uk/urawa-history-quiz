@@ -1,0 +1,32 @@
+[
+  {
+    "tenure_id": "tenure_osieck_1995",
+    "manager_id": "holger_osieck",
+    "season_id": "1995",
+    "role": "監督",
+    "tenure_type": "full_season",
+    "titles_won": [],
+    "notes": "1995年に就任しチームをサントリーシリーズ3位に導く。",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "tenure_id": "tenure_buchwald_2006",
+    "manager_id": "guido_buchwald",
+    "season_id": "2006",
+    "role": "監督",
+    "tenure_type": "full_season",
+    "titles_won": ["J1リーグ", "天皇杯", "ゼロックススーパーカップ"],
+    "notes": "2004年に就任し、3年目の2006年にリーグ初優勝・天皇杯連覇を達成して勇退。",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "tenure_id": "tenure_skorza_2025",
+    "manager_id": "maciej_skorza",
+    "season_id": "2025",
+    "role": "監督",
+    "tenure_type": "full_season",
+    "titles_won": [],
+    "notes": "2023年にACLを制覇し一度退任後、2024年秋に再就任して指揮を執る。",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  }
+]

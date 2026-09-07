@@ -1,0 +1,222 @@
+[
+  {
+    "player_id": "norihiro_yamagishi",
+    "name": "山岸 範宏",
+    "name_kana": "ヤマギシ ノリヒロ",
+    "name_en": "Norihiro YAMAGISHI",
+    "nationality": "Japan",
+    "birth_date": "1978-05-17",
+    "primary_position": "GK",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "player_id": "keisuke_tsuboi",
+    "name": "坪井 慶介",
+    "name_kana": "ツボイ ケイスケ",
+    "name_en": "Keisuke TSUBOI",
+    "nationality": "Japan",
+    "birth_date": "1979-09-16",
+    "primary_position": "DF",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "player_id": "marcus_tulio_tanaka",
+    "name": "田中マルクス闘莉王",
+    "name_kana": "タナカマルクス トゥーリオ",
+    "name_en": "Marcus Tulio TANAKA",
+    "nationality": "Japan",
+    "birth_date": "1981-04-24",
+    "primary_position": "DF",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "player_id": "nene",
+    "name": "ネネ",
+    "name_kana": "ネネ",
+    "name_en": "NENE",
+    "nationality": "Brazil",
+    "birth_date": "1975-06-06",
+    "primary_position": "DF",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "player_id": "nobuhisa_yamada",
+    "name": "山田 暢久",
+    "name_kana": "ヤマダ ノブヒサ",
+    "name_en": "Nobuhisa YAMADA",
+    "nationality": "Japan",
+    "birth_date": "1975-09-10",
+    "primary_position": "DF",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "player_id": "tomoyuki_sakai",
+    "name": "酒井 友之",
+    "name_kana": "サカイ トモユキ",
+    "name_en": "Tomoyuki SAKAI",
+    "nationality": "Japan",
+    "birth_date": "1979-06-29",
+    "primary_position": "MF",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "player_id": "alessandro_santos",
+    "name": "三都主アレサンドロ",
+    "name_kana": "サントス アレサンドロ",
+    "name_en": "Alessandro SANTOS",
+    "nationality": "Japan",
+    "birth_date": "1977-07-20",
+    "primary_position": "MF",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "player_id": "yuichiro_nagai",
+    "name": "永井 雄一郎",
+    "name_kana": "ナガイ ユウイチロウ",
+    "name_en": "Yuichiro NAGAI",
+    "nationality": "Japan",
+    "birth_date": "1979-02-14",
+    "primary_position": "FW",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "player_id": "robs_ponte",
+    "name": "ポンテ",
+    "name_kana": "ポンテ",
+    "name_en": "Robson PONTE",
+    "nationality": "Brazil",
+    "birth_date": "1976-11-06",
+    "primary_position": "MF",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "player_id": "tatsuya_tanaka",
+    "name": "田中 達也",
+    "name_kana": "タナカ タツヤ",
+    "name_en": "Tatsuya TANAKA",
+    "nationality": "Japan",
+    "birth_date": "1982-11-27",
+    "primary_position": "FW",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "player_id": "keita_suzuki",
+    "name": "鈴木 啓太",
+    "name_kana": "スズキ ケイタ",
+    "name_en": "Keita SUZUKI",
+    "nationality": "Japan",
+    "birth_date": "1981-07-08",
+    "primary_position": "MF",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "player_id": "tadaaki_hirakawa",
+    "name": "平川 忠亮",
+    "name_kana": "ヒラカワ タダアキ",
+    "name_en": "Tadaaki HIRAKAWA",
+    "nationality": "Japan",
+    "birth_date": "1979-05-01",
+    "primary_position": "MF",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "player_id": "takahito_soma",
+    "name": "相馬 崇人",
+    "name_kana": "ソウマ タカヒト",
+    "name_en": "Takahito SOMA",
+    "nationality": "Japan",
+    "birth_date": "1981-12-10",
+    "primary_position": "DF",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "player_id": "makoto_hasebe",
+    "name": "長谷部 誠",
+    "name_kana": "ハセベ マコト",
+    "name_en": "Makoto HASEBE",
+    "nationality": "Japan",
+    "birth_date": "1984-01-18",
+    "primary_position": "MF",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "player_id": "shinji_ono",
+    "name": "小野 伸二",
+    "name_kana": "オノ シンジ",
+    "name_en": "Shinji ONO",
+    "nationality": "Japan",
+    "birth_date": "1979-09-27",
+    "primary_position": "MF",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "player_id": "hideki_uchidate",
+    "name": "内舘 秀樹",
+    "name_kana": "ウチダテ ヒデキ",
+    "name_en": "Hideki UCHIDATE",
+    "nationality": "Japan",
+    "birth_date": "1974-01-15",
+    "primary_position": "DF",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "player_id": "satoshi_horinouchi",
+    "name": "堀之内 聖",
+    "name_kana": "ホリノウチ サトシ",
+    "name_en": "Satoshi HORINOUCHI",
+    "nationality": "Japan",
+    "birth_date": "1979-10-26",
+    "primary_position": "DF",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "player_id": "ryota_tsuzuki",
+    "name": "都築 龍太",
+    "name_kana": "ツヅキ リョウタ",
+    "name_en": "Ryota TSUZUKI",
+    "nationality": "Japan",
+    "birth_date": "1978-04-18",
+    "primary_position": "GK",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "player_id": "hajime_hosogai",
+    "name": "細貝 萌",
+    "name_kana": "ホソガイ ハジメ",
+    "name_en": "Hajime HOSOGAI",
+    "nationality": "Japan",
+    "birth_date": "1986-06-10",
+    "primary_position": "MF",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "player_id": "washington",
+    "name": "ワシントン",
+    "name_kana": "ワシントン",
+    "name_en": "WASHINGTON",
+    "nationality": "Brazil",
+    "birth_date": "1975-04-01",
+    "primary_position": "FW",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "player_id": "masayuki_okano",
+    "name": "岡野 雅行",
+    "name_kana": "オカノ マサユキ",
+    "name_en": "Masayuki OKANO",
+    "nationality": "Japan",
+    "birth_date": "1972-07-25",
+    "primary_position": "FW",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "player_id": "masahiro_fukuda",
+    "name": "福田 正博",
+    "name_kana": "フクダ マサヒロ",
+    "name_en": "Masahiro FUKUDA",
+    "nationality": "Japan",
+    "birth_date": "1966-12-27",
+    "primary_position": "FW",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  }
+]

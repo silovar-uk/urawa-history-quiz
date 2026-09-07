@@ -1,0 +1,45 @@
+[
+  {
+    "uniform_id": "kit_1995_home",
+    "season_id": "1995",
+    "type": "HOME",
+    "supplier": "Mizuno",
+    "chest_sponsor": "MITSUBISHI MOTORS",
+    "main_color": "#E6002D",
+    "accent_color": "#FFFFFF",
+    "description": "赤のグラデーションに白いダイヤモンドの幾何学模様が散りばめられた、Jリーグ初期のアイコニックなデザイン。",
+    "image_url": "",
+    "image_status": "placeholder",
+    "source_ids": ["SRC_URAWA_OFFICIAL"]
+  },
+  {
+    "uniform_id": "kit_2006_home",
+    "season_id": "2006",
+    "type": "HOME",
+    "supplier": "Nike",
+    "chest_sponsor": "Vodafone",
+    "main_color": "#E6002D",
+    "accent_color": "#FFFFFF",
+    "pants_color": "#FFFFFF",
+    "socks_color": "#000000",
+    "description": "赤のシャツに白い襟付き。白パンツ、黒ソックスの伝統的トリコロール。胸にはVodafoneロゴ。",
+    "image_url": "",
+    "image_status": "placeholder",
+    "source_ids": ["SRC_URAWA_OFFICIAL"]
+  },
+  {
+    "uniform_id": "kit_2006_away",
+    "season_id": "2006",
+    "type": "AWAY",
+    "supplier": "Nike",
+    "chest_sponsor": "Vodafone",
+    "main_color": "#FFFFFF",
+    "accent_color": "#E6002D",
+    "pants_color": "#000000",
+    "socks_color": "#FFFFFF",
+    "description": "白シャツに黒のパンツ。シンプルかつ精悍なアウェイキット。",
+    "image_url": "",
+    "image_status": "placeholder",
+    "source_ids": ["SRC_URAWA_OFFICIAL"]
+  }
+]

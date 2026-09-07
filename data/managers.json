@@ -1,0 +1,42 @@
+[
+  {
+    "manager_id": "guido_buchwald",
+    "name": "ギド・ブッフバルト",
+    "name_en": "Guido BUCHWALD",
+    "nationality": "Germany",
+    "birth_date": "1961-01-24",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "manager_id": "holger_osieck",
+    "name": "ホルガー・オジェック",
+    "name_en": "Holger OSIECK",
+    "nationality": "Germany",
+    "birth_date": "1948-08-31",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "manager_id": "hans_ooft",
+    "name": "ハンス・オフト",
+    "name_en": "Hans OOFT",
+    "nationality": "Netherlands",
+    "birth_date": "1947-06-27",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "manager_id": "mihailo_petrovic",
+    "name": "ミハイロ・ペトロヴィッチ",
+    "name_en": "Mihailo PETROVIC",
+    "nationality": "Austria",
+    "birth_date": "1957-10-18",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "manager_id": "maciej_skorza",
+    "name": "マチェイ・スコルジャ",
+    "name_en": "Maciej SKORZA",
+    "nationality": "Poland",
+    "birth_date": "1972-06-09",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  }
+]
