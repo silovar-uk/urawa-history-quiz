@@ -10,18 +10,20 @@ Current status:
 - Q1 Correctness / Eligibility — **DONE**
 - Q1.5 Provenance Recovery — **PARTIAL PASS / FOUNDATION DONE**
 - Q1.6 Uniform Model Repair — **DONE**
-- Q2 Distractor Quality — **DONE (policy / invariant level)**
-- Q3 Difficulty — **NOW**
-- Q4 Coverage / Balance — NEXT
-- Q5 Significance / Memory Hook — LATER
+- Q2 Distractor Quality — **DONE**
+- Q3 Difficulty — **DONE (structural estimate baseline)**
+- Q4 Coverage / Balance — **NOW**
+- Q5 Significance / Memory Hook — NEXT
 - Q6 Learning History — LATER
 
-Reports:
+Reports / plans:
 
 - `docs/quiz-trust-gate-report.md`
 - `docs/provenance-recovery-report.md`
 - `docs/q1-6-q2-report.md`
 - `docs/uniform-context-schema.md`
+- `docs/q3-difficulty-report.md`
+- `docs/q4-coverage-balance-plan.md`
 
 ---
 
@@ -81,8 +83,8 @@ It proves exact relationship values rather than treating entity-level sources as
 
 Current safe player recovery:
 
-- PLAYER_NUMBER: 2 / 34 seasons
-- PLAYER_POSITION: 3 / 34 seasons
+- PLAYER_NUMBER: 2 / 34 eligible seasons
+- PLAYER_POSITION: 3 / 34 eligible seasons
 
 Known source/data contradictions remain quarantined and fail closed.
 
@@ -91,14 +93,6 @@ PLAYER_OVERLAP remains disabled until interval evidence exists.
 ---
 
 # 3. Q1.6 — Uniform Model Repair — DONE
-
-## Decision
-
-Season-level:
-
-`season × HOME × chest_sponsor`
-
-is insufficient for quiz correctness.
 
 Quiz truth now uses:
 
@@ -112,11 +106,7 @@ Trust module:
 
 `prototype/kit-trust.js`
 
-Schema addendum:
-
-`docs/uniform-context-schema.md`
-
-## Verified slice
+Verified slice:
 
 - 2005 domestic → Vodafone
 - 2007 domestic → SAVAS
@@ -124,237 +114,279 @@ Schema addendum:
 - 2013 domestic → POLUS
 - 2013 ACL → MITSUBISHI MOTORS
 
-## Result
+Result:
 
 - contexts: 5
-- distinct sponsor values: 5
-- KIT_DETAIL eligible seasons: **3 / 34**
+- distinct sponsors: 5
+- KIT_DETAIL eligible seasons: 3 / 34
 - invariantFailures: 0
 - provenanceFailures: 0
-
-Q1.6 therefore passes.
-
-Important:
-
-`uniforms.json` remains archive/display data. Competition-aware context is authoritative for chest-sponsor Quiz eligibility.
 
 ---
 
 # 4. Q2 — Distractor Quality — DONE
 
-Policy module:
+Policy:
 
 `prototype/quiz-distractors.js`
 
-Automated audit:
+Audit:
 
 `scripts/quiz-quality-audit.mjs`
 
-## Principle
+Principle:
 
 Do not choose distractors merely because they are false.
 
-Prefer answers that are:
+Prefer:
 
 - plausible
-- close to the target
+- close to target
 - domain-consistent
 - clearly false
 - data-derived
 - auditable
 
+Current strategies:
+
 ## PLAYER_NUMBER
 
-Prioritize:
-
-1. verified same-season player
-2. same registered position when available
-3. closer shirt number
+- same-season verified players
+- same position preferred
+- smaller shirt-number distance preferred
 
 ## PLAYER_POSITION
 
-Use normalized:
-
-- GK
-- DF
-- MF
-- FW
-
-Historical correctness remains provenance-gated.
+- normalized GK / DF / MF / FW
 
 ## MANAGER_SEASON
 
-Prioritize:
-
-1. unique manager
-2. same decade
-3. smaller temporal distance
+- same decade preferred
+- smaller temporal distance preferred
 
 ## SEASON_RANK
 
-Use nearest valid ranks inside the actual league size.
+- nearest valid ranks inside actual league size
 
 ## SEASON_SUMMARY
 
-Prioritize using:
-
 - year distance
 - same decade
-- title-count similarity
+- title-profile similarity
 - league similarity
-
-Representative results:
-
-- 2006 → 2005 / 2007 / 2004
-- 2017 → 2018 / 2015 / 2016
-- 2023 → 2022 / 2021 / 2024
 
 ## KIT_DETAIL
 
-Prioritize:
+- verified historical sponsors
+- same competition scope preferred
+- temporal proximity
 
-1. distinct verified historical sponsor values
-2. same competition scope when enough values exist
-3. temporal proximity
-4. other verified competition contexts as fallback distractor labels
+Latest Q2 failures:
 
-A fallback label is not asserted to belong to the target competition. It is a historically grounded but false option for the explicitly stated target context.
-
-## Q2 Pass
-
-Latest automated result:
-
-- Q2 failures: 0
-- all KIT contexts can form four unique options
-- player policy prefers same-position candidate when one exists
-- rank distractors are ordered by proximity
-- summary candidates remain temporally relevant
-
-Q2 therefore passes at **policy / invariant level**.
-
-It does not claim human difficulty calibration. That is Q3.
+**0**
 
 ---
 
-# 5. Q3 — Difficulty — NOW
+# 5. Q3 — Difficulty — DONE
 
-## Central question
+Status:
 
-> Can Easy / Medium / Hard be defined from measurable relationships between target, clue and distractors, instead of treating obscure trivia as Hard?
+**PASS — structural estimate baseline**
 
-## Why now
+Model:
 
-Q2 gives us structured distractor relationships.
+`prototype/quiz-difficulty.js`
 
-Difficulty can now be modeled from those relationships rather than guessed before question construction stabilizes.
+Audit / inventory:
 
-## Candidate dimensions
+`scripts/quiz-difficulty-audit.mjs`
 
-### Temporal Distance
+CI artifact:
 
-Examples:
+`q3-difficulty-baseline.json`
 
-- neighboring seasons are harder for a year-identification question
-- decades-apart seasons are easier
+## Terminology decision
 
-### Distractor Similarity
+Do not call the pre-response model “observed item difficulty”.
 
-Examples:
+Q3 produces:
 
-- same position + nearby shirt number
-- same-era manager
-- neighboring league rank
+**Structural Difficulty Estimate**
 
-More similarity can increase difficulty.
+Observed item difficulty must later come from actual response data.
 
-### Fact Prominence
+## Current factors
 
-A title-winning season or iconic event may be easier than a routine fact even when distractors are close.
+### PLAYER_NUMBER
 
-Do not use unsupported subjective labels directly in production; first define a small auditable prominence scale.
+- same-position ratio
+- average shirt-number distance
+- number closeness
 
-### Clue Richness
+### MANAGER_SEASON
 
-A stem containing several unique historical clues is easier than one containing a single generic clue.
+- same-decade ratio
+- average year distance
+- temporal closeness
 
-### Option Homogeneity
+### SEASON_RANK
 
-Options from the same semantic class and era can increase difficulty.
+- average rank distance
+- rank closeness
+- title-count prominence proxy
 
-## First vertical slice
+### SEASON_SUMMARY
 
-Do not create new facts.
+- temporal closeness
+- same-decade ratio
+- title-profile similarity
+- league similarity
+- title-count distinctiveness proxy
 
-Use already-trusted questions from:
+### KIT_DETAIL
 
-- PLAYER_NUMBER
-- MANAGER_SEASON
-- SEASON_RANK
-- SEASON_SUMMARY
-- KIT_DETAIL
+- same competition-scope ratio
+- temporal distance
+- same-year alternative context
 
-Build a scoring prototype that annotates candidate questions with:
+## Baseline
 
-- feature values
-- raw score
-- proposed Easy / Medium / Hard
-- explanation
+107 modeled item constructions:
 
-## Pass condition
+- EASY: 4
+- MEDIUM: 23
+- HARD: 80
 
-Q3 passes when:
+By generator:
 
-- the scoring rule is explicit and machine-readable
-- the same inputs always produce the same difficulty
-- representative generators occupy more than one difficulty band
-- obscure facts are not automatically labeled Hard
-- easy questions remain useful, not absurd
-- no correctness / provenance Gate is weakened
-- difficulty can be audited in CI
+- PLAYER_NUMBER: 11 / E4 M3 H4 / avg 54.9
+- MANAGER_SEASON: 26 / E0 M13 H13 / avg 73.2
+- SEASON_RANK: 32 / E0 M2 H30 / avg 80.3
+- SEASON_SUMMARY: 33 / E0 M2 H31 / avg 80.0
+- KIT_DETAIL: 5 / E0 M3 H2 / avg 65.2
 
-## Reject
+## Core finding
 
-Reject a difficulty system if:
+The engine is structurally Hard-skewed because Q2 currently chooses the closest plausible distractors almost every time.
 
-- it is manually assigned per question without rules
-- it only measures temporal distance
-- it equates rarity with quality
-- all KIT questions become Hard simply because they are kit questions
-- every famous season becomes Easy regardless of distractor construction
-- it depends on user performance before a baseline question model exists
+Do not “fix” this by shifting thresholds until the chart looks balanced.
+
+Q4 must measure how that construction policy affects actual historical exposure.
+
+## Confidence / limits
+
+Overall Q3 confidence:
+
+**MEDIUM**
+
+Limitations:
+
+- true difficulty still needs user response data
+- SEASON_SUMMARY clue richness is under-modeled
+- PLAYER_POSITION remains intentionally unmodeled
+- PLAYER_OVERLAP remains trust-disabled
+- bands are not user-facing
+
+Detailed reasoning:
+
+`docs/q3-difficulty-report.md`
 
 ---
 
-# 6. Q4 — Coverage / Balance — NEXT
+# 6. Q4 — Coverage / Balance — NOW
 
-After Q3, measure:
+Central question:
+
+> If a user repeatedly requests the next question under the current engine, what history dominates and what history barely appears?
+
+Q4 must distinguish:
+
+1. **Data Availability**
+2. **Quiz Eligibility**
+3. **Runtime Exposure**
+
+Do not treat these as the same metric.
+
+## Required dimensions
 
 - era
+- season
 - category
 - generator
-- season
-- player
-- difficulty
-- knowledge cluster
+- structural difficulty
+- player / manager where applicable
+- KIT competition scope where applicable
 
-Goal:
+## First implementation
 
-Avoid a high-quality engine that mostly asks about famous 2000s seasons and a small set of players.
+Create a deterministic eligibility-and-exposure census.
+
+Recommended:
+
+- `scripts/quiz-coverage-audit.mjs`
+- CI artifact `q4-coverage-baseline.json`
+- `docs/q4-coverage-report.md`
+
+Measure both:
+
+### Eligibility census
+
+How many safe constructions exist?
+
+### Runtime exposure simulation
+
+Under the real selection algorithm, how often does each construction / season / category reach the screen?
+
+Simulation must be reproducible.
+
+It measures engine exposure, not user engagement.
+
+## Biases to test
+
+- famous-era bias
+- provenance bias toward newer seasons
+- generator bias
+- difficulty bias
+- quiet-season invisibility
+- category starvation
+
+## Do not impose equal balance yet
+
+Do not force 25% per era or category.
+
+Q5 Significance must inform later editorial weighting.
+
+## Pass
+
+Q4 passes when:
+
+- eligibility and runtime exposure are separately measurable
+- exposure is deterministic / reproducible
+- era / season / category / generator / difficulty bias is visible
+- provenance-driven gaps are separated from editorial choices
+- low-visibility seasons are identified
+- no Trust Gate is weakened to improve coverage
+
+Plan:
+
+`docs/q4-coverage-balance-plan.md`
 
 ---
 
-# 7. Q5 — Significance / Memory Hook — LATER
+# 7. Q5 — Significance / Memory Hook — NEXT
 
 A correct fact is not automatically worth learning.
 
-Memory Hook should connect:
+Q5 should define which facts deserve repetition / prominence based on:
 
-- player ↔ era
-- event ↔ season
-- kit ↔ historical period
-- manager ↔ result / transformation
+- club history
+- era representation
+- player identity
+- transformation / tactical or organizational relevance
+- supporter cultural memory
+- connectivity to other years / people / events
 
-Avoid unsupported dramatic copy and isolated trivia.
+Do not use Q4 imbalance as a reason to equalize everything before Q5.
 
 ---
 
@@ -380,22 +412,30 @@ Then derive:
 
 Raw accuracy alone should not be called mastery.
 
+Observed item difficulty can eventually be calibrated here once enough response data exists.
+
 ---
 
-# 9. Technical Debt Track
+# 9. Technical / Research Debt Track
+
+## Runtime data
 
 `data/data-bundle.js` can drift from canonical source data.
-
-New provenance / uniform contexts are loaded separately to avoid manual duplicate edits.
 
 Recommended before broad data expansion:
 
 - deterministically generate runtime data from canonical source files, or
-- remove the bundle fallback if unnecessary.
+- remove the fallback if unnecessary.
 
-Also archive/remove the one-time Q1.6/Q2 migration workflow after it no longer provides historical value.
+## Q3 research debt
 
-This is a parallel maintenance track, not a reason to mix framework migration into Q3.
+- semantic clue-richness for SEASON_SUMMARY
+- observed difficulty calibration from future response data
+- PLAYER_POSITION difficulty model only if a defensible factor set emerges
+
+## Migration cleanup
+
+Archive/remove the one-time Q1.6/Q2 migration workflow after it no longer provides historical value.
 
 ---
 
@@ -412,11 +452,11 @@ Q1.6 Uniform Model Repair            DONE
 ↓
 Q2 Distractor Quality               DONE
 ↓
-Q3 Difficulty                       NOW
+Q3 Structural Difficulty            DONE
 ↓
-Q4 Coverage / Balance               NEXT
+Q4 Coverage / Balance               NOW
 ↓
-Q5 Significance / Memory Hook
+Q5 Significance / Memory Hook        NEXT
 ↓
 Q6 Learning History
 ↓
@@ -429,4 +469,4 @@ History Browser Refinement
 
 # 11. Immediate Next Question
 
-> What measurable properties make one trusted URAWA HISTORY question meaningfully harder than another without simply making it more obscure?
+> Under the current real generator-selection logic, what probability does each era, season, category, generator, and structural difficulty band have of reaching the user’s screen?
