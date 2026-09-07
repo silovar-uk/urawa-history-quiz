@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="URAWA HISTORY diamond timeline mark">
+  <rect width="64" height="64" rx="14" fill="#171717"/>
+  <path d="M32 7 55 32 32 57 9 32Z" fill="#c3152a"/>
+  <path d="M32 18 45 32 32 46 19 32Z" fill="#fffefb"/>
+  <rect x="29.5" y="17" width="5" height="30" rx="2.5" fill="#171717"/>
+</svg>
