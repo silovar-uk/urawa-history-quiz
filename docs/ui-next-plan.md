@@ -1,409 +1,402 @@
-# UI Next Plan — Refinement Roadmap
+# UI Next Plan — Shu-Ha-Ri Refinement Roadmap
 
 Updated: 2026-09-07
 
 ## Current position
 
-URAWA HISTORYは、すでに以下を備えた実データ入りprototypeまで到達している。
+URAWA HISTORYは、全34シーズンの実データ、DB-driven Quiz、Timeline、Season / Player Detail、Learning Historyまで実装済み。
 
-- 1992〜2025の全34シーズン
-- DBからのQuiz生成
-- TODAY
-- QUIZ / answer state
-- HISTORY Timeline
-- Season Detail
-- Player Detail
-- YOU / Learning History
-- localStorage
-- GitHub Pages公開
+現在地はMVP開発ではなく、**Experience Refinement + Native UI Research**。
 
-したがって、旧計画の「3シーズンだけでstress testする」「2006 Vertical Sliceを作る」は現在地としては完了 / superseded。
+今回、守破離によるUI研究Round 01を完了した。
 
-次の主戦場は機能追加ではなく、**Experience Refinement**。
+研究記録：
+`docs/ui-shuhari-research.md`
+
+実験：
+`prototype/experiments/history-spine.html`
 
 ---
 
-# Design Direction
+# Product direction
 
 `Archive × Editorial × Football × Urawa Identity`
 
-ブランド表現は以下を基本文法とする。
+Visual Grammar：
 
-- White：読む面
-- Black：構造・文字・骨格
-- Red：浦和を示す現在地・重要アクション
-- Diamond：History node / current state / direction
+- White = reading surface / archive
+- Black = structure / typography / spine
+- Red = current / meaningful action / Urawa
+- Diamond = node / connection / direction
 
-目標は「赤いファンサイト」ではなく、色やロゴを減らしても浦和らしいUI。
+独自性は色・shapeだけで作らない。
+
+**他では必要ないが、URAWA HISTORYでは自然なinteraction**を優先する。
 
 ---
 
 # DONE
 
 ## Foundation
-- Product Principles
-- Mobile First方針
-- Quiz → Memory Hook → History loop
-- 全34シーズンDB
-- Quiz Engine MVP
-- Timeline
+- 1992〜2025 全34シーズンDB
+- Quiz Engine
+- TODAY
+- QUIZ answered / unanswered
+- Memory Hook
+- HISTORY Timeline
 - Season Detail
 - Player Detail
-- Learning History MVP
-- basic responsive CSS
-- semantic correct / wrong colors
+- YOU / Learning History
+- responsive baseline
+- Product Principles
+- Visual System
 
-## Superseded
-- 3シーズンだけを使った初期Stress Test
-- 2006のみのVertical Slice
-- Historical DB expansionをUI改善より先に行う計画
+## Shu-Ha-Ri Research Round 01
 
----
+### 守
+Standard UX / accessibility / feedback / hierarchyをbaselineとして確認。
 
-# NOW — UI Refinement
+### 破
+以下の前提をchallengeした。
 
-UI改善は一度に行わず、以下のStageを順番に通す。
+- QuizとHistoryは完全に別画面
+- Yearはmetadata
+- TimelineはHistory tab専用
+- Diamondはbrand decoration
 
-各Stage共通：
+### 離
+Native UI候補を比較し、**History Spine**を第一候補として選択。
 
-`Design → Prototype → Audit → Fix / Reject → Pass`
+History Spine：
 
-次Stageへ進む前にPass Criteriaを満たす。
+`Year = place`
 
----
+`Line = time`
 
-# Stage 0 — Baseline Freeze
+`Diamond = node`
 
-## Purpose
-現在の主要画面・state・導線を固定し、比較基準を作る。
+`Red Diamond = current place`
 
-## Target
-- TODAY
-- QUIZ / unanswered
-- QUIZ / correct
-- QUIZ / incorrect
-- HISTORY
-- SEASON DETAIL
-- PLAYER DETAIL
-- YOU
-- Bottom Navigation
-- Error / Empty / Loading
+### Prototype
 
-## Tasks
-- 各画面のJobを1文で定義
-- Primary Action / Secondary Actionを分類
-- 320 / 390 / desktopの現状を記録
-- inline style / duplicated UI patternを棚卸し
-- 現在の導線図を作る
+`prototype/experiments/history-spine.html`
 
-## Pass
-各画面を3秒見れば目的と第一操作を説明できる比較基準が揃う。
+- mobile = horizontal spine
+- desktop = vertical spine
+- 2003〜2007 local context
+- keyboard arrow focus
+- reduced motion配慮
 
----
+### Favicon
 
-# Stage 1 — Experience Architecture
+`assets/favicon.svg`
 
-## Purpose
-画面装飾より先に、ユーザーが迷わない体験構造へ整える。
+Diamond Timeline Nodeを採用。
 
-## Primary journey
-
-`TODAY → QUIZ → ANSWER → MEMORY HOOK → NEXT / HISTORY`
-
-Secondary journey
-
-`HISTORY → SEASON → PLAYER / MANAGER / KIT → RELATED QUIZ`
-
-## Audit
-- CTA競合
-- Bottom Navigation競合
-- 戻る操作過多
-- Context loss
-- モード選択の先回り
-- 情報過多
-
-## Rejection
-見た目だけ変わり、操作数・理解速度が変わらない案。
-
-## Pass
-主要journeyに行き止まりがなく、次の行動が常に1〜2候補以内。
+`index.html` / `prototype/index.html` に設定済み。
 
 ---
 
-# Stage 2 — Quiz Experience
+# IMPORTANT DECISION
 
-## Purpose
-1問を解くリズムを、このアプリの最も完成度が高い体験にする。
+History Spineを本番UIへ全面採用したとはまだ判断しない。
 
-## Sequence
-Question
-→ Choice
-→ Feedback
-→ Correct Answer
-→ Memory Hook
-→ Next / Explore
+今回分かったのは、
 
-## Tasks
-- 問題文と選択肢の距離
-- 4択のscan speed
-- tap target
-- answered stateの再配置
-- 正誤演出よりMemory Hookを強くする
-- NextとExploreの優先順位
-- Bottom Navとの競合回避
-- keyboard state
-- reduced motion
+**「Timelineを別画面だけに置く必要はない」可能性が高い**
 
-## Brand integration
-- 問題回答前はRedを正誤予告に使わない
-- RedはHistoryへの入口や現在地へ
-- Diamondは選択状態の補助に限定して検証
+というところまで。
 
-## Pass
-390pxでQuestion → Answer → Memory Hookまで文脈が途切れない。
+次は「どこまでQuizへ持ち込むか」を検証する。
+
+---
+
+# NOW — Research Round 02
+
+## Research Question
+
+**History SpineはQuizの常設navigationにするべきか、Answered Stateだけに出すべきか。**
+
+## Why
+
+回答前はQuestionへの集中が最優先。
+
+一方、回答直後は歴史への興味が最も高い。
+
+History Spineの独自性を残しながら、Questionの主役性を壊さない境界を決める。
+
+---
+
+# Experiment 02 — Always vs Reveal
+
+同一Quiz Experienceで2variantを比較する。
+
+## Variant A — Always Visible
+
+Question表示時からHistory Spineを見せる。
+
+### Hypothesis
+Year contextを常に理解できる。
+
+### Risk
+QuestionよりTimelineが先に目に入る。
+
+---
+
+## Variant B — Reveal After Answer
+
+回答前：Yearは通常metadataのみ。
+
+回答後：Memory Hookとともにlocal History Spineを展開。
+
+### Hypothesis
+Questionへの集中を維持しながら、回答直後だけHistory探索へ自然に誘導できる。
+
+### Risk
+UI変化が大きすぎると「新しい機能が出た」感が強くなる。
+
+---
+
+# Measurement
+
+定量分析基盤はまだ不要。
+
+まずheuristic / manual testで以下を見る。
+
+1. First visual focus
+2. Answerまでの視線移動
+3. Scroll amount
+4. Memory Hook read order
+5. Next / Explore competition
+6. History Spineの発見性
+7. perceived clutter
+8. keyboard sequence
+9. 320 / 390pxでの高さ
+
+---
+
+# Decision rule
+
+## PASS
+
+- Questionが第一視線のまま
+- 回答後にMemory Hook → Historyの順序が自然
+- Spineを説明しなくてもYear navigationとして理解できる
+- 390pxで過剰なscrollを生まない
+- Diamondがselected/current nodeとして機能
+- Redなしでもnavigation structureを理解可能
+
+## FAIL
+
+- 回答前にSpineへ注意が奪われる
+- 単なるdecorative timelineになる
+- Next Questionとの競合が増える
+- Bottom Navigationとの二重navigation感が強い
+- 34年へ拡張した時の密度問題を解消できない
+
+---
+
+# Recommendation before Experiment 02
+
+第一候補は **Variant B — Reveal After Answer**。
+
+理由：
+
+- One question, one screenを守りやすい
+- Questionの認知負荷を増やさない
+- Memory Hookの直後がHistory explorationへ入る自然なmoment
+- History Spineを「常設chrome」ではなく「知識がつながる瞬間」として使える
+
+ただし実装前にA / Bを同じcontentで比較し、Bを自動採用しない。
+
+---
+
+# Production Batch 01 — after Research Pass
+
+Research Round 02がPassした場合のみ、実アプリへ小さく統合する。
+
+対象：
+
+`QUIZ answered → Memory Hook → History Spine → Explore Season`
+
+Change Budget：最大3概念。
+
+1. Answered-state hierarchy
+2. Contextual History Spine
+3. Explore action
+
+対象外：
+
+- TODAY全面変更
+- HISTORY全面変更
+- Season Detail全面変更
+- Bottom Nav redesign
+- Full 34-year spine
+- Relation graph
+- New gamification
+
+---
+
+# Production integration idea
+
+最初の本番版では34年全部を出さない。
+
+Current yearを中心にlocal rangeを出す。
+
+例：
+
+`2004 — 2005 — ◆2006 — 2007 — 2008`
+
+選択したyear：Red Diamond。
+
+前後year：neutral node。
+
+Milestone表現はこの段階では追加しない。
 
 ---
 
 # Stage 3 — History Exploration
 
-## Purpose
-HistoryをDB一覧ではなく「年代を辿る体験」にする。
+Production Batch 01がPassした後に着手。
 
-## Targets
-- Timeline
-- Season Detail
-- Player Detail
-- Manager Detail future slot
-- Kit Archive future slot
+## Question
 
-## Key idea
-**Year is the anchor. Diamond is the node.**
+History画面にも同じSpine Grammarを展開すると、Timelineはより自然になるか。
 
-## Tasks
-- 全34年を俯瞰したときの情報密度
-- 年代の強弱
-- タイトル獲得年などの節点
-- Season間の移動
-- PlayerからSeasonへ戻るcontext
-- Related Quizへの自然な入口
+## Candidates
 
-## Diamond experiments
-- neutral diamond = timeline node
-- red diamond = selected/current node
-- milestone diamond = 特別な歴史節点
+- local → full timeline transition
+- selected year persistence
+- Season Detailとのcontext維持
+- Player → Seasonへの戻り
+- title year / milestone density
+- desktop side spine
 
-全34年を赤いdiamondにしない。
+## Do not assume
 
-## Pass
-「情報を検索する」より「次の年も見たくなる」導線になっている。
+Quizで成功したinteractionをそのままHistoryへコピーしない。
+
+Historyではbrowse量が違うため再検証する。
 
 ---
 
 # Stage 4 — Visual Language
 
-## Purpose
-個別CSS調整をDesign Systemへ昇格させる。
+History Spine検証後にDesign Systemへ昇格。
 
-## Define
+Define：
+
+- Year typography
+- Spine line
+- neutral node
+- current node
+- Diamond size
+- Red use
 - Typography scale
-- Font roles
 - Spacing scale
-- Content width
-- Grid
-- Red / White / Black tokens
-- Semantic colors
-- Border hierarchy
-- Radius hierarchy
 - Button hierarchy
-- Interaction states
-- Diamond rules
-- Motion principles
+- Motion
 
-## Required test
-1. Grayscaleで成立するか
-2. Redを戻すと浦和らしい方向性が増すか
-3. Diamondを戻すと固有のリズムが増すか
+Required test：
 
-Red / Diamondがないと成立しない案は禁止。
+1. grayscale
+2. black / white
+3. red
+4. diamond
 
-## Pass
-主要画面のCSS判断をtoken / ruleで説明できる。
+の順。
+
+Red / Diamondがないと成立しないUIは禁止。
 
 ---
 
 # Stage 5 — Responsive Experience
 
-## Purpose
-Mobile Firstを維持しつつ、Desktopを「中央にスマホを置いただけ」から脱却する。
+Primary：390px。
 
-## Widths
-- 320px extreme
-- 390px primary
-- tablet
-- desktop
+Stress：320px。
 
-## Desktop experiments
-- Timeline + detail relation
-- 2-column limited layout
-- large year typography
-- archive browsing
+Desktopでは同じSpine Grammarをvertical orientationへ変換する可能性を検証。
 
-Desktop専用機能を増やさず、同じ情報構造の見せ方を変える。
-
-## Pass
-390pxが最良の主体験であり、desktopにもdesktopを使う理由がある。
+Desktopをmobile拡大版にしないが、別productにもしてはいけない。
 
 ---
 
 # Stage 6 — Accessibility & Stress
 
-## Test states
-- 長い選手名
-- 外国籍選手名
-- 同姓同名
-- 長期在籍
-- 複数回在籍
-- 途中加入 / 退団
-- 監督交代
-- 長いsummary
-- title複数
-- 画像なし
-- data missing
-- answer history 0
-- answer history 1000+
-- accuracy 0%
-- accuracy 100%
-- keyboard only
+Minimum：
+
+- keyboard
 - focus-visible
+- color-independent state
 - reduced motion
-- low speed
-- JS error
+- WCAG 2.2 target sizing
 
-## Pass
-極端値でも情報階層・操作・正答の一意性が壊れない。
+Stress：
 
----
-
-# Stage 7 — Reduction Round
-
-## Purpose
-完成案から不要なUIを削る。
-
-全要素を以下へ分類：
-
-- KEEP
-- REMOVE
-- MERGE
-- DE-EMPHASIZE
-
-対象：
-- Card
-- Divider
-- Badge
-- Label
-- Button
-- Copy
-- Icon
-- Diamond
-- Navigation
-- Decoration
-
-## Pass
-要素数を減らしても意味が失われず、むしろ理解が速くなっている。
+- long question
+- long player name
+- long memory hook
+- 1000+ answer history
+- error
+- missing data
+- 320px
+- 390px
+- desktop
 
 ---
 
-# Stage 8 — Final Polish
+# Stage 7 — Reduction
 
-## Targets
-- 1px alignment
-- typography rhythm
-- vertical spacing
-- optical balance
-- copy length
-- focus state
-- tap feedback
-- micro motion
-- empty state
-- error state
+History Spine採用後も、以下を必ず削る。
 
-## Pass
-「prototypeだから許される違和感」が主要画面から消えている。
+- unnecessary diamonds
+- decorative red
+- labels
+- lines
+- badges
+- card containers
+- duplicated navigation
+
+削って意味が同じなら削除。
 
 ---
 
-# Visual Rejection Conditions
+# Rejected / Parked
 
-以下は却下する。
+現時点では実装しない。
 
-- 赤背景だらけ
-- Diamond patternだらけ
-- 何でもcard
-- 何でも角丸
-- shadowで階層を作る
-- generic SaaS
-- generic quiz app
-- sports news dashboard
-- 公式サイトの模倣
-- 正誤とブランド色の混同
-- Yearより装飾が目立つ
-- HistoryよりUI chromeが目立つ
+- Season Strataをprimary navigationにする
+- Player relation graph
+- Archive Drawer metaphor
+- 3D timeline
+- drag-only timeline
+- 全34年diamond常時表示
+- red-dominant layout
+
+Memory EchoはHistory Spine補助として保留。
 
 ---
 
-# First Implementation Batch
+# NEXT ACTION
 
-Stage 0監査後、最初の実装batchはQUIZに限定する。
+**Experiment 02：同じQuiz Answered Stateで「Spine常設」と「回答後Reveal」を比較する。**
 
-対象：
-1. QUIZ unanswered
-2. QUIZ answered
-3. Memory Hook
-4. Next / Explore
-5. Bottom Navigationとの関係
+実装前に比較。
 
-理由：
-- Product loopの中心
-- 使用頻度が最も高い
-- Visual Systemを小さい範囲で検証できる
-- 成功したruleをTODAY / HISTORYへ展開できる
-
-この段階ではHistory全面改修を同時に行わない。
-
----
-
-# NEXT
-
-Stage 0 — Baseline Freeze
-↓
-Stage 1 — Experience Architecture
-↓
-Stage 2 — Quiz Experience prototype
-
----
-
-# LATER
-
-- Manager Detail
-- Kit Archiveの本格化
-- adaptive quiz
-- cloud sync
-- account
-- advanced learning model
-
-UIが安定する前に追加しない。
+比較後、勝った1案だけをproduction Quizへ統合する。
 
 ---
 
 # Next Review Gate
 
-最初のレビューではコード量ではなく以下だけを見る。
+次回レビューで見るのは6点だけ。
 
-- 1問を解く速度
-- 回答後に何を読むか
-- 次の行動が迷わないか
-- Redが意味を持っているか
-- Diamondが意味を持っているか
-- 390pxで成立しているか
+1. Questionへ第一視線が向くか
+2. Memory Hookが読まれるか
+3. History Spineが説明なしで理解できるか
+4. NextとExploreが競合しないか
+5. 390pxで成立するか
+6. 独自性がshapeではなくinteractionとして残るか
 
-この6点が通ってからHistoryへ進む。
+この6点が通るまでHistory本体へ進まない。
