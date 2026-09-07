@@ -16,6 +16,7 @@ on:
       - 'scripts/quiz-trust-audit.mjs'
       - 'scripts/quiz-quality-audit.mjs'
       - 'scripts/quiz-difficulty-audit.mjs'
+      - 'scripts/quiz-coverage-audit.mjs'
       - 'scripts/ui-answered-state-audit.mjs'
       - '.github/workflows/quiz-trust-audit.yml'
   pull_request:
@@ -32,6 +33,7 @@ on:
       - 'scripts/quiz-trust-audit.mjs'
       - 'scripts/quiz-quality-audit.mjs'
       - 'scripts/quiz-difficulty-audit.mjs'
+      - 'scripts/quiz-coverage-audit.mjs'
       - 'scripts/ui-answered-state-audit.mjs'
       - '.github/workflows/quiz-trust-audit.yml'
 
@@ -48,6 +50,7 @@ jobs:
         run: |
           node --check prototype/app.js
           node --check prototype/quiz-difficulty.js
+          node --check scripts/quiz-coverage-audit.mjs
 
       - name: Verify Answered State B+ UI contract
         run: node scripts/ui-answered-state-audit.mjs
@@ -69,9 +72,19 @@ jobs:
           mkdir -p artifacts
           node scripts/quiz-difficulty-audit.mjs --out artifacts/q3-difficulty-baseline.json
 
+      - name: Run Q4 deterministic coverage and exposure audit
+        run: node scripts/quiz-coverage-audit.mjs --out artifacts/q4-coverage-baseline.json
+
       - name: Upload Q3 baseline dataset
         uses: actions/upload-artifact@v4
         with:
           name: q3-difficulty-baseline
           path: artifacts/q3-difficulty-baseline.json
+          if-no-files-found: error
+
+      - name: Upload Q4 coverage baseline
+        uses: actions/upload-artifact@v4
+        with:
+          name: q4-coverage-baseline
+          path: artifacts/q4-coverage-baseline.json
           if-no-files-found: error
