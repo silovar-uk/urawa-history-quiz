@@ -505,7 +505,7 @@
         <div class="options">
           ${activeQuiz.options.map((opt, i) => `
             <button class="option" data-answer="${i}" data-value="${opt}">
-              <span class="key">${String.fromCharCode(65 + i)}</span>
+              <span class="key">${String(i + 1).padStart(2, '0')}</span>
               <strong>${opt}</strong>
             </button>
           `).join('')}
@@ -729,6 +729,37 @@
     bindEvents();
   }
 
+  function getAnswerSpineContext(question) {
+    if (!db || !question) return [];
+    const seasons = [...db.seasons].sort((a, b) => a.year - b.year);
+    const index = seasons.findIndex(s => s.season_id === question.seasonId);
+    if (index < 0) return [];
+    return seasons.slice(Math.max(0, index - 1), Math.min(seasons.length, index + 2));
+  }
+
+  function getHistoryEchoText(season) {
+    if (!season) return '';
+    if (Array.isArray(season.titles) && season.titles.length) return season.titles.join(' / ');
+    if (season.league_rank && season.league_name) return season.league_name + ' ' + season.league_rank + '位';
+    const text = season.summary || 'シーズン記録';
+    return text.length > 72 ? text.slice(0, 72) + '…' : text;
+  }
+
+  function renderAnswerSpine(question) {
+    const context = getAnswerSpineContext(question);
+    if (!context.length) return '';
+    const current = context.find(s => s.season_id === question.seasonId) || context[0];
+    const nodes = context.map(season => {
+      const isCurrent = season.season_id === question.seasonId;
+      return '<button class="history-node" type="button" data-history-preview data-season="' + season.season_id + '" aria-pressed="' + (isCurrent ? 'true' : 'false') + '"' + (isCurrent ? ' aria-current="true"' : '') + '>' +
+        '<span class="history-diamond" aria-hidden="true"></span><span class="history-year">' + season.year + '</span></button>';
+    }).join('');
+    return '<section class="history-spine-reveal" aria-label="回答した年の前後の歴史">' +
+      '<div class="history-spine">' + nodes + '</div>' +
+      '<div class="history-echo" id="history-echo">' + current.year + ' — ' + getHistoryEchoText(current) + '</div>' +
+      '</section>';
+  }
+
   function bindEvents() {
     document.querySelectorAll('[data-screen]').forEach(el => {
       el.addEventListener('click', () => {
@@ -796,19 +827,23 @@
         });
 
         const feedbackEl = document.querySelector('#feedback');
+        const spineMarkup = renderAnswerSpine(activeQuiz);
         feedbackEl.innerHTML = `
-          <section class="feedback" aria-live="polite">
-            <div class="feedback-state ${isCorrect ? 'good' : 'bad'}">
-              ${isCorrect ? 'CORRECT' : 'NOT THIS TIME'}
+          <section class="feedback">
+            <div class="feedback-announcement" role="status" aria-live="polite" aria-atomic="true">
+              <div class="feedback-state ${isCorrect ? 'good' : 'bad'}">
+                ${isCorrect ? 'CORRECT' : 'NOT THIS TIME'}
+              </div>
+              <h2 class="answer-title">${activeQuiz.correct}</h2>
             </div>
-            <h2 class="answer-title">${activeQuiz.correct}</h2>
-            <div class="memory-hook">
-              <strong>💡 記憶フック:</strong><br>
-              ${activeQuiz.memoryHook}
+            <div class="memory-echo">
+              <span class="memory-echo-label">MEMORY ECHO</span>
+              <span>${activeQuiz.memoryHook}</span>
             </div>
+            ${spineMarkup}
             <div class="actions">
               <button class="primary" data-action="next-question">次の問題へ</button>
-              <button class="secondary" data-action="explore-season" data-season="${activeQuiz.seasonId}">このシーズンを見る (${activeQuiz.year}年)</button>
+              <button class="secondary" data-action="explore-season" data-season="${activeQuiz.seasonId}">${activeQuiz.year}年を見る</button>
             </div>
           </section>
         `;
@@ -821,6 +856,22 @@
         feedbackEl.querySelector('[data-action="explore-season"]').addEventListener('click', (e) => {
           selectedSeasonId = e.currentTarget.dataset.season;
           render('season');
+        });
+
+        const historyEchoEl = feedbackEl.querySelector('#history-echo');
+        const exploreButton = feedbackEl.querySelector('[data-action="explore-season"]');
+        feedbackEl.querySelectorAll('[data-history-preview]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const previewSeason = db.seasons.find(s => s.season_id === btn.dataset.season);
+            if (!previewSeason) return;
+            feedbackEl.querySelectorAll('[data-history-preview]').forEach(node => node.setAttribute('aria-pressed', 'false'));
+            btn.setAttribute('aria-pressed', 'true');
+            if (historyEchoEl) historyEchoEl.textContent = previewSeason.year + ' — ' + getHistoryEchoText(previewSeason);
+            if (exploreButton) {
+              exploreButton.dataset.season = previewSeason.season_id;
+              exploreButton.textContent = previewSeason.year + '年を見る';
+            }
+          });
         });
       });
     });
