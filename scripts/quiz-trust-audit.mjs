@@ -19,20 +19,27 @@ const db = {
   sources: readJson('data/sources.json')
 };
 
-const trustCode = fs.readFileSync(path.join(root, 'prototype/quiz-trust.js'), 'utf8');
 const sandbox = { window: {}, console };
 vm.createContext(sandbox);
-vm.runInContext(trustCode, sandbox, { filename: 'quiz-trust.js' });
-const trust = sandbox.window.URAWA_QUIZ_TRUST;
 
-if (!trust) {
-  console.error('Quiz Trust Gate could not be loaded.');
+const provenanceCode = fs.readFileSync(path.join(root, 'data/provenance-claims.js'), 'utf8');
+vm.runInContext(provenanceCode, sandbox, { filename: 'provenance-claims.js' });
+
+const trustCode = fs.readFileSync(path.join(root, 'prototype/quiz-trust.js'), 'utf8');
+vm.runInContext(trustCode, sandbox, { filename: 'quiz-trust.js' });
+
+const trust = sandbox.window.URAWA_QUIZ_TRUST;
+const provenance = sandbox.window.URAWA_CLAIM_PROVENANCE;
+
+if (!trust || !provenance) {
+  console.error('Quiz Trust Gate or claim provenance registry could not be loaded.');
   process.exit(1);
 }
 
 const results = {};
 const rejectionReasons = {};
-const failures = [];
+const invariantFailures = [];
+const provenanceFailures = [];
 
 function bucket(id) {
   if (!results[id]) results[id] = { eligible: 0, rejected: 0, reasons: {} };
@@ -54,10 +61,64 @@ function pass(id) {
 function baseQuestionIsValid(id, seasonId, question) {
   const checked = trust.validateQuestionBase(question);
   if (!checked.ok) {
-    failures.push({ id, seasonId, reason: checked.reason, detail: checked.detail });
+    invariantFailures.push({ id, seasonId, reason: checked.reason, detail: checked.detail });
     return false;
   }
   return true;
+}
+
+function entityForClaim(claim) {
+  if (claim.entityType === 'player_season') {
+    return db.playerSeasons.find(x => x.id === claim.entityId);
+  }
+  if (claim.entityType === 'uniform') {
+    return db.uniforms.find(x => x.uniform_id === claim.entityId);
+  }
+  return null;
+}
+
+function normalize(value) {
+  return String(value ?? '').trim().normalize('NFKC');
+}
+
+function auditProvenanceRegistry() {
+  const knownSources = new Set(db.sources.map(s => s.source_id));
+  const seen = new Set();
+
+  for (const claim of provenance.claims || []) {
+    const key = `${claim.entityType}:${claim.entityId}`;
+    if (seen.has(key)) {
+      provenanceFailures.push({ type: 'DUPLICATE_CLAIM_ENTITY', key });
+      continue;
+    }
+    seen.add(key);
+
+    const entity = entityForClaim(claim);
+    if (!entity) {
+      provenanceFailures.push({ type: 'CLAIM_ENTITY_MISSING', key });
+      continue;
+    }
+
+    for (const [fieldName, field] of Object.entries(claim.fields || {})) {
+      if (!Array.isArray(field.sourceIds) || !field.sourceIds.length) {
+        provenanceFailures.push({ type: 'CLAIM_SOURCE_MISSING', key, fieldName });
+        continue;
+      }
+      const unknown = field.sourceIds.filter(id => !knownSources.has(id));
+      if (unknown.length) {
+        provenanceFailures.push({ type: 'CLAIM_SOURCE_UNKNOWN', key, fieldName, unknown });
+      }
+      if (normalize(entity[fieldName]) !== normalize(field.value)) {
+        provenanceFailures.push({
+          type: 'CLAIM_VALUE_MISMATCH',
+          key,
+          fieldName,
+          baseValue: entity[fieldName],
+          claimValue: field.value
+        });
+      }
+    }
+  }
 }
 
 function auditPlayerNumber(season) {
@@ -123,12 +184,7 @@ function auditPlayerPosition(season) {
 }
 
 function auditPlayerOverlap(season) {
-  return reject(
-    'PLAYER_OVERLAP',
-    'OVERLAP_UNVERIFIED',
-    season.season_id,
-    'No registration interval / roster-completeness evidence.'
-  );
+  return reject('PLAYER_OVERLAP', 'OVERLAP_UNVERIFIED', season.season_id, 'No registration interval / roster-completeness evidence.');
 }
 
 function auditManager(season) {
@@ -162,8 +218,7 @@ function auditRank(season) {
   if (!check.ok) return reject(id, check.reason, season.season_id, check.detail);
 
   const correct = Number(season.league_rank);
-  const other = Array.from({ length: Number(season.total_teams) }, (_, i) => i + 1)
-    .filter(x => x !== correct);
+  const other = Array.from({ length: Number(season.total_teams) }, (_, i) => i + 1).filter(x => x !== correct);
   if (other.length < 3) return reject(id, 'INSUFFICIENT_DISTRACTORS', season.season_id);
 
   const q = {
@@ -218,6 +273,8 @@ function auditKit(season) {
   return reject(id, 'AMBIGUOUS_CORRECT_ANSWER', season.season_id);
 }
 
+auditProvenanceRegistry();
+
 for (const season of db.seasons) {
   const seasonCheck = trust.isConfirmedSeason(season, db);
   if (!seasonCheck.ok) {
@@ -235,13 +292,17 @@ for (const season of db.seasons) {
 
 const report = {
   trustVersion: trust.version,
+  provenanceVersion: provenance.version,
   seasons: db.seasons.length,
   sources: db.sources.length,
+  provenanceClaims: (provenance.claims || []).length,
+  knownDataIssues: (provenance.issues || []).length,
   generators: results,
   rejectionReasons,
-  invariantFailures: failures
+  invariantFailures,
+  provenanceFailures
 };
 
 console.log(JSON.stringify(report, null, 2));
 
-if (failures.length) process.exit(1);
+if (invariantFailures.length || provenanceFailures.length) process.exit(1);
