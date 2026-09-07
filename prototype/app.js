@@ -1,4 +1,4 @@
-// URAWA HISTORY QUIZ — Application Core & Multi-era Quiz Engine
+// URAWA HISTORY QUIZ — All 34 Seasons Complete Engine (1992-2025)
 
 (function () {
   'use strict';
@@ -32,7 +32,7 @@
   // --------------------------------------------------
   // 2. Learning History Store (localStorage)
   // --------------------------------------------------
-  const STORAGE_KEY = 'urawa_history_quiz_stats_v1';
+  const STORAGE_KEY = 'urawa_history_quiz_stats_v2';
 
   function getStats() {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -41,8 +41,18 @@
         total: 0,
         correct: 0,
         recentWrong: 0,
-        byCategory: { PLAYER: { total: 0, correct: 0 }, MANAGER: { total: 0, correct: 0 }, SEASON: { total: 0, correct: 0 }, KIT: { total: 0, correct: 0 } },
-        byEra: { '1990s': { total: 0, correct: 0 }, '2000s': { total: 0, correct: 0 }, '2010s': { total: 0, correct: 0 }, '2020s': { total: 0, correct: 0 } }
+        byCategory: {
+          PLAYER: { total: 0, correct: 0 },
+          MANAGER: { total: 0, correct: 0 },
+          SEASON: { total: 0, correct: 0 },
+          KIT: { total: 0, correct: 0 }
+        },
+        byEra: {
+          '1990s': { total: 0, correct: 0 },
+          '2000s': { total: 0, correct: 0 },
+          '2010s': { total: 0, correct: 0 },
+          '2020s': { total: 0, correct: 0 }
+        }
       };
     }
     try {
@@ -83,7 +93,7 @@
   }
 
   // --------------------------------------------------
-  // 3. Multi-era Quiz Generator (Quiz Engine MVP)
+  // 3. Quiz Engine (All 34 Seasons Dynamic Generator)
   // --------------------------------------------------
   function shuffle(arr) {
     const copy = [...arr];
@@ -98,13 +108,14 @@
     if (specificSeasonId) {
       return db.seasons.find(s => s.season_id === specificSeasonId) || db.seasons[0];
     }
-    if (!selectedEra || selectedEra === 'ALL') {
-      return db.seasons[Math.floor(Math.random() * db.seasons.length)];
-    }
-    if (selectedEra === '1990s') return db.seasons.find(s => s.year < 2000) || db.seasons[0];
-    if (selectedEra === '2000s') return db.seasons.find(s => s.year >= 2000 && s.year < 2010) || db.seasons[0];
-    if (selectedEra === '2020s') return db.seasons.find(s => s.year >= 2020) || db.seasons[0];
-    return db.seasons[0];
+    let pool = db.seasons;
+    if (selectedEra === '1990s') pool = db.seasons.filter(s => s.year < 2000);
+    else if (selectedEra === '2000s') pool = db.seasons.filter(s => s.year >= 2000 && s.year < 2010);
+    else if (selectedEra === '2010s') pool = db.seasons.filter(s => s.year >= 2010 && s.year < 2020);
+    else if (selectedEra === '2020s') pool = db.seasons.filter(s => s.year >= 2020);
+
+    if (!pool.length) pool = db.seasons;
+    return pool[Math.floor(Math.random() * pool.length)];
   }
 
   function generateQuiz(targetSeasonId = null, filterEra = 'ALL') {
@@ -115,7 +126,7 @@
     const psList = db.playerSeasons.filter(ps => ps.season_id === seasonId);
 
     const generators = [
-      // 1. PLAYER_NUMBER (背番号問題: 背番号が存在するシーズンのみ)
+      // 1. PLAYER_NUMBER (背番号問題)
       () => {
         const withNumber = psList.filter(ps => ps.shirt_number !== null);
         if (!withNumber.length) return null;
@@ -125,6 +136,9 @@
 
         const samePos = withNumber.filter(ps => ps.player_id !== targetPS.player_id && ps.position === targetPS.position);
         let distractorPool = samePos.length >= 3 ? samePos : withNumber.filter(ps => ps.player_id !== targetPS.player_id);
+        if (distractorPool.length < 3) {
+          distractorPool = db.playerSeasons.filter(ps => ps.player_id !== targetPS.player_id);
+        }
         const distractors = shuffle(distractorPool)
           .slice(0, 3)
           .map(ps => {
@@ -167,20 +181,18 @@
         };
       },
 
-      // 3. PLAYER_OVERLAP (同時在籍問題: 異年代の選手を誤答にして出題)
+      // 3. PLAYER_OVERLAP (同時在籍問題)
       () => {
         if (psList.length < 2) return null;
         const targetPS = psList[Math.floor(Math.random() * psList.length)];
         const targetPlayer = db.players.find(p => p.player_id === targetPS.player_id);
         if (!targetPlayer) return null;
 
-        // 同一シーズンに在籍していた正解選手
         const coPlayers = psList.filter(ps => ps.player_id !== targetPS.player_id);
         const correctPS = coPlayers[Math.floor(Math.random() * coPlayers.length)];
         const correctPlayer = db.players.find(p => p.player_id === correctPS.player_id);
         if (!correctPlayer) return null;
 
-        // 同一シーズンに在籍していなかった異年代の選手をディストラクターにする
         const coPlayerIds = new Set(psList.map(ps => ps.player_id));
         const diffEraPS = db.playerSeasons.filter(ps => !coPlayerIds.has(ps.player_id));
         const distinctDiffPlayers = [...new Set(diffEraPS.map(ps => ps.player_id))];
@@ -200,12 +212,12 @@
           question: `${seasonData.year}年シーズンに ${targetPlayer.name} とチームメイトとして在籍していた選手は？`,
           options,
           correct: correctPlayer.name,
-          memoryHook: `${targetPlayer.name} と ${correctPlayer.name} は${seasonData.year}年の浦和レッズで共闘した。`,
+          memoryHook: `${targetPlayer.name} と ${correctPlayer.name} は${seasonData.year}年の浦和レッズで共に戦った。`,
           seasonId: seasonData.season_id
         };
       },
 
-      // 4. MANAGER_SEASON (監督問題)
+      // 4. MANAGER_SEASON (歴代監督問題)
       () => {
         const tenure = db.managerTenures.find(mt => mt.season_id === seasonId);
         if (!tenure) return null;
@@ -228,37 +240,31 @@
         };
       },
 
-      // 5. SEASON_RANK (順位・戦績問題)
+      // 5. SEASON_RANK (順位問題)
       () => {
         if (!seasonData.league_rank) return null;
         const correct = `${seasonData.league_rank}位`;
-        const possible = [1, 2, 3, 4, 6, 8].filter(r => r !== seasonData.league_rank);
+        const possible = [1, 2, 3, 4, 6, 7, 10, 11, 14, 15].filter(r => r !== seasonData.league_rank);
         const distractors = shuffle(possible).slice(0, 3).map(r => `${r}位`);
         const options = shuffle([correct, ...distractors]);
 
         return {
           category: 'SEASON',
           year: seasonData.year,
-          question: `${seasonData.year}年シーズンの浦和レッズのJ1リーグ最終順位は？`,
+          question: `${seasonData.year}年シーズンの浦和レッズのJ1/J2最終順位は？`,
           options,
           correct,
-          memoryHook: seasonData.memory_hook || `勝点${seasonData.points}を獲得し、リーグ${seasonData.league_rank}位で終えた。`,
+          memoryHook: seasonData.memory_hook || `リーグ${seasonData.league_rank}位でシーズンを終えた。`,
           seasonId: seasonData.season_id
         };
       },
 
-      // 6. SEASON_SUMMARY (シーズン要約問題)
+      // 6. SEASON_SUMMARY (要約から年度を当てる)
       () => {
         const otherSeasons = db.seasons.filter(s => s.season_id !== seasonId);
-        const distractors = otherSeasons.map(s => `${s.year}年`);
-        while (distractors.length < 3) {
-          const fakeYear = 2000 + Math.floor(Math.random() * 24);
-          if (fakeYear !== seasonData.year && !distractors.includes(`${fakeYear}年`)) {
-            distractors.push(`${fakeYear}年`);
-          }
-        }
+        const distractors = shuffle(otherSeasons.map(s => `${s.year}年`)).slice(0, 3);
         const correct = `${seasonData.year}年`;
-        const options = shuffle([correct, ...distractors.slice(0, 3)]);
+        const options = shuffle([correct, ...distractors]);
 
         return {
           category: 'SEASON',
@@ -271,12 +277,12 @@
         };
       },
 
-      // 7. KIT_DETAIL (ユニフォーム胸スポンサー問題)
+      // 7. KIT_DETAIL (キット胸スポンサー問題)
       () => {
         const kit = db.uniforms.find(u => u.season_id === seasonId && u.type === 'HOME');
-        if (!kit) return null;
+        if (!kit || !kit.chest_sponsor) return null;
         const correct = kit.chest_sponsor;
-        const pool = ['MITSUBISHI MOTORS', 'Vodafone', 'POLUS', 'DHL'].filter(s => s !== correct);
+        const pool = ['MITSUBISHI MOTORS', 'Vodafone', 'DHL', 'POLUS'].filter(s => s !== correct);
         const distractors = shuffle(pool).slice(0, 3);
         const options = shuffle([correct, ...distractors]);
 
@@ -286,7 +292,7 @@
           question: `${seasonData.year}年シーズンの公式ユニフォームの胸スポンサーは？`,
           options,
           correct,
-          memoryHook: kit.description || `${seasonData.year}年のユニフォームはサプライヤーが${kit.supplier}、胸ロゴは${kit.chest_sponsor}。`,
+          memoryHook: kit.description || `${seasonData.year}年のサプライヤーは${kit.supplier}、胸ロゴは${kit.chest_sponsor}。`,
           seasonId: seasonData.season_id
         };
       }
@@ -295,7 +301,7 @@
     const validGenerators = shuffle(generators);
     for (const gen of validGenerators) {
       const q = gen();
-      if (q && q.options && q.options.length === 4) {
+      if (q && q.options && q.options.length === 4 && new Set(q.options).size === 4) {
         return q;
       }
     }
@@ -318,14 +324,15 @@
       const accuracy = stats.total > 0 ? Math.round((stats.correct / stats.total) * 100) : 0;
       return `
         <div class="eyebrow">TODAY</div>
-        <div class="year">2006</div>
+        <div class="year">34 YEARS</div>
         <h1 class="display-title">1問から、浦和の歴史へ。</h1>
-        <p class="lead">単なるクイズではなく、歴史データベースと連携して「解く → 覚える → 年代へ潜る」学習サイクルを体験できます。</p>
+        <p class="lead">1992年クラブ発足から2025年最新シーズンまで、全34年におよぶ浦和レッズ全史の記憶を旅する学習アプリです。</p>
 
         <div class="era-filters" aria-label="出題年代フィルター">
-          <button class="filter-pill ${activeEraFilter === 'ALL' ? 'active' : ''}" data-era="ALL">全年代</button>
+          <button class="filter-pill ${activeEraFilter === 'ALL' ? 'active' : ''}" data-era="ALL">全年代 (1992〜2025)</button>
           <button class="filter-pill ${activeEraFilter === '1990s' ? 'active' : ''}" data-era="1990s">1990年代</button>
           <button class="filter-pill ${activeEraFilter === '2000s' ? 'active' : ''}" data-era="2000s">2000年代</button>
+          <button class="filter-pill ${activeEraFilter === '2010s' ? 'active' : ''}" data-era="2010s">2010年代</button>
           <button class="filter-pill ${activeEraFilter === '2020s' ? 'active' : ''}" data-era="2020s">2020年代</button>
         </div>
 
@@ -334,13 +341,13 @@
         <div class="section-label">CONTINUE</div>
         <div class="stat-line"><span>最近間違えた問題</span><strong>${stats.recentWrong}</strong></div>
         <div class="stat-line"><span>学習した問題数</span><strong>${stats.total}問 / 正答率 ${accuracy}%</strong></div>
-        <div class="stat-line"><span>収録年代</span><strong>1995年 / 2006年 / 2023年</strong></div>
+        <div class="stat-line"><span>収録シーズン</span><strong>1992年 〜 2025年（全34シーズン網羅）</strong></div>
       `;
     },
 
     quiz: () => {
       if (!activeQuiz) {
-        activeQuiz = generateQuiz(selectedSeasonId, activeEraFilter);
+        activeQuiz = generateQuiz(null, activeEraFilter);
       }
       if (!activeQuiz) {
         return `
@@ -352,7 +359,7 @@
 
       return `
         <div class="question-meta">
-          <span>${activeQuiz.category} · ${activeQuiz.year}</span>
+          <span>${activeQuiz.category} · ${activeQuiz.year}年</span>
           <span>FACT VERIFIED</span>
         </div>
         <h1 class="question">${activeQuiz.question.replace(/\n/g, '<br>')}</h1>
@@ -369,17 +376,17 @@
     },
 
     history: () => {
-      const seasons = db ? db.seasons : [];
+      const seasons = db ? [...db.seasons].sort((a, b) => b.year - a.year) : [];
       return `
         <div class="eyebrow">HISTORY</div>
-        <h1 class="display-title">Timeline</h1>
-        <p class="lead">年を入口に、選手・監督・ユニフォーム・出来事を結びつける。</p>
+        <h1 class="display-title">Timeline (全34年)</h1>
+        <p class="lead">1992年のクラブ発足から現在まで。年をタップして詳細へ潜る。</p>
         <div class="timeline">
           ${seasons.map(s => `
             <div class="timeline-item" data-action="view-season" data-season="${s.season_id}">
               <div class="timeline-year">${s.year}</div>
               <div class="timeline-note">
-                <strong style="color:var(--brand);">${s.titles && s.titles.length ? s.titles.join(' / ') : (s.league_rank ? `J1 ${s.league_rank}位` : 'シーズン')}</strong><br>
+                <strong style="color:var(--brand);">${s.titles && s.titles.length ? '🏆 ' + s.titles.join(' / ') : (s.league_rank ? `${s.league_name} ${s.league_rank}位` : 'シーズン')}</strong><br>
                 ${s.summary}
               </div>
             </div>
@@ -403,9 +410,9 @@
 
         <hr class="rule">
         <div class="section-label">RECORD & TITLES</div>
-        <div class="stat-line"><span>最終順位</span><strong>${s.league_rank ? `J1 ${s.league_rank}位` : '—'}</strong></div>
-        ${s.points ? `<div class="stat-line"><span>勝点 / 戦績</span><strong>勝点${s.points}（${s.wins}勝 ${s.draws}分 ${s.losses}敗）</strong></div>` : ''}
-        ${s.titles && s.titles.length ? `<div class="stat-line"><span>獲得タイトル</span><strong style="color:var(--brand);">${s.titles.join('、')}</strong></div>` : ''}
+        <div class="stat-line"><span>最終順位</span><strong>${s.league_rank ? `${s.league_name} ${s.league_rank}位` : '—'}</strong></div>
+        ${s.points !== null ? `<div class="stat-line"><span>勝点 / 戦績</span><strong>勝点${s.points}（${s.wins}勝 ${s.draws}分 ${s.losses}敗）</strong></div>` : ''}
+        ${s.titles && s.titles.length ? `<div class="stat-line"><span>獲得タイトル</span><strong style="color:var(--brand);">🏆 ${s.titles.join('、')}</strong></div>` : ''}
 
         <hr class="rule">
         <div class="section-label">MANAGER</div>
@@ -421,14 +428,14 @@
           <div style="display:flex; align-items:center; gap:12px;">
             <div style="width:38px; height:38px; background:${kit ? kit.main_color : '#E6002D'}; border:1px solid #ddd; border-radius:4px; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:10px; color:#fff;">KIT</div>
             <div>
-              <strong>${kit ? kit.supplier : 'Nike'} (${kit ? kit.chest_sponsor : ''})</strong>
+              <strong>${kit ? kit.supplier : 'Mizuno/Puma/Nike'} (${kit && kit.chest_sponsor ? kit.chest_sponsor : '—'})</strong>
               <div style="font-size:0.8125rem; color:var(--muted);">${kit ? kit.description : '公式ユニフォーム'}</div>
             </div>
           </div>
         </div>
 
         <hr class="rule">
-        <div class="section-label">KEY SQUAD (${psList.length}名登録 · タップで選手詳細)</div>
+        <div class="section-label">KEY PLAYERS (${psList.length}名登録 · タップで選手詳細)</div>
         <div class="squad-list">
           ${psList.map(ps => {
             const p = db.players.find(x => x.player_id === ps.player_id);
@@ -455,9 +462,10 @@
       const stats = getStats();
       const accuracy = stats.total > 0 ? Math.round((stats.correct / stats.total) * 100) : 0;
       const eras = [
-        { key: '1990s', label: '1990年代 (1995年)' },
-        { key: '2000s', label: '2000年代 (2006年)' },
-        { key: '2020s', label: '2020年代 (2023年)' }
+        { key: '1990s', label: '1990年代 (草創期・J2降格まで)' },
+        { key: '2000s', label: '2000年代 (J1初制覇・ACL初制覇)' },
+        { key: '2010s', label: '2010年代 (ミシャ体制・ACL2度目)' },
+        { key: '2020s', label: '2020年代 (ACL3度目・世界へ)' }
       ];
       const categories = [
         { key: 'PLAYER', label: '選手' },
@@ -469,14 +477,14 @@
       return `
         <div class="eyebrow">YOU</div>
         <h1 class="display-title">Your Urawa</h1>
-        <p class="lead">単なるスコアではなく、「どの年代・カテゴリを深く理解しているか」を可視化します。</p>
+        <p class="lead">全34年の歴史の中で、「どの年代・カテゴリを深く理解しているか」を可視化します。</p>
 
         <div class="stat-line"><span>総解答数</span><strong>${stats.total}問</strong></div>
         <div class="stat-line"><span>総合正答率</span><strong>${accuracy}%</strong></div>
         <div class="stat-line"><span>最近の誤答</span><strong>${stats.recentWrong}問</strong></div>
 
         <hr class="rule">
-        <div class="section-label">ERA MASTERY（年代別）</div>
+        <div class="section-label">ERA MASTERY（年代別理解度）</div>
         ${eras.map(e => {
           const eraData = stats.byEra[e.key] || { total: 0, correct: 0 };
           const pct = eraData.total > 0 ? Math.round((eraData.correct / eraData.total) * 100) : 0;
@@ -493,7 +501,7 @@
         }).join('')}
 
         <hr class="rule">
-        <div class="section-label">CATEGORY MASTERY（カテゴリ別）</div>
+        <div class="section-label">CATEGORY MASTERY（カテゴリ別理解度）</div>
         ${categories.map(c => {
           const catData = stats.byCategory[c.key] || { total: 0, correct: 0 };
           const pct = catData.total > 0 ? Math.round((catData.correct / catData.total) * 100) : 0;
@@ -519,7 +527,7 @@
   function showPlayerDetail(playerId) {
     const player = db.players.find(p => p.player_id === playerId);
     if (!player) return;
-    const history = db.playerSeasons.filter(ps => ps.player_id === playerId);
+    const history = db.playerSeasons.filter(ps => ps.player_id === playerId).sort((a, b) => parseInt(a.season_id) - parseInt(b.season_id));
 
     let modal = document.querySelector('#player-modal');
     if (!modal) {
@@ -537,7 +545,7 @@
           ${player.name_kana} / ${player.primary_position} / ${player.nationality}
         </p>
 
-        <div class="section-label">RECORD IN URAWA</div>
+        <div class="section-label">RECORD IN URAWA (${history.length}シーズン登録)</div>
         ${history.map(h => `
           <div class="stat-line" style="align-items:center;">
             <div>
@@ -575,17 +583,15 @@
   }
 
   function bindEvents() {
-    // Navigation items
     document.querySelectorAll('[data-screen]').forEach(el => {
       el.addEventListener('click', () => {
         if (el.dataset.screen === 'quiz') {
-          activeQuiz = generateQuiz(selectedSeasonId, activeEraFilter);
+          activeQuiz = generateQuiz(null, activeEraFilter);
         }
         render(el.dataset.screen);
       });
     });
 
-    // Era Filters on TODAY screen
     document.querySelectorAll('[data-era]').forEach(el => {
       el.addEventListener('click', () => {
         activeEraFilter = el.dataset.era;
@@ -593,7 +599,6 @@
       });
     });
 
-    // Start Quiz
     document.querySelectorAll('[data-action="start-quiz"]').forEach(el => {
       el.addEventListener('click', () => {
         activeQuiz = generateQuiz(null, activeEraFilter);
@@ -601,7 +606,6 @@
       });
     });
 
-    // View Season from timeline
     document.querySelectorAll('[data-action="view-season"]').forEach(el => {
       el.addEventListener('click', () => {
         selectedSeasonId = el.dataset.season;
@@ -609,7 +613,6 @@
       });
     });
 
-    // Quiz this specific season
     document.querySelectorAll('[data-action="quiz-this-season"]').forEach(el => {
       el.addEventListener('click', () => {
         selectedSeasonId = el.dataset.season;
@@ -618,14 +621,12 @@
       });
     });
 
-    // View Player Detail modal
     document.querySelectorAll('[data-action="view-player"]').forEach(el => {
       el.addEventListener('click', () => {
         showPlayerDetail(el.dataset.player);
       });
     });
 
-    // Reset stats
     document.querySelectorAll('[data-action="reset-stats"]').forEach(el => {
       el.addEventListener('click', () => {
         if (confirm('学習履歴を初期化しますか？')) {
@@ -635,17 +636,14 @@
       });
     });
 
-    // Answer selection
     document.querySelectorAll('[data-answer]').forEach(el => {
       el.addEventListener('click', () => {
         if (!activeQuiz) return;
         const selectedVal = el.dataset.value;
         const isCorrect = selectedVal === activeQuiz.correct;
 
-        // Record learning history
         recordAnswer(activeQuiz, isCorrect);
 
-        // Lock all options and show results
         document.querySelectorAll('[data-answer]').forEach(b => {
           b.disabled = true;
           if (b.dataset.value === activeQuiz.correct) {
@@ -656,7 +654,6 @@
           }
         });
 
-        // Feedback section with Memory Hook
         const feedbackEl = document.querySelector('#feedback');
         feedbackEl.innerHTML = `
           <section class="feedback" aria-live="polite">
@@ -689,7 +686,7 @@
   }
 
   // --------------------------------------------------
-  // 5. App Bootstrap
+  // 5. Bootstrap
   // --------------------------------------------------
   initDB().then(() => {
     render(currentScreen);

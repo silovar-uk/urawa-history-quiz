@@ -1,10 +1,18 @@
 [
   {
-    "manager_id": "guido_buchwald",
-    "name": "ギド・ブッフバルト",
-    "name_en": "Guido BUCHWALD",
-    "nationality": "Germany",
-    "birth_date": "1961-01-24",
+    "manager_id": "takaji_mori",
+    "name": "森 孝慈",
+    "name_en": "Takaji MORI",
+    "nationality": "Japan",
+    "birth_date": "1943-11-24",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "manager_id": "kenzo_yokoyama",
+    "name": "横山 謙三",
+    "name_en": "Kenzo YOKOYAMA",
+    "nationality": "Japan",
+    "birth_date": "1943-01-21",
     "source_ids": ["SRC_JLEAGUE_DATA"]
   },
   {
@@ -16,6 +24,46 @@
     "source_ids": ["SRC_JLEAGUE_DATA"]
   },
   {
+    "manager_id": "hiromi_hara",
+    "name": "原 博実",
+    "name_en": "Hiromi HARA",
+    "nationality": "Japan",
+    "birth_date": "1958-10-19",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "manager_id": "aad_de_mos",
+    "name": "ア・デモス",
+    "name_en": "Aad DE MOS",
+    "nationality": "Netherlands",
+    "birth_date": "1947-03-27",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "manager_id": "kazuo_saito",
+    "name": "斉藤 和夫",
+    "name_en": "Kazuo SAITO",
+    "nationality": "Japan",
+    "birth_date": "1951-04-15",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "manager_id": "tita",
+    "name": "チッタ",
+    "name_en": "TITA",
+    "nationality": "Brazil",
+    "birth_date": "1958-04-01",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "manager_id": "pittard",
+    "name": "ピッタ",
+    "name_en": "PITTA",
+    "nationality": "Brazil",
+    "birth_date": "1962-02-17",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
     "manager_id": "hans_ooft",
     "name": "ハンス・オフト",
     "name_en": "Hans OOFT",
@@ -24,11 +72,83 @@
     "source_ids": ["SRC_JLEAGUE_DATA"]
   },
   {
+    "manager_id": "guido_buchwald",
+    "name": "ギド・ブッフバルト",
+    "name_en": "Guido BUCHWALD",
+    "nationality": "Germany",
+    "birth_date": "1961-01-24",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "manager_id": "gert_engels",
+    "name": "ゲルト・エンゲルス",
+    "name_en": "Gert ENGELS",
+    "nationality": "Germany",
+    "birth_date": "1957-04-26",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "manager_id": "volker_finke",
+    "name": "フォルカー・フィンケ",
+    "name_en": "Volker FINKE",
+    "nationality": "Germany",
+    "birth_date": "1948-03-24",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "manager_id": "zeljko_petrovic",
+    "name": "ゼリコ・ペトロヴィッチ",
+    "name_en": "Zeljko PETROVIC",
+    "nationality": "Montenegro",
+    "birth_date": "1965-11-13",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "manager_id": "takafumi_hori",
+    "name": "堀 孝史",
+    "name_en": "Takafumi HORI",
+    "nationality": "Japan",
+    "birth_date": "1967-09-10",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
     "manager_id": "mihailo_petrovic",
     "name": "ミハイロ・ペトロヴィッチ",
     "name_en": "Mihailo PETROVIC",
     "nationality": "Austria",
     "birth_date": "1957-10-18",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "manager_id": "tsuyoshi_otsuki",
+    "name": "大槻 毅",
+    "name_en": "Tsuyoshi OTSUKI",
+    "nationality": "Japan",
+    "birth_date": "1972-12-01",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "manager_id": "oswaldo_oliveira",
+    "name": "オズワルド・オリヴェイラ",
+    "name_en": "Oswaldo OLIVEIRA",
+    "nationality": "Brazil",
+    "birth_date": "1950-12-05",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "manager_id": "ricardo_rodriguez",
+    "name": "リカルド・ロドリゲス",
+    "name_en": "Ricardo RODRIGUEZ",
+    "nationality": "Spain",
+    "birth_date": "1974-04-03",
+    "source_ids": ["SRC_JLEAGUE_DATA"]
+  },
+  {
+    "manager_id": "per_mathias_hogmo",
+    "name": "ペア・マティアス・ヘグモ",
+    "name_en": "Per-Mathias HOGMO",
+    "nationality": "Norway",
+    "birth_date": "1959-12-01",
     "source_ids": ["SRC_JLEAGUE_DATA"]
   },
   {

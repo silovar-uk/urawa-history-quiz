@@ -1,14 +1,67 @@
 [
   {
+    "id": "ps_1992_fukuda",
+    "player_id": "masahiro_fukuda",
+    "season_id": "1992",
+    "shirt_number": null,
+    "position": "FW",
+    "memory_hook": "クラブ発足初年度のエースとしてナビスコカップを牽引。"
+  },
+  {
+    "id": "ps_1992_tsuchida",
+    "player_id": "hisashi_tsuchida",
+    "season_id": "1992",
+    "shirt_number": null,
+    "position": "GK",
+    "memory_hook": "初代守護神としてゴールマウスに君臨。"
+  },
+  {
+    "id": "ps_1993_fukuda",
+    "player_id": "masahiro_fukuda",
+    "season_id": "1993",
+    "shirt_number": null,
+    "position": "FW",
+    "memory_hook": "Jリーグ開幕年、苦難のチームでゴールを挙げ続けた魂のストライカー。"
+  },
+  {
+    "id": "ps_1993_tsuchida",
+    "player_id": "hisashi_tsuchida",
+    "season_id": "1993",
+    "shirt_number": null,
+    "position": "GK",
+    "memory_hook": "猛攻にさらされながらも気迫のセービングを連発した。"
+  },
+  {
+    "id": "ps_1994_buchwald",
+    "player_id": "player_guido_buchwald",
+    "season_id": "1994",
+    "shirt_number": null,
+    "position": "DF",
+    "memory_hook": "夏に現役ドイツ代表DFとして加入し、駒場を熱狂の渦に巻き込んだ。"
+  },
+  {
+    "id": "ps_1994_fukuda",
+    "player_id": "masahiro_fukuda",
+    "season_id": "1994",
+    "shirt_number": null,
+    "position": "FW",
+    "memory_hook": "チームの中心として前線で奮闘。"
+  },
+  {
+    "id": "ps_1994_okano",
+    "player_id": "masayuki_okano",
+    "season_id": "1994",
+    "shirt_number": null,
+    "position": "FW",
+    "memory_hook": "ルーキーイヤー。快速を武器に「野人」としてサポーターを魅了。"
+  },
+  {
     "id": "ps_1995_tsuchida",
     "player_id": "hisashi_tsuchida",
     "season_id": "1995",
     "shirt_number": null,
     "position": "GK",
-    "league_matches": 47,
-    "league_goals": 0,
-    "memory_hook": "守護神としてゴールを守り抜き、サントリーシリーズでの3位躍進を支えた。",
-    "source_ids": ["SRC_JLEAGUE_DATA"]
+    "memory_hook": "守護神としてゴールを守り抜き、サントリーシリーズでの3位躍進を支えた。"
   },
   {
     "id": "ps_1995_taguchi",
@@ -16,10 +69,7 @@
     "season_id": "1995",
     "shirt_number": null,
     "position": "DF",
-    "league_matches": 36,
-    "league_goals": 4,
-    "memory_hook": "気迫あふれる守備と空中戦で最終ラインを牽引した。",
-    "source_ids": ["SRC_JLEAGUE_DATA"]
+    "memory_hook": "気迫あふれる守備と空中戦で最終ラインを牽引した。"
   },
   {
     "id": "ps_1995_buchwald",
@@ -27,10 +77,7 @@
     "season_id": "1995",
     "shirt_number": null,
     "position": "DF",
-    "league_matches": 26,
-    "league_goals": 4,
-    "memory_hook": "W杯優勝DFの威厳をピッチで示し、統率力と知性で浦和の守備を劇的に変革した。",
-    "source_ids": ["SRC_JLEAGUE_DATA"]
+    "memory_hook": "統率力と知性で浦和の守備を劇的に変革した。"
   },
   {
     "id": "ps_1995_hirose",
@@ -38,10 +85,7 @@
     "season_id": "1995",
     "shirt_number": null,
     "position": "MF",
-    "league_matches": 49,
-    "league_goals": 2,
-    "memory_hook": "精密なフリーキックと卓越したキック精度でチャンスを演出した浦和の古豪。",
-    "source_ids": ["SRC_JLEAGUE_DATA"]
+    "memory_hook": "精密なフリーキックでチャンスを演出した浦和の古豪。"
   },
   {
     "id": "ps_1995_bein",
@@ -49,10 +93,7 @@
     "season_id": "1995",
     "shirt_number": null,
     "position": "MF",
-    "league_matches": 38,
-    "league_goals": 18,
-    "memory_hook": "「左足の魔術師」と呼ばれ、18ゴールと無数の決定的なラストパスを供給した。",
-    "source_ids": ["SRC_JLEAGUE_DATA"]
+    "memory_hook": "「左足の魔術師」と呼ばれ、18ゴールと決定的なラストパスを供給。"
   },
   {
     "id": "ps_1995_fukuda",
@@ -60,10 +101,7 @@
     "season_id": "1995",
     "shirt_number": null,
     "position": "FW",
-    "league_matches": 50,
-    "league_goals": 27,
-    "memory_hook": "27ゴールを叩き出し、日本人選手として初となるJリーグ得点王に輝いた。",
-    "source_ids": ["SRC_JLEAGUE_DATA"]
+    "memory_hook": "27ゴールを叩き出し日本人初となるJリーグ得点王に輝いた。"
   },
   {
     "id": "ps_1995_okano",
@@ -71,219 +109,175 @@
     "season_id": "1995",
     "shirt_number": null,
     "position": "FW",
-    "league_matches": 44,
-    "league_goals": 5,
-    "memory_hook": "圧倒的な俊足で相手守備陣を切り裂き「野人」旋風を巻き起こした。",
-    "source_ids": ["SRC_JLEAGUE_DATA"]
+    "memory_hook": "圧倒的な俊足で相手守備陣を切り裂き「野人」旋風を巻き起こした。"
   },
   {
-    "id": "ps_2006_yamagishi",
-    "player_id": "norihiro_yamagishi",
-    "season_id": "2006",
-    "shirt_number": 1,
-    "position": "GK",
-    "league_matches": 24,
-    "league_goals": 0,
-    "memory_hook": "背番号1を着け、開幕からゴールマウスを守り優勝に貢献。",
-    "source_ids": ["SRC_JLEAGUE_DATA"]
+    "id": "ps_1996_okano",
+    "player_id": "masayuki_okano",
+    "season_id": "1996",
+    "shirt_number": null,
+    "position": "FW",
+    "memory_hook": "Jリーグ新人王に輝き、日本代表にも定着した躍進の年。"
   },
   {
-    "id": "ps_2006_tsuboi",
-    "player_id": "keisuke_tsuboi",
-    "season_id": "2006",
-    "shirt_number": 2,
+    "id": "ps_1996_fukuda",
+    "player_id": "masahiro_fukuda",
+    "season_id": "1996",
+    "shirt_number": null,
+    "position": "FW",
+    "memory_hook": "前線で体を張りチームを牽引。"
+  },
+  {
+    "id": "ps_1996_buchwald",
+    "player_id": "player_guido_buchwald",
+    "season_id": "1996",
+    "shirt_number": null,
     "position": "DF",
-    "league_matches": 27,
-    "league_goals": 1,
-    "memory_hook": "圧倒的なスピードでピンチを未然に防ぎ、ドイツW杯日本代表にも選出された。",
-    "source_ids": ["SRC_JLEAGUE_DATA"]
+    "memory_hook": "守備の要として統率力を発揮。"
   },
   {
-    "id": "ps_2006_tulio",
-    "player_id": "marcus_tulio_tanaka",
-    "season_id": "2006",
+    "id": "ps_1997_begiristain",
+    "player_id": "txiki_begiristain",
+    "season_id": "1997",
+    "shirt_number": 10,
+    "position": "FW",
+    "memory_hook": "バルサの黄金期を支えたスーパースターが浦和に加入し妙技を披露。"
+  },
+  {
+    "id": "ps_1997_buchwald",
+    "player_id": "player_guido_buchwald",
+    "season_id": "1997",
     "shirt_number": 4,
     "position": "DF",
-    "league_matches": 33,
-    "league_goals": 7,
-    "memory_hook": "魂のディフェンスと勝負強さでDFながら7ゴールを挙げ、Jリーグ年間MVPを受賞。",
-    "source_ids": ["SRC_JLEAGUE_DATA"]
+    "memory_hook": "現役引退のラストシーズン。サポーターに惜しまれつつピッチを去る。"
   },
   {
-    "id": "ps_2006_nene",
-    "player_id": "nene",
-    "season_id": "2006",
-    "shirt_number": 5,
-    "position": "DF",
-    "league_matches": 9,
-    "league_goals": 0,
-    "memory_hook": "強靭なフィジカルで3バックの左を支えたブラジル人センターバック。",
-    "source_ids": ["SRC_JLEAGUE_DATA"]
-  },
-  {
-    "id": "ps_2006_yamada",
-    "player_id": "nobuhisa_yamada",
-    "season_id": "2006",
-    "shirt_number": 6,
-    "position": "DF",
-    "league_matches": 32,
-    "league_goals": 6,
-    "memory_hook": "キャプテンとして右サイドを疾走し、優勝決定戦でも貴重な得点を記録。",
-    "source_ids": ["SRC_JLEAGUE_DATA"]
-  },
-  {
-    "id": "ps_2006_sakai",
-    "player_id": "tomoyuki_sakai",
-    "season_id": "2006",
-    "shirt_number": 7,
+    "id": "ps_1998_ono",
+    "player_id": "shinji_ono",
+    "season_id": "1998",
+    "shirt_number": 28,
     "position": "MF",
-    "league_matches": 3,
-    "league_goals": 0,
-    "memory_hook": "ユーティリティな才能でチームを支えたシドニー五輪世代のMF。",
-    "source_ids": ["SRC_JLEAGUE_DATA"]
+    "memory_hook": "高卒ルーキーで加入し新人王・ベストイレブン・仏W杯出場を達成。"
   },
   {
-    "id": "ps_2006_santos",
-    "player_id": "alessandro_santos",
-    "season_id": "2006",
-    "shirt_number": 8,
-    "position": "MF",
-    "league_matches": 22,
-    "league_goals": 2,
-    "memory_hook": "左サイドを支配し鋭いクロスを供給。ドイツW杯後に海外移籍を果たした。",
-    "source_ids": ["SRC_JLEAGUE_DATA"]
-  },
-  {
-    "id": "ps_2006_nagai",
-    "player_id": "yuichiro_nagai",
-    "season_id": "2006",
+    "id": "ps_1998_fukuda",
+    "player_id": "masahiro_fukuda",
+    "season_id": "1998",
     "shirt_number": 9,
     "position": "FW",
-    "league_matches": 23,
-    "league_goals": 4,
-    "memory_hook": "独特のリズムを持つドリブルと華麗なテクニックでスタジアムを沸かせた背番号9。",
-    "source_ids": ["SRC_JLEAGUE_DATA"]
+    "memory_hook": "小野伸二との連携で多くのゴールを記録。"
   },
   {
-    "id": "ps_2006_ponte",
-    "player_id": "robs_ponte",
-    "season_id": "2006",
-    "shirt_number": 10,
-    "position": "MF",
-    "league_matches": 22,
-    "league_goals": 4,
-    "memory_hook": "背番号10を背負い、卓越した戦術眼とキック精度で攻撃を司った司令塔。",
-    "source_ids": ["SRC_JLEAGUE_DATA"]
-  },
-  {
-    "id": "ps_2006_tanaka",
-    "player_id": "tatsuya_tanaka",
-    "season_id": "2006",
-    "shirt_number": 11,
+    "id": "ps_1999_fukuda",
+    "player_id": "masahiro_fukuda",
+    "season_id": "1999",
+    "shirt_number": 9,
     "position": "FW",
-    "league_matches": 18,
-    "league_goals": 4,
-    "memory_hook": "怪我を乗り越えてピッチに立ち「ワンダーボーイ」としてサポーターの心を掴んだ。",
-    "source_ids": ["SRC_JLEAGUE_DATA"]
+    "memory_hook": "最終節で延長Vゴールを沈めるも、J2降格が決まり涙を流した。"
   },
   {
-    "id": "ps_2006_suzuki",
-    "player_id": "keita_suzuki",
-    "season_id": "2006",
-    "shirt_number": 13,
+    "id": "ps_1999_tsuchihashi",
+    "player_id": "masaki_tsuchihashi",
+    "season_id": "1999",
+    "shirt_number": 6,
     "position": "MF",
-    "league_matches": 31,
-    "league_goals": 1,
-    "memory_hook": "無尽蔵のスタミナで中盤の危機を摘み続け、ベストイレブンに選出されたダイナモ。",
-    "source_ids": ["SRC_JLEAGUE_DATA"]
+    "memory_hook": "中盤のハードワーカーとして攻守に奮闘。"
   },
   {
-    "id": "ps_2006_hirakawa",
-    "player_id": "tadaaki_hirakawa",
-    "season_id": "2006",
-    "shirt_number": 14,
+    "id": "ps_2000_tsuchihashi",
+    "player_id": "masaki_tsuchihashi",
+    "season_id": "2000",
+    "shirt_number": 6,
     "position": "MF",
-    "league_matches": 28,
-    "league_goals": 1,
-    "memory_hook": "豊富な運動量と堅実な守備で両サイドのウイングバックを高い水準で務めた。",
-    "source_ids": ["SRC_JLEAGUE_DATA"]
+    "memory_hook": "J2最終節・延長後半に劇的Vゴールを決め、1年でのJ1復帰をもたらした英雄。"
   },
   {
-    "id": "ps_2006_soma",
-    "player_id": "takahito_soma",
-    "season_id": "2006",
-    "shirt_number": 16,
+    "id": "ps_2000_fukuda",
+    "player_id": "masahiro_fukuda",
+    "season_id": "2000",
+    "shirt_number": 9,
+    "position": "FW",
+    "memory_hook": "J2の激闘を戦い抜きJ1復帰に貢献。"
+  },
+  {
+    "id": "ps_2001_emerson",
+    "player_id": "emerson",
+    "season_id": "2001",
+    "shirt_number": 10,
+    "position": "FW",
+    "memory_hook": "驚異的な突破力を持つブラジル人ストライカーが加入。"
+  },
+  {
+    "id": "ps_2001_tanaka",
+    "player_id": "tatsuya_tanaka",
+    "season_id": "2001",
+    "shirt_number": 18,
+    "position": "FW",
+    "memory_hook": "帝京高校から加入しワンダーボーイとして台頭。"
+  },
+  {
+    "id": "ps_2002_emerson",
+    "player_id": "emerson",
+    "season_id": "2002",
+    "shirt_number": 10,
+    "position": "FW",
+    "memory_hook": "圧倒的なスピードと得点力でリーグ屈指のFWへ。"
+  },
+  {
+    "id": "ps_2002_tsuboi",
+    "player_id": "keisuke_tsuboi",
+    "season_id": "2002",
+    "shirt_number": 2,
     "position": "DF",
-    "league_matches": 18,
-    "league_goals": 1,
-    "memory_hook": "左足の強烈なクロスと推進力で攻撃にアクセントを加えた新加入レフティ。",
-    "source_ids": ["SRC_JLEAGUE_DATA"]
+    "memory_hook": "新人王とフェアプレー個人賞を同時受賞した快足CB。"
   },
   {
-    "id": "ps_2006_hasebe",
+    "id": "ps_2003_emerson",
+    "player_id": "emerson",
+    "season_id": "2003",
+    "shirt_number": 10,
+    "position": "FW",
+    "memory_hook": "ナビスコカップ決勝で鹿島を粉砕し大会MVPに輝いた。"
+  },
+  {
+    "id": "ps_2003_hasebe",
     "player_id": "makoto_hasebe",
-    "season_id": "2006",
+    "season_id": "2003",
     "shirt_number": 17,
     "position": "MF",
-    "league_matches": 32,
-    "league_goals": 2,
-    "memory_hook": "鋭いドリブル突破とゲームメイクで背番号17を着け、初優勝の中核を担った。",
-    "source_ids": ["SRC_JLEAGUE_DATA"]
+    "memory_hook": "プロ2年目で定位置を掴みナビスコ杯初優勝に貢献。"
   },
   {
-    "id": "ps_2006_ono",
-    "player_id": "shinji_ono",
-    "season_id": "2006",
-    "shirt_number": 18,
-    "position": "MF",
-    "league_matches": 21,
-    "league_goals": 5,
-    "memory_hook": "フェイエノールトから復帰し、背番号18で天才的なパスとテクニックを披露。",
-    "source_ids": ["SRC_JLEAGUE_DATA"]
+    "id": "ps_2004_emerson",
+    "player_id": "emerson",
+    "season_id": "2004",
+    "shirt_number": 10,
+    "position": "FW",
+    "memory_hook": "27得点でJ1得点王に輝き、2ndステージ初制覇の原動力となった。"
   },
   {
-    "id": "ps_2006_uchidate",
-    "player_id": "hideki_uchidate",
-    "season_id": "2006",
-    "shirt_number": 19,
+    "id": "ps_2004_tulio",
+    "player_id": "marcus_tulio_tanaka",
+    "season_id": "2004",
+    "shirt_number": 4,
     "position": "DF",
-    "league_matches": 23,
-    "league_goals": 0,
-    "memory_hook": "最終ラインとボランチを器用にこなし、チームの危機を幾度も救った職人。",
-    "source_ids": ["SRC_JLEAGUE_DATA"]
+    "memory_hook": "浦和へ移籍加入し、闘志あふれる守備と得点力で一躍サポーターの英雄に。"
   },
   {
-    "id": "ps_2006_horinouchi",
-    "player_id": "satoshi_horinouchi",
-    "season_id": "2006",
-    "shirt_number": 20,
-    "position": "DF",
-    "league_matches": 28,
-    "league_goals": 1,
-    "memory_hook": "センターバックやボランチで冷静な判断力を発揮した地元・埼玉出身のDF。",
-    "source_ids": ["SRC_JLEAGUE_DATA"]
-  },
-  {
-    "id": "ps_2006_tsuzuki",
-    "player_id": "ryota_tsuzuki",
-    "season_id": "2006",
-    "shirt_number": 21,
-    "position": "GK",
-    "league_matches": 11,
-    "league_goals": 0,
-    "memory_hook": "シーズン終盤の緊迫した優勝争いの中で熱い魂と気迫のセービングを見せた守護神。",
-    "source_ids": ["SRC_JLEAGUE_DATA"]
-  },
-  {
-    "id": "ps_2006_hosogai",
-    "player_id": "hajime_hosogai",
-    "season_id": "2006",
-    "shirt_number": 22,
+    "id": "ps_2005_ponte",
+    "player_id": "robs_ponte",
+    "season_id": "2005",
+    "shirt_number": 10,
     "position": "MF",
-    "league_matches": 2,
-    "league_goals": 0,
-    "memory_hook": "若手として強烈なファイティングスピリットを見せ、後の主軸へと成長していった。",
-    "source_ids": ["SRC_JLEAGUE_DATA"]
+    "memory_hook": "レバークーゼンから夏に加入し、異次元のテクニックで攻撃を支配。"
+  },
+  {
+    "id": "ps_2005_tulio",
+    "player_id": "marcus_tulio_tanaka",
+    "season_id": "2005",
+    "shirt_number": 4,
+    "position": "DF",
+    "memory_hook": "天皇杯初制覇を攻守両面で支えた。"
   },
   {
     "id": "ps_2006_washington",
@@ -291,10 +285,79 @@
     "season_id": "2006",
     "shirt_number": 30,
     "position": "FW",
-    "league_matches": 26,
-    "league_goals": 26,
-    "memory_hook": "26得点でJ1得点王を獲得。優勝決定戦のG大阪戦でも2ゴールを叩き込んだ巨漢ストライカー。",
-    "source_ids": ["SRC_JLEAGUE_DATA"]
+    "memory_hook": "26得点でJ1得点王。最終節・G大阪戦で2ゴールを挙げリーグ初優勝をもたらした。"
+  },
+  {
+    "id": "ps_2006_tulio",
+    "player_id": "marcus_tulio_tanaka",
+    "season_id": "2006",
+    "shirt_number": 4,
+    "position": "DF",
+    "memory_hook": "DFながら7得点を挙げ、攻守で圧倒的プレゼンスを示しJリーグ年間MVPを受賞。"
+  },
+  {
+    "id": "ps_2006_hasebe",
+    "player_id": "makoto_hasebe",
+    "season_id": "2006",
+    "shirt_number": 17,
+    "position": "MF",
+    "memory_hook": "背番号17を着け、鋭いドリブル突破で中盤を制圧しJ1初制覇の中核を担った。"
+  },
+  {
+    "id": "ps_2006_ono",
+    "player_id": "shinji_ono",
+    "season_id": "2006",
+    "shirt_number": 18,
+    "position": "MF",
+    "memory_hook": "欧州から浦和へ電撃復帰し、背番号18で天才的プレーを連発。"
+  },
+  {
+    "id": "ps_2006_ponte",
+    "player_id": "robs_ponte",
+    "season_id": "2006",
+    "shirt_number": 10,
+    "position": "MF",
+    "memory_hook": "背番号10として卓越したゲームメイクで初優勝に貢献。"
+  },
+  {
+    "id": "ps_2006_tanaka",
+    "player_id": "tatsuya_tanaka",
+    "season_id": "2006",
+    "shirt_number": 11,
+    "position": "FW",
+    "memory_hook": "ワンダーボーイとしてサポーターの心を掴みリーグ制覇に貢献。"
+  },
+  {
+    "id": "ps_2006_suzuki",
+    "player_id": "keita_suzuki",
+    "season_id": "2006",
+    "shirt_number": 13,
+    "position": "MF",
+    "memory_hook": "中盤のダイナモとして危機を摘み続けベストイレブン選出。"
+  },
+  {
+    "id": "ps_2006_tsuboi",
+    "player_id": "keisuke_tsuboi",
+    "season_id": "2006",
+    "shirt_number": 2,
+    "position": "DF",
+    "memory_hook": "抜群のスピードでドイツW杯日本代表にも選出。"
+  },
+  {
+    "id": "ps_2006_yamada",
+    "player_id": "nobuhisa_yamada",
+    "season_id": "2006",
+    "shirt_number": 6,
+    "position": "DF",
+    "memory_hook": "主将として右サイドを疾走し、優勝決定戦でも貴重な得点を挙げた。"
+  },
+  {
+    "id": "ps_2006_tsuzuki",
+    "player_id": "ryota_tsuzuki",
+    "season_id": "2006",
+    "shirt_number": 21,
+    "position": "GK",
+    "memory_hook": "シーズン終盤の優勝争いで気迫のビッグセーブを連発。"
   },
   {
     "id": "ps_2006_okano",
@@ -302,43 +365,207 @@
     "season_id": "2006",
     "shirt_number": 32,
     "position": "FW",
-    "league_matches": 8,
-    "league_goals": 0,
-    "memory_hook": "「野人」としてサポーターから絶大な人気を誇り、ベンチからもチームを鼓舞した。",
-    "source_ids": ["SRC_JLEAGUE_DATA"]
+    "memory_hook": "「野人」としてサポーターから愛され、ベンチからも士気を高めた。"
   },
   {
-    "id": "ps_2023_nishikawa",
+    "id": "ps_2007_abe",
+    "player_id": "yuki_abe",
+    "season_id": "2007",
+    "shirt_number": 22,
+    "position": "MF",
+    "memory_hook": "大型移籍で加入し、ACL決勝第2戦で追加点を奪いアジア初制覇の立役者に。"
+  },
+  {
+    "id": "ps_2007_ponte",
+    "player_id": "robs_ponte",
+    "season_id": "2007",
+    "shirt_number": 10,
+    "position": "MF",
+    "memory_hook": "アジア制覇と世界3位の原動力となり、Jリーグ年間MVPを受賞。"
+  },
+  {
+    "id": "ps_2007_nagai",
+    "player_id": "yuichiro_nagai",
+    "season_id": "2007",
+    "shirt_number": 9,
+    "position": "FW",
+    "memory_hook": "ACL決勝で値千金の先制弾を沈め、大会MVPに輝いた背番号9。"
+  },
+  {
+    "id": "ps_2008_takahara",
+    "player_id": "naohiro_takahara",
+    "season_id": "2008",
+    "shirt_number": 19,
+    "position": "FW",
+    "memory_hook": "ドイツ・フランクフルトから完全移籍で加入し前線を牽引。"
+  },
+  {
+    "id": "ps_2009_haraguchi",
+    "player_id": "genki_haraguchi",
+    "season_id": "2009",
+    "shirt_number": 24,
+    "position": "FW",
+    "memory_hook": "ユースから昇格し、鋭いドリブルで一気にサポーターの希望の星へ。"
+  },
+  {
+    "id": "ps_2010_kashiwagi",
+    "player_id": "yosuke_kashiwagi",
+    "season_id": "2010",
+    "shirt_number": 8,
+    "position": "MF",
+    "memory_hook": "広島から加入し「太陽の王子」として中盤で存在感を発揮。"
+  },
+  {
+    "id": "ps_2010_abe",
+    "player_id": "yuki_abe",
+    "season_id": "2010",
+    "shirt_number": 22,
+    "position": "MF",
+    "memory_hook": "南アW杯で日本代表ベスト16の主役となりイングランドへ移籍。"
+  },
+  {
+    "id": "ps_2011_haraguchi",
+    "player_id": "genki_haraguchi",
+    "season_id": "2011",
+    "shirt_number": 24,
+    "position": "FW",
+    "memory_hook": "苦難の残留争いの中、孤軍奮闘しJ1残留の救世主となった。"
+  },
+  {
+    "id": "ps_2012_makino",
+    "player_id": "tomoaki_makino",
+    "season_id": "2012",
+    "shirt_number": 20,
+    "position": "DF",
+    "memory_hook": "ドイツ・ケルンから加入し「お祭り男」として埼スタを熱狂させた。"
+  },
+  {
+    "id": "ps_2012_abe",
+    "player_id": "yuki_abe",
+    "season_id": "2012",
+    "shirt_number": 22,
+    "position": "MF",
+    "memory_hook": "英レスターから復帰し主将に就任。ミシャ体制の屋台骨となった。"
+  },
+  {
+    "id": "ps_2013_koroki",
+    "player_id": "shinzo_koroki",
+    "season_id": "2013",
+    "shirt_number": 30,
+    "position": "FW",
+    "memory_hook": "鹿島から加入し、天性のポストプレーと得点力で絶対的エースに定着。"
+  },
+  {
+    "id": "ps_2014_nishikawa",
     "player_id": "shusaku_nishikawa",
-    "season_id": "2023",
+    "season_id": "2014",
     "shirt_number": 1,
     "position": "GK",
-    "league_matches": 34,
-    "league_goals": 0,
-    "memory_hook": "全試合フルタイム出場で最少失点（27失点）に貢献し、自身6度目のJリーグベストイレブンを受賞。",
-    "source_ids": ["SRC_JLEAGUE_DATA"]
+    "memory_hook": "日本代表正GKとして加入。正確無比なフィードとセーブで首位争いを支えた。"
   },
   {
-    "id": "ps_2023_sakai",
-    "player_id": "hiroki_sakai",
-    "season_id": "2023",
-    "shirt_number": 2,
-    "position": "DF",
-    "league_matches": 25,
-    "league_goals": 2,
-    "memory_hook": "キャプテンとしてACL優勝のトロフィーを掲げ、ベストイレブンにも選出された鉄人サイドバック。",
-    "source_ids": ["SRC_JLEAGUE_DATA"]
+    "id": "ps_2014_sekine",
+    "player_id": "takahiro_sekine",
+    "season_id": "2014",
+    "shirt_number": 26,
+    "position": "MF",
+    "memory_hook": "ユースから昇格し、爆発的なドリブル突破でスタジアムを沸かせた。"
   },
   {
-    "id": "ps_2023_hoibraten",
-    "player_id": "marius_hoibraten",
-    "season_id": "2023",
+    "id": "ps_2015_koroki",
+    "player_id": "shinzo_koroki",
+    "season_id": "2015",
+    "shirt_number": 30,
+    "position": "FW",
+    "memory_hook": "1stステージ無敗優勝の原動力となりエースとして君臨。"
+  },
+  {
+    "id": "ps_2016_kashiwagi",
+    "player_id": "yosuke_kashiwagi",
+    "season_id": "2016",
+    "shirt_number": 10,
+    "position": "MF",
+    "memory_hook": "背番号10を背負い、年間勝点1位（74pt）とルヴァン杯制覇をもたらした司令塔。"
+  },
+  {
+    "id": "ps_2016_makino",
+    "player_id": "tomoaki_makino",
+    "season_id": "2016",
     "shirt_number": 5,
     "position": "DF",
-    "league_matches": 33,
-    "league_goals": 1,
-    "memory_hook": "ノルウェーから新加入し、的確なカバーリングと空中戦でショルツとともに鉄壁のCBコンビを形成。",
-    "source_ids": ["SRC_JLEAGUE_DATA"]
+    "memory_hook": "ルヴァンカップ決勝のPK戦で最後のキッカーとして優勝を決めた。"
+  },
+  {
+    "id": "ps_2017_rafael",
+    "player_id": "rafael_silva",
+    "season_id": "2017",
+    "shirt_number": 8,
+    "position": "FW",
+    "memory_hook": "ACL決勝アル・ヒラル戦の第1戦・第2戦ともに劇的ゴールを決めアジア王者の英雄に。"
+  },
+  {
+    "id": "ps_2017_abe",
+    "player_id": "yuki_abe",
+    "season_id": "2017",
+    "shirt_number": 22,
+    "position": "MF",
+    "memory_hook": "主将として2度目のACL制覇のトロフィーを埼スタで掲げた。"
+  },
+  {
+    "id": "ps_2018_ugajin",
+    "player_id": "tomoya_ugajin",
+    "season_id": "2018",
+    "shirt_number": 3,
+    "position": "DF",
+    "memory_hook": "天皇杯決勝で圧巻のダイレクトボレーミドルを叩き込み優勝をもたらした。"
+  },
+  {
+    "id": "ps_2019_koroki",
+    "player_id": "shinzo_koroki",
+    "season_id": "2019",
+    "shirt_number": 30,
+    "position": "FW",
+    "memory_hook": "ACLで得点を重ねクラブを3度目のアジアファイナルへ牽引。"
+  },
+  {
+    "id": "ps_2020_nishikawa",
+    "player_id": "shusaku_nishikawa",
+    "season_id": "2020",
+    "shirt_number": 1,
+    "position": "GK",
+    "memory_hook": "主将を務め過密日程の中でもゴールマウスを死守。"
+  },
+  {
+    "id": "ps_2021_makino",
+    "player_id": "tomoaki_makino",
+    "season_id": "2021",
+    "shirt_number": 5,
+    "position": "DF",
+    "memory_hook": "天皇杯決勝の後半AT、劇的な決勝ゴールを決め阿部勇樹の花道を飾った。"
+  },
+  {
+    "id": "ps_2021_koizumi",
+    "player_id": "yoshio_koizumi",
+    "season_id": "2021",
+    "shirt_number": 18,
+    "position": "MF",
+    "memory_hook": "琉球から加入し卓越したポジショニングで天皇杯制覇に貢献。"
+  },
+  {
+    "id": "ps_2022_sakai",
+    "player_id": "hiroki_sakai",
+    "season_id": "2022",
+    "shirt_number": 2,
+    "position": "DF",
+    "memory_hook": "主将としてスーパーカップを制し、ACL決勝進出へチームを率いた。"
+  },
+  {
+    "id": "ps_2022_scholz",
+    "player_id": "alexander_scholz",
+    "season_id": "2022",
+    "shirt_number": 28,
+    "position": "DF",
+    "memory_hook": "鉄壁の対人守備と落ち着き払ったPKでサポーターの絶大な信頼を獲得。"
   },
   {
     "id": "ps_2023_scholz",
@@ -346,10 +573,15 @@
     "season_id": "2023",
     "shirt_number": 28,
     "position": "DF",
-    "league_matches": 34,
-    "league_goals": 7,
-    "memory_hook": "高い守備力に加え、PK職人として7ゴールを挙げベストイレブンに輝いたデンマーク人DF。",
-    "source_ids": ["SRC_JLEAGUE_DATA"]
+    "memory_hook": "J1最少失点（27点）とACL制覇の主役となりベストイレブン受賞。"
+  },
+  {
+    "id": "ps_2023_hoibraten",
+    "player_id": "marius_hoibraten",
+    "season_id": "2023",
+    "shirt_number": 5,
+    "position": "DF",
+    "memory_hook": "加入即座に鉄壁の守備を構築し3度目のアジア王者に貢献。"
   },
   {
     "id": "ps_2023_ito",
@@ -357,43 +589,7 @@
     "season_id": "2023",
     "shirt_number": 3,
     "position": "MF",
-    "league_matches": 33,
-    "league_goals": 2,
-    "memory_hook": "アカデミー出身のダイナモとして中盤を制圧し、日本代表にも選出されベストイレブンを受賞。",
-    "source_ids": ["SRC_JLEAGUE_DATA"]
-  },
-  {
-    "id": "ps_2023_koizumi",
-    "player_id": "yoshio_koizumi",
-    "season_id": "2023",
-    "shirt_number": 8,
-    "position": "MF",
-    "league_matches": 28,
-    "league_goals": 1,
-    "memory_hook": "両足を遜色なく使い、巧みなポジショニングと献身的なプレスでACL制覇に貢献。",
-    "source_ids": ["SRC_JLEAGUE_DATA"]
-  },
-  {
-    "id": "ps_2023_sekine",
-    "player_id": "takahiro_sekine",
-    "season_id": "2023",
-    "shirt_number": 14,
-    "position": "MF",
-    "league_matches": 32,
-    "league_goals": 1,
-    "memory_hook": "浦和魂を体現するアタッカーとして、ACL決勝でも泥臭く戦い抜いた。",
-    "source_ids": ["SRC_JLEAGUE_DATA"]
-  },
-  {
-    "id": "ps_2023_iwao",
-    "player_id": "ken_iwao",
-    "season_id": "2023",
-    "shirt_number": 19,
-    "position": "MF",
-    "league_matches": 33,
-    "league_goals": 1,
-    "memory_hook": "ピッチ上の戦術家としてプレースキックとゲームコントロールを一手に担った。",
-    "source_ids": ["SRC_JLEAGUE_DATA"]
+    "memory_hook": "浦和のアカデミー出身として日本代表に選出されベストイレブン受賞。"
   },
   {
     "id": "ps_2023_kante",
@@ -401,20 +597,38 @@
     "season_id": "2023",
     "shirt_number": 11,
     "position": "FW",
-    "league_matches": 24,
-    "league_goals": 8,
-    "memory_hook": "理不尽とも言える強烈なシュートで貴重なゴールを量産し、シーズン終了後に鮮烈な印象を残して引退。",
-    "source_ids": ["SRC_JLEAGUE_DATA"]
+    "memory_hook": "理不尽なまでの超絶ゴールを連発し鮮烈な記憶を残した。"
   },
   {
-    "id": "ps_2023_koroki",
-    "player_id": "shinzo_koroki",
-    "season_id": "2023",
-    "shirt_number": 30,
-    "position": "FW",
-    "league_matches": 29,
-    "league_goals": 4,
-    "memory_hook": "浦和復帰シーズン。ACL決勝第1戦アウェイで貴重な同点ゴールを叩き込んだ歴代最高峰のストライカー。",
-    "source_ids": ["SRC_JLEAGUE_DATA"]
+    "id": "ps_2024_haraguchi",
+    "player_id": "genki_haraguchi",
+    "season_id": "2024",
+    "shirt_number": 78,
+    "position": "MF",
+    "memory_hook": "10年間の欧州挑戦を経て浦和レッズへ電撃復帰。"
+  },
+  {
+    "id": "ps_2024_nishikawa",
+    "player_id": "shusaku_nishikawa",
+    "season_id": "2024",
+    "shirt_number": 1,
+    "position": "GK",
+    "memory_hook": "J1通算最多無失点試合数を更新し続ける浦和の守護神。"
+  },
+  {
+    "id": "ps_2025_nishikawa",
+    "player_id": "shusaku_nishikawa",
+    "season_id": "2025",
+    "shirt_number": 1,
+    "position": "GK",
+    "memory_hook": "FIFAクラブワールドカップ2025で世界に挑む絶対的守護神。"
+  },
+  {
+    "id": "ps_2025_hoibraten",
+    "player_id": "marius_hoibraten",
+    "season_id": "2025",
+    "shirt_number": 5,
+    "position": "DF",
+    "memory_hook": "世界の強豪を迎え撃つ浦和のディフェンスリーダー。"
   }
 ]
