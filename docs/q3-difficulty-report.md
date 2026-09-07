@@ -2,11 +2,15 @@
 
 Updated: 2026-09-07
 
-Status: **PASS — structural estimate baseline**
+Status: **PASS — Structural Difficulty Estimate baseline**
 
 Important limitation:
 
-> Q3 does **not** claim psychometric / observed item difficulty. In classical test theory, item difficulty is observed from the proportion of users who answer an item correctly. Until URAWA HISTORY has sufficient response data, this project uses a deterministic **Structural Difficulty Estimate** based on target, clue proxies, and distractor relationships.
+> Q3 does **not** claim psychometric / observed item difficulty. Until sufficient response data exists, URAWA HISTORY uses a deterministic Structural Difficulty Estimate based on target, clue proxies, and distractor relationships.
+
+Canonical current state:
+
+`docs/current-state.md`
 
 ---
 
@@ -16,49 +20,34 @@ Important limitation:
 
 ---
 
-# 2. Why Now
+# 2. Research Framing
 
-Q0–Q2 established:
+Difficulty and learning value are separate.
 
-- source-backed eligibility
-- fail-closed correctness
-- competition-aware KIT facts
-- plausible / domain-aware distractors
+The project distinguishes:
 
-That makes it possible to study the structure of difficulty without first guessing what a question will look like.
+1. Structural Difficulty Estimate — Q3
+2. Historical / learning significance — Q5
+3. Observed item difficulty from real response data — future calibration
 
----
+External framing used in the original Q3 research:
 
-# 3. Research Framing
-
-Difficulty and learning value are separate concepts.
-
-A difficult question is not automatically a good learning question.
-
-The project therefore distinguishes:
-
-1. **Structural Difficulty Estimate** — Q3
-2. **Historical / learning significance** — Q5
-3. **Observed item difficulty from real response data** — future calibration after a meaningful learning-history dataset exists
-
-External research used for framing:
-
-- Classical item difficulty is ordinarily estimated from the proportion of examinees answering correctly. This means the current structural model must not be presented as observed difficulty.
+- Classical item difficulty is ordinarily estimated from the proportion of examinees answering correctly.
   - https://asmepublications.onlinelibrary.wiley.com/doi/10.1111/j.1365-2923.2009.03425.x
   - https://testingservices.utexas.edu/scanning/interpreting-test-results
-- "Desirable difficulty" is only desirable when added challenge supports later learning / retention; difficulty by itself is not the goal.
+- Desirable difficulty is useful only when challenge supports later learning / retention.
   - https://bjorklab.psych.ucla.edu/research/
   - https://pubmed.ncbi.nlm.nih.gov/26255442/
 
 ---
 
-# 4. Implementation
+# 3. Implementation
 
 Model:
 
 `prototype/quiz-difficulty.js`
 
-Baseline generator / audit:
+Audit:
 
 `scripts/quiz-difficulty-audit.mjs`
 
@@ -66,84 +55,56 @@ CI:
 
 `.github/workflows/quiz-trust-audit.yml`
 
-Every relevant CI run now generates a full baseline artifact:
+Every relevant CI run produces:
 
 `q3-difficulty-baseline.json`
 
-The artifact contains the scored item inventory, factors, bands, and representative samples.
+The artifact contains item-level structural scores, factors, bands, and representative samples.
 
 ---
 
-# 5. Model
+# 4. Model
 
-All modeled questions produce:
+Modeled questions produce:
 
 - `kind = STRUCTURAL_ESTIMATE`
 - `score = 0..100`
 - `band = EASY / MEDIUM / HARD`
 - factor values
-- human-readable reasons
+- reasons
 - cautions where a factor is only a proxy
 
-Current provisional fixed thresholds:
+Current research thresholds:
 
 - EASY: 0–39
 - MEDIUM: 40–69
 - HARD: 70–100
 
-The thresholds are deterministic and do not change when the item bank changes.
-
-They are research bands, not user-facing labels.
+These are not user-facing labels.
 
 ---
 
-# 6. Generator-specific Factors
+# 5. Generator Factors
 
 ## PLAYER_NUMBER
-
-Factors:
 
 - same-position distractor ratio
 - average shirt-number distance
 - number closeness
 
-Interpretation:
-
-A question becomes structurally harder when the alternatives are players from the same role and the competing shirt numbers are closer to the target.
-
 ## MANAGER_SEASON
-
-Factors:
 
 - same-decade distractor ratio
 - average year distance
 - temporal closeness
 
-Interpretation:
-
-Managers from the same period create stronger historical interference than managers from distant eras.
-
 ## SEASON_RANK
-
-Factors:
 
 - average rank distance
 - rank closeness
-- objective title-count prominence proxy
-
-Interpretation:
-
-`4位 / 5位 / 6位 / 7位` is structurally harder than widely separated numeric alternatives.
-
-A title-rich season receives an ease adjustment because the final result can be historically distinctive.
-
-Caution:
-
-The title-count adjustment is only a proxy for prominence, not observed user knowledge.
+- title-count prominence proxy
 
 ## SEASON_SUMMARY
-
-Factors:
 
 - temporal closeness
 - same-decade ratio
@@ -151,255 +112,182 @@ Factors:
 - league similarity
 - title-count distinctiveness proxy
 
-Interpretation:
-
-Neighboring seasons with similar competitive context produce stronger interference.
-
 Caution:
 
-The current model does not yet measure the semantic uniqueness / clue richness of the actual summary text well enough. Confidence for this generator is therefore lower than for pure numeric / temporal generators.
+The model does not yet measure semantic clue richness in the actual summary text well enough. Confidence is therefore lower for this generator.
 
 ## KIT_DETAIL
-
-Factors:
 
 - same competition-scope ratio
 - year distance
 - same-year alternative context
 
-Interpretation:
+PLAYER_POSITION remains intentionally unmodeled rather than inventing unsupported precision.
 
-A sponsor from the same competition scope or a different competition in the same season is a more plausible alternative than a distant unrelated sponsor.
+PLAYER_OVERLAP remains disabled because its Trust requirements are not met.
 
 ---
 
-# 7. Baseline Result
+# 6. Initial Baseline — Before Data Content Repair
 
-CI run:
+Original Q3 run:
 
 https://github.com/silovar-uk/urawa-history-quiz/actions/runs/34120456643
 
-Total structurally scorable items:
+This is preserved as a historical snapshot, not the current baseline.
 
-**107**
+- total: 107
+- EASY: 4
+- MEDIUM: 23
+- HARD: 80
 
-Overall provisional bands:
+By generator:
+
+- PLAYER_NUMBER: 11 / E4 M3 H4 / avg 54.9
+- MANAGER_SEASON: 26 / E0 M13 H13 / avg 73.2
+- SEASON_RANK: 32 / E0 M2 H30 / avg 80.3
+- SEASON_SUMMARY: 33 / E0 M2 H31 / avg 80.0
+- KIT_DETAIL: 5 / E0 M3 H2 / avg 65.2
+
+---
+
+# 7. Current Baseline — After Data Content Repair
+
+Current aligned CI run:
+
+https://github.com/silovar-uk/urawa-history-quiz/actions/runs/34124150650
+
+Artifact:
+
+https://github.com/silovar-uk/urawa-history-quiz/actions/runs/34124150650/artifacts/10019374783
+
+Total structurally scorable constructions:
+
+**114**
+
+Overall bands:
 
 - EASY: **4**
-- MEDIUM: **23**
-- HARD: **80**
+- MEDIUM: **29**
+- HARD: **81**
 
-This is a finding, not a target distribution.
-
-## By generator
+By generator:
 
 ### PLAYER_NUMBER
 
-- items: 11
-- EASY: 4
-- MEDIUM: 3
-- HARD: 4
+- count: **15**
+- E4 / M6 / H5
 - range: 20–88
-- average: 54.9
+- average: **57.4**
 
 ### MANAGER_SEASON
 
-- items: 26
-- EASY: 0
-- MEDIUM: 13
-- HARD: 13
+- count: **26**
+- E0 / M13 / H13
 - range: 48–92
-- average: 73.2
+- average: **73.2**
 
 ### SEASON_RANK
 
-- items: 32
-- EASY: 0
-- MEDIUM: 2
-- HARD: 30
+- count: **32**
+- E0 / M2 / H30
 - range: 47–87
-- average: 80.3
+- average: **80.3**
 
 ### SEASON_SUMMARY
 
-- items: 33
-- EASY: 0
-- MEDIUM: 2
-- HARD: 31
+- count: **33**
+- E0 / M2 / H31
 - range: 54–89
-- average: 80.0
+- average: **80.0**
 
 ### KIT_DETAIL
 
-- items: 5
-- EASY: 0
-- MEDIUM: 3
-- HARD: 2
-- range: 58–77
-- average: 65.2
+- count: **8**
+- E0 / M6 / H2
+- range: 46–77
+- average: **61.6**
+
+Why the baseline changed:
+
+- repaired 2006 player relations created additional trust-safe PLAYER_NUMBER constructions
+- verified 2008 / 2011 uniform contexts created additional KIT constructions
+- no Trust rule was weakened
 
 ---
 
 # 8. Human Reasonableness Audit
 
-The first model was not tuned to manufacture a balanced-looking distribution.
+Representative outputs remain directionally sensible.
 
-Instead, representative outputs were inspected for whether the direction of the score made sense.
+Examples:
 
-## Reasonable EASY examples
+- 2023 伊藤敦樹 #3 — score 20 / EASY
+- 2006 都築龍太 #23 — score 42 / MEDIUM after repaired shirt-number provenance
+- 2006 final league rank 1st — score 47 / MEDIUM
+- 1994 / 1995 manager questions — around 92 / HARD
+- neighboring 2011–2013 summary questions — around 89 / HARD, but with lower confidence because semantic clue richness is under-modeled
 
-### 2023 伊藤敦樹 #3 — score 20
-
-Why low:
-
-- selected distractors were not same-position
-- average shirt-number distance was large
-
-The answer alternatives provide relatively weak retrieval competition.
-
-### 2023 ホセ・カンテ #11 — score 24
-
-Same pattern: low role similarity and large number distance.
-
-## Reasonable MEDIUM example
-
-### 2006 final league rank = 1st — score 47
-
-The distractor ranks are numerically close, which makes exact-rank recall harder.
-
-However, the season is title-rich and historically distinctive, so the prominence proxy lowers the estimate.
-
-This is directionally sensible and demonstrates why `famous season = always easy` and `near options = always hard` are both too simplistic.
-
-## Reasonable HARD examples
-
-### 1994 / 1995 manager questions — score 92
-
-The competing managers come from the same decade and neighboring seasons.
-
-This is strong historical interference and is a sensible structural Hard pattern.
-
-### 2011–2013 season-summary group — score about 89
-
-The Q2 policy intentionally selects neighboring seasons with the same league and similar title profile.
-
-Structurally these options are extremely close.
-
-However, the actual summary text may contain unique clues not represented in the current score, so this result has lower confidence than the manager example.
+The model was not tuned to manufacture a balanced-looking distribution.
 
 ---
 
-# 9. Critical Finding — Current Quiz Is Hard-skewed by Construction
+# 9. Critical Finding — Hard Skew Is a Construction Property
 
-The main Q3 discovery is not the exact threshold.
+Q2 generally chooses the closest plausible distractors.
 
-It is this:
+Therefore many constructions are structurally Hard by design, especially:
 
-> Q2 currently selects the **closest plausible distractors** almost every time. Therefore many generators are structurally biased toward Hard questions.
+- exact final-rank questions
+- neighboring season-summary questions
 
-This is especially visible in:
+Do not move thresholds merely to make the distribution look balanced.
 
-- SEASON_RANK: 30 / 32 Hard
-- SEASON_SUMMARY: 31 / 33 Hard
-
-Do **not** fix this by changing score thresholds until the distribution looks pretty.
-
-The score is revealing a construction policy decision.
-
-Future question selection should be able to choose among candidate distractor sets with different structural distances rather than always taking the nearest three.
-
-That is a later construction / selection problem, not a reason to falsify Q3.
+Q4 must measure how this structural bias interacts with actual runtime exposure.
 
 ---
 
-# 10. Misclassification / Model Risk
+# 10. Limits / Research Debt
 
-## SEASON_SUMMARY — Confidence MEDIUM-LOW
-
-Missing factor:
-
-- semantic clue richness / uniqueness in the actual stem
-
-The summary may mention a uniquely identifying player, final, relegation, trophy, or manager even if its three year options are temporally close.
-
-Q3 therefore keeps the score but records this limitation explicitly.
-
-Do not expose Summary difficulty bands to users yet.
-
-## SEASON_RANK — Confidence MEDIUM
-
-The high Hard rate may be real for exact-rank questions because Q2 deliberately uses adjacent numeric options.
-
-But this also raises a Q5 significance question:
-
-> Is exact final rank in a routine season worth asking at all?
-
-Do not answer that inside Q3.
-
-## PLAYER_POSITION — UNMODELED
-
-The four options are always GK / DF / MF / FW.
-
-Current data does not provide enough defensible structural variation to produce a useful estimate without introducing unsupported assumptions about role rarity or player familiarity.
-
-Keep it unmodeled rather than inventing precision.
-
-## PLAYER_OVERLAP — UNMODELED / DISABLED
-
-Trust-disabled until registration interval evidence exists.
+1. Observed item difficulty still requires real response data.
+2. SEASON_SUMMARY needs a better semantic clue-richness model before user-facing difficulty use.
+3. PLAYER_POSITION may not need a structural difficulty model unless defensible variation can be defined.
+4. PLAYER_OVERLAP remains unmodeled / trust-disabled.
+5. Difficulty and historical significance remain separate concepts.
+6. Data repair may change the safe item bank; therefore the current CI artifact, not an older report count, is the authoritative baseline.
 
 ---
 
 # 11. Q3 Decision
 
-**PASS — structural estimate baseline**
+**PASS — Structural Difficulty Estimate baseline**
 
 Confidence:
 
 **MEDIUM**
 
-Why Pass:
+What is proven:
 
-- scoring rule is explicit and machine-readable
-- same inputs produce deterministic outputs
-- 107 trusted item constructions are observable
-- multiple bands exist
-- PLAYER_NUMBER spans all three bands
-- no Trust / provenance rule was weakened
-- the system distinguishes structural prediction from observed difficulty
-- CI generates a reusable baseline artifact
-- model limitations are explicitly recorded instead of hidden
+- explicit deterministic scoring model exists
+- trust-safe constructions can be inventoried
+- different structural bands emerge
+- repair-driven item-bank changes can be re-baselined automatically
+- CI retains the item-level artifact
 
-What Q3 does not claim:
+What is not proven:
 
 - true user difficulty
-- optimal Easy / Medium / Hard thresholds
-- optimal distribution
+- optimal band thresholds
+- optimal Easy / Medium / Hard mix
 - learning value
-- adaptive selection
+- adaptive selection policy
 
 ---
 
-# 12. Research Debt
+# 12. Next Gate — Q4 Coverage / Balance
 
-1. Observe true item difficulty after sufficient response histories exist.
-2. Develop a better semantic clue-richness measure for SEASON_SUMMARY before user-facing difficulty labels.
-3. Decide whether PLAYER_POSITION needs a structural difficulty model at all.
-4. Do not use current bands as a gamification badge.
-5. Keep Q5 significance separate from difficulty.
+Q4 now uses the **post-repair 114-construction baseline**.
 
----
+Central question:
 
-# 13. Next Gate — Q4 Coverage / Balance
-
-Q4 should not merely count questions.
-
-It must measure:
-
-`availability × generation policy × era × category × generator × difficulty`
-
-The first Q4 question is:
-
-> If a user simply presses “next” repeatedly today, what history are they statistically likely to see — and what history is nearly invisible?
-
-Q4 should use the Q3 baseline rather than inventing a new disconnected dataset.
+> If a user simply presses “next” repeatedly under the repaired current engine, what history is statistically likely to reach the screen, what history is nearly invisible, and which gaps are caused by data/provenance limitations rather than editorial intent?
