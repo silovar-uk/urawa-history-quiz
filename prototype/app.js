@@ -72,13 +72,11 @@
       stats.recentWrong += 1;
     }
 
-    // Category
     const cat = question.category || 'PLAYER';
     if (!stats.byCategory[cat]) stats.byCategory[cat] = { total: 0, correct: 0 };
     stats.byCategory[cat].total += 1;
     if (isCorrect) stats.byCategory[cat].correct += 1;
 
-    // Era
     const year = parseInt(question.year || '2006', 10);
     let era = '2000s';
     if (year < 2000) era = '1990s';
@@ -93,8 +91,32 @@
   }
 
   // --------------------------------------------------
-  // 3. Quiz Engine (All 34 Seasons Dynamic Generator)
+  // 3. Quiz Trust Gate + Dynamic Generator
   // --------------------------------------------------
+  const trust = window.URAWA_QUIZ_TRUST || null;
+
+  const quizQA = {
+    generated: 0,
+    passed: 0,
+    rejected: 0,
+    reasons: {},
+    lastRejected: []
+  };
+  window.URAWA_QUIZ_QA = quizQA;
+
+  function noteReject(generatorId, reason, seasonId, detail = '') {
+    quizQA.rejected += 1;
+    quizQA.reasons[reason] = (quizQA.reasons[reason] || 0) + 1;
+    quizQA.lastRejected.unshift({ generatorId, reason, seasonId, detail });
+    quizQA.lastRejected = quizQA.lastRejected.slice(0, 30);
+    return null;
+  }
+
+  function notePass(question) {
+    quizQA.passed += 1;
+    return question;
+  }
+
   function shuffle(arr) {
     const copy = [...arr];
     for (let i = copy.length - 1; i > 0; i--) {
@@ -104,208 +126,311 @@
     return copy;
   }
 
-  function getSeasonForFilter(selectedEra, specificSeasonId) {
-    if (specificSeasonId) {
-      return db.seasons.find(s => s.season_id === specificSeasonId) || db.seasons[0];
-    }
-    let pool = db.seasons;
-    if (selectedEra === '1990s') pool = db.seasons.filter(s => s.year < 2000);
-    else if (selectedEra === '2000s') pool = db.seasons.filter(s => s.year >= 2000 && s.year < 2010);
-    else if (selectedEra === '2010s') pool = db.seasons.filter(s => s.year >= 2010 && s.year < 2020);
-    else if (selectedEra === '2020s') pool = db.seasons.filter(s => s.year >= 2020);
+  function getSeasonPool(selectedEra, specificSeasonId) {
+    if (!db || !trust) return [];
 
-    if (!pool.length) pool = db.seasons;
-    return pool[Math.floor(Math.random() * pool.length)];
+    let pool = db.seasons.filter(s => trust.isConfirmedSeason(s, db).ok);
+
+    if (specificSeasonId) {
+      return pool.filter(s => s.season_id === specificSeasonId);
+    }
+
+    if (selectedEra === '1990s') pool = pool.filter(s => s.year < 2000);
+    else if (selectedEra === '2000s') pool = pool.filter(s => s.year >= 2000 && s.year < 2010);
+    else if (selectedEra === '2010s') pool = pool.filter(s => s.year >= 2010 && s.year < 2020);
+    else if (selectedEra === '2020s') pool = pool.filter(s => s.year >= 2020);
+
+    return shuffle(pool);
+  }
+
+  function uniquePlayersFromRelations(relations) {
+    const seen = new Set();
+    const out = [];
+    for (const rel of relations) {
+      if (seen.has(rel.player_id)) continue;
+      const player = db.players.find(p => p.player_id === rel.player_id);
+      if (!player || !trust.hasKnownSources(player, db)) continue;
+      seen.add(rel.player_id);
+      out.push({ rel, player });
+    }
+    return out;
+  }
+
+  function finalizeQuestion(generatorId, seasonData, draft) {
+    quizQA.generated += 1;
+
+    if (!draft) {
+      return noteReject(generatorId, 'MISSING_REQUIRED_FIELD', seasonData.season_id, 'Generator returned no draft.');
+    }
+
+    const base = trust.validateQuestionBase(draft);
+    if (!base.ok) {
+      return noteReject(generatorId, base.reason, seasonData.season_id, base.detail || '');
+    }
+
+    return notePass({
+      ...draft,
+      generatorId,
+      trust: {
+        eligible: true,
+        sourceChecked: true,
+        gateVersion: 'q1-2026-09-07'
+      }
+    });
+  }
+
+  function generatePlayerNumber(seasonData, psList) {
+    const generatorId = 'PLAYER_NUMBER';
+    const sourced = psList.filter(ps => ps.shirt_number !== null && trust.hasKnownSources(ps, db));
+
+    if (!sourced.length) {
+      return noteReject(generatorId, 'MISSING_RELATION_SOURCE', seasonData.season_id, 'player_seasons source_ids required.');
+    }
+
+    const candidates = shuffle(sourced);
+    for (const targetPS of candidates) {
+      const targetPlayer = db.players.find(p => p.player_id === targetPS.player_id);
+      if (!targetPlayer || !trust.hasKnownSources(targetPlayer, db)) continue;
+
+      const sameNumber = sourced.filter(ps => String(ps.shirt_number) === String(targetPS.shirt_number));
+      const distinctWearers = new Set(sameNumber.map(ps => ps.player_id));
+      if (distinctWearers.size !== 1) {
+        noteReject(generatorId, 'SHIRT_NUMBER_NOT_UNIQUE', seasonData.season_id, `shirt_number=${targetPS.shirt_number}`);
+        continue;
+      }
+
+      const otherPlayers = uniquePlayersFromRelations(
+        sourced.filter(ps => ps.player_id !== targetPS.player_id && String(ps.shirt_number) !== String(targetPS.shirt_number))
+      );
+      if (otherPlayers.length < 3) {
+        return noteReject(generatorId, 'INSUFFICIENT_DISTRACTORS', seasonData.season_id, 'Need 3 sourced same-season players with different numbers.');
+      }
+
+      const samePos = otherPlayers.filter(x => x.rel.position === targetPS.position);
+      const pool = samePos.length >= 3 ? samePos : otherPlayers;
+      const distractors = shuffle(pool).slice(0, 3).map(x => x.player.name);
+
+      return finalizeQuestion(generatorId, seasonData, {
+        category: 'PLAYER',
+        year: seasonData.year,
+        question: `${seasonData.year}年の浦和レッズで背番号「${targetPS.shirt_number}」を背負った選手は？`,
+        options: shuffle([targetPlayer.name, ...distractors]),
+        correct: targetPlayer.name,
+        memoryHook: targetPS.memory_hook || `${targetPlayer.name}（背番号${targetPS.shirt_number}・${targetPS.position}）`,
+        seasonId: seasonData.season_id
+      });
+    }
+
+    return noteReject(generatorId, 'NO_ELIGIBLE_TARGET', seasonData.season_id);
+  }
+
+  function generatePlayerPosition(seasonData, psList) {
+    const generatorId = 'PLAYER_POSITION';
+    const allPositions = ['GK', 'DF', 'MF', 'FW'];
+    const sourced = psList.filter(ps => trust.hasKnownSources(ps, db) && allPositions.includes(ps.position));
+
+    if (!sourced.length) {
+      return noteReject(generatorId, 'MISSING_RELATION_SOURCE', seasonData.season_id, 'player_seasons source_ids required.');
+    }
+
+    for (const targetPS of shuffle(sourced)) {
+      const targetPlayer = db.players.find(p => p.player_id === targetPS.player_id);
+      if (!targetPlayer || !trust.hasKnownSources(targetPlayer, db)) continue;
+
+      const positionsForPlayer = new Set(
+        sourced.filter(ps => ps.player_id === targetPS.player_id).map(ps => ps.position)
+      );
+      if (positionsForPlayer.size !== 1) {
+        noteReject(generatorId, 'AMBIGUOUS_CORRECT_ANSWER', seasonData.season_id, `${targetPlayer.name} has multiple registered positions.`);
+        continue;
+      }
+
+      const correctPos = targetPS.position;
+      return finalizeQuestion(generatorId, seasonData, {
+        category: 'PLAYER',
+        year: seasonData.year,
+        question: `${seasonData.year}年シーズンの ${targetPlayer.name} の登録ポジションは？`,
+        options: shuffle([correctPos, ...allPositions.filter(pos => pos !== correctPos)]),
+        correct: correctPos,
+        memoryHook: targetPS.memory_hook || `${targetPlayer.name}は${correctPos}として登録された。`,
+        seasonId: seasonData.season_id
+      });
+    }
+
+    return noteReject(generatorId, 'NO_ELIGIBLE_TARGET', seasonData.season_id);
+  }
+
+  function generatePlayerOverlap(seasonData) {
+    return noteReject(
+      'PLAYER_OVERLAP',
+      'OVERLAP_UNVERIFIED',
+      seasonData.season_id,
+      'Disabled until registration interval or roster-completeness evidence is available.'
+    );
+  }
+
+  function generateManagerSeason(seasonData) {
+    const generatorId = 'MANAGER_SEASON';
+    const managerCheck = trust.getSafeManagerForSeason(seasonData.season_id, db);
+    if (!managerCheck.ok) {
+      return noteReject(generatorId, managerCheck.reason, seasonData.season_id, managerCheck.detail || '');
+    }
+
+    const { tenure, manager } = managerCheck;
+    const otherSafeManagers = [];
+    const seen = new Set([manager.manager_id]);
+
+    for (const otherSeason of db.seasons) {
+      if (otherSeason.season_id === seasonData.season_id) continue;
+      if (!trust.isConfirmedSeason(otherSeason, db).ok) continue;
+      const check = trust.getSafeManagerForSeason(otherSeason.season_id, db);
+      if (!check.ok || seen.has(check.manager.manager_id)) continue;
+      seen.add(check.manager.manager_id);
+      otherSafeManagers.push(check.manager);
+    }
+
+    if (otherSafeManagers.length < 3) {
+      return noteReject(generatorId, 'INSUFFICIENT_DISTRACTORS', seasonData.season_id);
+    }
+
+    const distractors = shuffle(otherSafeManagers).slice(0, 3).map(m => m.name);
+
+    return finalizeQuestion(generatorId, seasonData, {
+      category: 'MANAGER',
+      year: seasonData.year,
+      question: `${seasonData.year}年シーズンを通じて浦和レッズの監督として登録されているのは？`,
+      options: shuffle([manager.name, ...distractors]),
+      correct: manager.name,
+      memoryHook: tenure.notes || `${manager.name}監督がチームを指揮した。`,
+      seasonId: seasonData.season_id
+    });
+  }
+
+  function generateSeasonRank(seasonData) {
+    const generatorId = 'SEASON_RANK';
+    const rankCheck = trust.validateRankFact(seasonData, db);
+    if (!rankCheck.ok) {
+      return noteReject(generatorId, rankCheck.reason, seasonData.season_id, rankCheck.detail || '');
+    }
+
+    const correctRank = Number(seasonData.league_rank);
+    const validRanks = Array.from({ length: Number(seasonData.total_teams) }, (_, i) => i + 1)
+      .filter(r => r !== correctRank);
+
+    if (validRanks.length < 3) {
+      return noteReject(generatorId, 'INSUFFICIENT_DISTRACTORS', seasonData.season_id);
+    }
+
+    const byDistance = validRanks.sort((a, b) => Math.abs(a - correctRank) - Math.abs(b - correctRank));
+    const nearPool = byDistance.slice(0, Math.min(8, byDistance.length));
+    const distractors = shuffle(nearPool).slice(0, 3).map(r => `${r}位`);
+    const correct = `${correctRank}位`;
+
+    return finalizeQuestion(generatorId, seasonData, {
+      category: 'SEASON',
+      year: seasonData.year,
+      question: `${seasonData.year}年シーズンの浦和レッズの${seasonData.league_name}最終順位は？`,
+      options: shuffle([correct, ...distractors]),
+      correct,
+      memoryHook: seasonData.memory_hook || `${seasonData.league_name}${correct}でシーズンを終えた。`,
+      seasonId: seasonData.season_id
+    });
+  }
+
+  function generateSeasonSummary(seasonData) {
+    const generatorId = 'SEASON_SUMMARY';
+    const summaryCheck = trust.validateSummaryFact(seasonData, db);
+    if (!summaryCheck.ok) {
+      return noteReject(generatorId, summaryCheck.reason, seasonData.season_id, summaryCheck.detail || '');
+    }
+
+    const otherSeasons = db.seasons.filter(s =>
+      s.season_id !== seasonData.season_id &&
+      trust.isConfirmedSeason(s, db).ok &&
+      s.summary &&
+      !trust.summaryLeaksYear(s)
+    );
+
+    if (otherSeasons.length < 3) {
+      return noteReject(generatorId, 'INSUFFICIENT_DISTRACTORS', seasonData.season_id);
+    }
+
+    const distractors = shuffle(otherSeasons).slice(0, 3).map(s => `${s.year}年`);
+    const correct = `${seasonData.year}年`;
+
+    return finalizeQuestion(generatorId, seasonData, {
+      category: 'SEASON',
+      year: seasonData.year,
+      question: `「${seasonData.summary}」\nこのシーズンはいつ？`,
+      options: shuffle([correct, ...distractors]),
+      correct,
+      memoryHook: seasonData.memory_hook || seasonData.summary,
+      seasonId: seasonData.season_id
+    });
+  }
+
+  function generateKitDetail(seasonData) {
+    const generatorId = 'KIT_DETAIL';
+    const kit = db.uniforms.find(u => u.season_id === seasonData.season_id && u.type === 'HOME');
+    if (!kit || !kit.chest_sponsor) {
+      return noteReject(generatorId, 'MISSING_REQUIRED_FIELD', seasonData.season_id, 'HOME kit/chest_sponsor missing.');
+    }
+    if (!trust.hasKnownSources(kit, db)) {
+      return noteReject(generatorId, 'MISSING_SOURCE', seasonData.season_id, 'uniform source_ids required before quiz eligibility.');
+    }
+
+    const sponsorPool = [...new Set(
+      db.uniforms
+        .filter(u => u.type === 'HOME' && u.season_id !== seasonData.season_id && u.chest_sponsor && trust.hasKnownSources(u, db))
+        .map(u => u.chest_sponsor)
+    )].filter(s => s !== kit.chest_sponsor);
+
+    if (sponsorPool.length < 3) {
+      return noteReject(generatorId, 'INSUFFICIENT_DISTRACTORS', seasonData.season_id, 'Need 3 sourced sponsor values.');
+    }
+
+    const distractors = shuffle(sponsorPool).slice(0, 3);
+    return finalizeQuestion(generatorId, seasonData, {
+      category: 'KIT',
+      year: seasonData.year,
+      question: `${seasonData.year}年シーズンのHOMEユニフォームの胸スポンサーは？`,
+      options: shuffle([kit.chest_sponsor, ...distractors]),
+      correct: kit.chest_sponsor,
+      memoryHook: kit.description || `${seasonData.year}年の胸スポンサーは${kit.chest_sponsor}。`,
+      seasonId: seasonData.season_id
+    });
+  }
+
+  function generateQuizForSeason(seasonData) {
+    const psList = db.playerSeasons.filter(ps => ps.season_id === seasonData.season_id);
+    const generators = shuffle([
+      () => generatePlayerNumber(seasonData, psList),
+      () => generatePlayerPosition(seasonData, psList),
+      () => generatePlayerOverlap(seasonData, psList),
+      () => generateManagerSeason(seasonData),
+      () => generateSeasonRank(seasonData),
+      () => generateSeasonSummary(seasonData),
+      () => generateKitDetail(seasonData)
+    ]);
+
+    for (const gen of generators) {
+      const question = gen();
+      if (question) return question;
+    }
+    return null;
   }
 
   function generateQuiz(targetSeasonId = null, filterEra = 'ALL') {
-    if (!db) return null;
-
-    const seasonData = getSeasonForFilter(filterEra, targetSeasonId);
-    const seasonId = seasonData.season_id;
-    const psList = db.playerSeasons.filter(ps => ps.season_id === seasonId);
-
-    const generators = [
-      // 1. PLAYER_NUMBER (背番号問題)
-      () => {
-        const withNumber = psList.filter(ps => ps.shirt_number !== null);
-        if (!withNumber.length) return null;
-        const targetPS = withNumber[Math.floor(Math.random() * withNumber.length)];
-        const targetPlayer = db.players.find(p => p.player_id === targetPS.player_id);
-        if (!targetPlayer) return null;
-
-        const samePos = withNumber.filter(ps => ps.player_id !== targetPS.player_id && ps.position === targetPS.position);
-        let distractorPool = samePos.length >= 3 ? samePos : withNumber.filter(ps => ps.player_id !== targetPS.player_id);
-        if (distractorPool.length < 3) {
-          distractorPool = db.playerSeasons.filter(ps => ps.player_id !== targetPS.player_id);
-        }
-        const distractors = shuffle(distractorPool)
-          .slice(0, 3)
-          .map(ps => {
-            const p = db.players.find(x => x.player_id === ps.player_id);
-            return p ? p.name : '選手';
-          });
-
-        const options = shuffle([targetPlayer.name, ...distractors]);
-        return {
-          category: 'PLAYER',
-          year: seasonData.year,
-          question: `${seasonData.year}年の浦和レッズで背番号「${targetPS.shirt_number}」を背負った選手は？`,
-          options,
-          correct: targetPlayer.name,
-          memoryHook: targetPS.memory_hook || `${targetPlayer.name}（背番号${targetPS.shirt_number}・${targetPS.position}）`,
-          seasonId: seasonData.season_id
-        };
-      },
-
-      // 2. PLAYER_POSITION (ポジション問題)
-      () => {
-        if (!psList.length) return null;
-        const targetPS = psList[Math.floor(Math.random() * psList.length)];
-        const targetPlayer = db.players.find(p => p.player_id === targetPS.player_id);
-        if (!targetPlayer) return null;
-
-        const allPositions = ['GK', 'DF', 'MF', 'FW'];
-        const correctPos = targetPS.position;
-        const distractors = allPositions.filter(pos => pos !== correctPos);
-        const options = shuffle([correctPos, ...distractors]);
-
-        return {
-          category: 'PLAYER',
-          year: seasonData.year,
-          question: `${seasonData.year}年シーズンの ${targetPlayer.name} の登録ポジションは？`,
-          options,
-          correct: correctPos,
-          memoryHook: targetPS.memory_hook || `${targetPlayer.name}は${correctPos}として活躍。`,
-          seasonId: seasonData.season_id
-        };
-      },
-
-      // 3. PLAYER_OVERLAP (同時在籍問題)
-      () => {
-        if (psList.length < 2) return null;
-        const targetPS = psList[Math.floor(Math.random() * psList.length)];
-        const targetPlayer = db.players.find(p => p.player_id === targetPS.player_id);
-        if (!targetPlayer) return null;
-
-        const coPlayers = psList.filter(ps => ps.player_id !== targetPS.player_id);
-        const correctPS = coPlayers[Math.floor(Math.random() * coPlayers.length)];
-        const correctPlayer = db.players.find(p => p.player_id === correctPS.player_id);
-        if (!correctPlayer) return null;
-
-        const coPlayerIds = new Set(psList.map(ps => ps.player_id));
-        const diffEraPS = db.playerSeasons.filter(ps => !coPlayerIds.has(ps.player_id));
-        const distinctDiffPlayers = [...new Set(diffEraPS.map(ps => ps.player_id))];
-        if (distinctDiffPlayers.length < 3) return null;
-
-        const distractors = shuffle(distinctDiffPlayers)
-          .slice(0, 3)
-          .map(pid => {
-            const p = db.players.find(x => x.player_id === pid);
-            return p ? p.name : '選手';
-          });
-
-        const options = shuffle([correctPlayer.name, ...distractors]);
-        return {
-          category: 'PLAYER',
-          year: seasonData.year,
-          question: `${seasonData.year}年シーズンに ${targetPlayer.name} とチームメイトとして在籍していた選手は？`,
-          options,
-          correct: correctPlayer.name,
-          memoryHook: `${targetPlayer.name} と ${correctPlayer.name} は${seasonData.year}年の浦和レッズで共に戦った。`,
-          seasonId: seasonData.season_id
-        };
-      },
-
-      // 4. MANAGER_SEASON (歴代監督問題)
-      () => {
-        const tenure = db.managerTenures.find(mt => mt.season_id === seasonId);
-        if (!tenure) return null;
-        const manager = db.managers.find(m => m.manager_id === tenure.manager_id);
-        if (!manager) return null;
-
-        const distractors = shuffle(db.managers.filter(m => m.manager_id !== manager.manager_id))
-          .slice(0, 3)
-          .map(m => m.name);
-
-        const options = shuffle([manager.name, ...distractors]);
-        return {
-          category: 'MANAGER',
-          year: seasonData.year,
-          question: `${seasonData.year}年に浦和レッズを率いて指揮を執った監督は？`,
-          options,
-          correct: manager.name,
-          memoryHook: tenure.notes || `${manager.name}監督がチームを指揮した。`,
-          seasonId: seasonData.season_id
-        };
-      },
-
-      // 5. SEASON_RANK (順位問題)
-      () => {
-        if (!seasonData.league_rank) return null;
-        const correct = `${seasonData.league_rank}位`;
-        const possible = [1, 2, 3, 4, 6, 7, 10, 11, 14, 15].filter(r => r !== seasonData.league_rank);
-        const distractors = shuffle(possible).slice(0, 3).map(r => `${r}位`);
-        const options = shuffle([correct, ...distractors]);
-
-        return {
-          category: 'SEASON',
-          year: seasonData.year,
-          question: `${seasonData.year}年シーズンの浦和レッズのJ1/J2最終順位は？`,
-          options,
-          correct,
-          memoryHook: seasonData.memory_hook || `リーグ${seasonData.league_rank}位でシーズンを終えた。`,
-          seasonId: seasonData.season_id
-        };
-      },
-
-      // 6. SEASON_SUMMARY (要約から年度を当てる)
-      () => {
-        const otherSeasons = db.seasons.filter(s => s.season_id !== seasonId);
-        const distractors = shuffle(otherSeasons.map(s => `${s.year}年`)).slice(0, 3);
-        const correct = `${seasonData.year}年`;
-        const options = shuffle([correct, ...distractors]);
-
-        return {
-          category: 'SEASON',
-          year: seasonData.year,
-          question: `「${seasonData.summary}」\nこのシーズンはいつ？`,
-          options,
-          correct,
-          memoryHook: seasonData.memory_hook,
-          seasonId: seasonData.season_id
-        };
-      },
-
-      // 7. KIT_DETAIL (キット胸スポンサー問題)
-      () => {
-        const kit = db.uniforms.find(u => u.season_id === seasonId && u.type === 'HOME');
-        if (!kit || !kit.chest_sponsor) return null;
-        const correct = kit.chest_sponsor;
-        const pool = ['MITSUBISHI MOTORS', 'Vodafone', 'DHL', 'POLUS'].filter(s => s !== correct);
-        const distractors = shuffle(pool).slice(0, 3);
-        const options = shuffle([correct, ...distractors]);
-
-        return {
-          category: 'KIT',
-          year: seasonData.year,
-          question: `${seasonData.year}年シーズンの公式ユニフォームの胸スポンサーは？`,
-          options,
-          correct,
-          memoryHook: kit.description || `${seasonData.year}年のサプライヤーは${kit.supplier}、胸ロゴは${kit.chest_sponsor}。`,
-          seasonId: seasonData.season_id
-        };
-      }
-    ];
-
-    const validGenerators = shuffle(generators);
-    for (const gen of validGenerators) {
-      const q = gen();
-      if (q && q.options && q.options.length === 4 && new Set(q.options).size === 4) {
-        return q;
-      }
+    if (!db || !trust) {
+      console.warn('Quiz Trust Gate is unavailable. Failing closed.');
+      return null;
     }
 
+    const seasons = getSeasonPool(filterEra, targetSeasonId);
+    for (const seasonData of seasons) {
+      const question = generateQuizForSeason(seasonData);
+      if (question) return question;
+    }
     return null;
   }
 
@@ -346,13 +471,11 @@
     },
 
     quiz: () => {
-      if (!activeQuiz) {
-        activeQuiz = generateQuiz(null, activeEraFilter);
-      }
+      if (!activeQuiz) activeQuiz = generateQuiz(null, activeEraFilter);
       if (!activeQuiz) {
         return `
-          <div class="eyebrow">ERROR</div>
-          <p class="lead">データを読み込めませんでした。再読み込みしてください。</p>
+          <div class="eyebrow">QUIZ PAUSED</div>
+          <p class="lead">この条件では、現在の品質基準を満たす問題を生成できませんでした。</p>
           <button class="secondary" data-screen="today">ホームへ戻る</button>
         `;
       }
@@ -527,7 +650,9 @@
   function showPlayerDetail(playerId) {
     const player = db.players.find(p => p.player_id === playerId);
     if (!player) return;
-    const history = db.playerSeasons.filter(ps => ps.player_id === playerId).sort((a, b) => parseInt(a.season_id) - parseInt(b.season_id));
+    const history = db.playerSeasons
+      .filter(ps => ps.player_id === playerId)
+      .sort((a, b) => parseInt(a.season_id) - parseInt(b.season_id));
 
     let modal = document.querySelector('#player-modal');
     if (!modal) {
@@ -585,9 +710,7 @@
   function bindEvents() {
     document.querySelectorAll('[data-screen]').forEach(el => {
       el.addEventListener('click', () => {
-        if (el.dataset.screen === 'quiz') {
-          activeQuiz = generateQuiz(null, activeEraFilter);
-        }
+        if (el.dataset.screen === 'quiz') activeQuiz = generateQuiz(null, activeEraFilter);
         render(el.dataset.screen);
       });
     });
@@ -646,12 +769,8 @@
 
         document.querySelectorAll('[data-answer]').forEach(b => {
           b.disabled = true;
-          if (b.dataset.value === activeQuiz.correct) {
-            b.classList.add('correct');
-          }
-          if (b.dataset.value === selectedVal && !isCorrect) {
-            b.classList.add('wrong');
-          }
+          if (b.dataset.value === activeQuiz.correct) b.classList.add('correct');
+          if (b.dataset.value === selectedVal && !isCorrect) b.classList.add('wrong');
         });
 
         const feedbackEl = document.querySelector('#feedback');
