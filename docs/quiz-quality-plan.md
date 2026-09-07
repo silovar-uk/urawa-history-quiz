@@ -8,13 +8,14 @@ Current status:
 
 - Q0 Inventory — **DONE**
 - Q1 Correctness / Eligibility — **DONE**
-- Q1.5 Provenance Recovery — **PARTIAL PASS / FOUNDATION DONE**
+- Q1.5 Provenance Recovery — **FOUNDATION DONE / COVERAGE PARTIAL**
 - Q1.6 Uniform Model Repair — **DONE**
 - Q2 Distractor Quality — **DONE**
 - Q3 Difficulty — **DONE (structural estimate baseline)**
+- Data Content Repair / Integrity Gate — **DONE / PASS**
 - Q4 Coverage / Balance — **NOW**
-- Q5 Significance / Memory Hook — NEXT
-- Q6 Learning History — LATER
+- Q5 Significance / Memory Hook — **NEXT**
+- Q6 Learning History — **LATER**
 
 Reports / plans:
 
@@ -23,19 +24,26 @@ Reports / plans:
 - `docs/q1-6-q2-report.md`
 - `docs/uniform-context-schema.md`
 - `docs/q3-difficulty-report.md`
+- `docs/data-repair-evidence.md`
+- `docs/data-integrity-report.md`
+- `docs/data-contract.md`
 - `docs/q4-coverage-balance-plan.md`
 
 ---
 
 # 0. Goal
 
-Move the Quiz Engine through three distinct states:
+Move the Quiz Engine through distinct states:
 
 `question can be generated`
 
 →
 
 `question is safe to show`
+
+→
+
+`underlying data is internally consistent and runtime-safe`
 
 →
 
@@ -73,20 +81,18 @@ Runtime QA:
 
 Status:
 
-**PARTIAL PASS / FOUNDATION DONE**
+**FOUNDATION DONE / COVERAGE PARTIAL**
 
 Claim-level provenance:
 
 `data/provenance-claims.js`
 
-It proves exact relationship values rather than treating entity-level sources as evidence for every field.
-
 Current safe player recovery:
 
-- PLAYER_NUMBER: 2 / 34 eligible seasons
-- PLAYER_POSITION: 3 / 34 eligible seasons
+- PLAYER_NUMBER: **2 / 34 eligible seasons**
+- PLAYER_POSITION: **3 / 34 eligible seasons**
 
-Known source/data contradictions remain quarantined and fail closed.
+The 2026-09-07 Data Repair Round corrected additional 2006 base relations and promoted them into positive claim provenance.
 
 PLAYER_OVERLAP remains disabled until interval evidence exists.
 
@@ -94,7 +100,7 @@ PLAYER_OVERLAP remains disabled until interval evidence exists.
 
 # 3. Q1.6 — Uniform Model Repair — DONE
 
-Quiz truth now uses:
+Quiz truth uses:
 
 `season × HOME × competition_scope × chest_sponsor × provenance`
 
@@ -102,25 +108,26 @@ Registry:
 
 `data/uniform-contexts.js`
 
-Trust module:
-
-`prototype/kit-trust.js`
-
-Verified slice:
+Latest verified context coverage:
 
 - 2005 domestic → Vodafone
 - 2007 domestic → SAVAS
 - 2007 international → DHL
+- 2008 domestic → SAVAS
+- 2008 international → DHL
+- 2011 domestic → SAVAS
 - 2013 domestic → POLUS
 - 2013 ACL → MITSUBISHI MOTORS
 
-Result:
+Current result:
 
-- contexts: 5
-- distinct sponsors: 5
-- KIT_DETAIL eligible seasons: 3 / 34
-- invariantFailures: 0
-- provenanceFailures: 0
+- verified contexts: **8**
+- distinct sponsors: **5**
+- KIT_DETAIL eligible seasons: **5 / 34**
+- invariantFailures: **0**
+- provenanceFailures: **0**
+
+Unverified legacy kit years are not guessed into eligibility.
 
 ---
 
@@ -191,7 +198,7 @@ Latest Q2 failures:
 
 Status:
 
-**PASS — structural estimate baseline**
+**PASS — Structural Difficulty Estimate baseline**
 
 Model:
 
@@ -201,103 +208,117 @@ Audit / inventory:
 
 `scripts/quiz-difficulty-audit.mjs`
 
-CI artifact:
+## Terminology
 
-`q3-difficulty-baseline.json`
-
-## Terminology decision
-
-Do not call the pre-response model “observed item difficulty”.
-
-Q3 produces:
-
-**Structural Difficulty Estimate**
+Do not call this pre-response model “observed item difficulty”.
 
 Observed item difficulty must later come from actual response data.
 
-## Current factors
+## Latest post-repair baseline
 
-### PLAYER_NUMBER
+**114 modeled constructions**
 
-- same-position ratio
-- average shirt-number distance
-- number closeness
-
-### MANAGER_SEASON
-
-- same-decade ratio
-- average year distance
-- temporal closeness
-
-### SEASON_RANK
-
-- average rank distance
-- rank closeness
-- title-count prominence proxy
-
-### SEASON_SUMMARY
-
-- temporal closeness
-- same-decade ratio
-- title-profile similarity
-- league similarity
-- title-count distinctiveness proxy
-
-### KIT_DETAIL
-
-- same competition-scope ratio
-- temporal distance
-- same-year alternative context
-
-## Baseline
-
-107 modeled item constructions:
-
-- EASY: 4
-- MEDIUM: 23
-- HARD: 80
+- EASY: **4**
+- MEDIUM: **29**
+- HARD: **81**
 
 By generator:
 
-- PLAYER_NUMBER: 11 / E4 M3 H4 / avg 54.9
-- MANAGER_SEASON: 26 / E0 M13 H13 / avg 73.2
-- SEASON_RANK: 32 / E0 M2 H30 / avg 80.3
-- SEASON_SUMMARY: 33 / E0 M2 H31 / avg 80.0
-- KIT_DETAIL: 5 / E0 M3 H2 / avg 65.2
+- PLAYER_NUMBER: **15** / E4 M6 H5 / avg 57.4
+- MANAGER_SEASON: **26** / E0 M13 H13 / avg 73.2
+- SEASON_RANK: **32** / E0 M2 H30 / avg 80.3
+- SEASON_SUMMARY: **33** / E0 M2 H31 / avg 80.0
+- KIT_DETAIL: **8** / E0 M6 H2 / avg 61.6
 
-## Core finding
+The baseline changed from the earlier 107-item census because repaired player relations and additional verified uniform contexts created new safe constructions.
 
-The engine is structurally Hard-skewed because Q2 currently chooses the closest plausible distractors almost every time.
+Do not shift thresholds merely to make the distribution look balanced.
 
-Do not “fix” this by shifting thresholds until the chart looks balanced.
+Limitations remain:
 
-Q4 must measure how that construction policy affects actual historical exposure.
-
-## Confidence / limits
-
-Overall Q3 confidence:
-
-**MEDIUM**
-
-Limitations:
-
-- true difficulty still needs user response data
+- true difficulty needs user response data
 - SEASON_SUMMARY clue richness is under-modeled
 - PLAYER_POSITION remains intentionally unmodeled
-- PLAYER_OVERLAP remains trust-disabled
-- bands are not user-facing
-
-Detailed reasoning:
-
-`docs/q3-difficulty-report.md`
+- PLAYER_OVERLAP remains disabled
 
 ---
 
-# 6. Q4 — Coverage / Balance — NOW
+# 6. Data Content Repair / Integrity Gate — DONE
+
+A historical correctness audit found concrete base-data errors after Q3, so Q4 was temporarily paused.
+
+The repair sequence was:
+
+`Primary-source Research → Evidence Ledger → Classification → Canonical Repair → Runtime Rebuild → Integrity Audit → Quiz Revalidation`
+
+Confirmed repairs included:
+
+- 1995 福田正博 32 goals
+- 1996 岡野雅行 award correction
+- 2000 Tosu / 95-minute promotion V-goal context
+- 2006 player relation corrections
+- 2007 / 2008 / 2011 legacy domestic kit sponsor corrections
+- 2011 and 2024 manager-tenure structural recovery
+
+Infrastructure added:
+
+- `data/issues.json`
+- `docs/data-repair-evidence.md`
+- `docs/data-contract.md`
+- `scripts/build-data-bundle.mjs`
+- `scripts/data-integrity-audit.mjs`
+
+`data/data-bundle.js` is now generated from canonical JSON and CI rejects drift.
+
+Latest Integrity status:
+
+**PASS / ERROR 0**
+
+Census:
+
+- seasons 34
+- players 38
+- player-season relations 79
+- managers 21
+- manager tenures 37
+- verified uniform contexts 8
+- sources 19
+- issues 11 total / 7 fixed / 4 open or blocked
+
+Warnings remain visible rather than guessed away:
+
+- 31 seasons rely only on broad root sources
+- many player-season samples are sparse
+- 29 seasons lack verified competition-aware uniform context
+- manager change reconstruction remains incomplete for 1997 / 1999 / 2000 / 2001 / 2008 / 2017
+
+These are Research / Coverage Debt, not permission to weaken Trust.
+
+---
+
+# 7. Permanent CI Order
+
+Every relevant data / quiz change now runs:
+
+1. syntax
+2. canonical JSON ↔ generated runtime bundle sync
+3. historical Data Integrity Audit
+4. Quiz Trust Audit
+5. Q2 Quality Audit
+6. Q3 Structural Difficulty Audit
+7. Q3 artifact upload
+
+A known repaired historical fact cannot silently regress without failing CI.
+
+---
+
+# 8. Q4 — Coverage / Balance — NOW
+
+Q4 resumes after Data Integrity PASS.
 
 Central question:
 
-> If a user repeatedly requests the next question under the current engine, what history dominates and what history barely appears?
+> If a user repeatedly requests the next question under the current real engine, what Urawa history dominates and what history barely appears?
 
 Q4 must distinguish:
 
@@ -307,7 +328,7 @@ Q4 must distinguish:
 
 Do not treat these as the same metric.
 
-## Required dimensions
+Required dimensions:
 
 - era
 - season
@@ -317,13 +338,10 @@ Do not treat these as the same metric.
 - player / manager where applicable
 - KIT competition scope where applicable
 
-## First implementation
+First implementation:
 
-Create a deterministic eligibility-and-exposure census.
-
-Recommended:
-
-- `scripts/quiz-coverage-audit.mjs`
+- deterministic eligibility-and-exposure census
+- recommended `scripts/quiz-coverage-audit.mjs`
 - CI artifact `q4-coverage-baseline.json`
 - `docs/q4-coverage-report.md`
 
@@ -341,39 +359,37 @@ Simulation must be reproducible.
 
 It measures engine exposure, not user engagement.
 
-## Biases to test
+Biases to test:
 
 - famous-era bias
-- provenance bias toward newer seasons
+- provenance bias toward better-sourced seasons
 - generator bias
 - difficulty bias
 - quiet-season invisibility
 - category starvation
 
-## Do not impose equal balance yet
+Do not force equal distribution yet.
 
-Do not force 25% per era or category.
+Q4 must label whether low exposure comes from:
 
-Q5 Significance must inform later editorial weighting.
+- historical/editorial policy
+- missing data
+- missing provenance
+- Trust rejection
+- generator selection policy
 
-## Pass
-
-Q4 passes when:
+Pass:
 
 - eligibility and runtime exposure are separately measurable
-- exposure is deterministic / reproducible
+- exposure simulation is deterministic
 - era / season / category / generator / difficulty bias is visible
-- provenance-driven gaps are separated from editorial choices
+- data-quality debt is separated from editorial balance
 - low-visibility seasons are identified
-- no Trust Gate is weakened to improve coverage
-
-Plan:
-
-`docs/q4-coverage-balance-plan.md`
+- Trust Gate remains unchanged
 
 ---
 
-# 7. Q5 — Significance / Memory Hook — NEXT
+# 9. Q5 — Significance / Memory Hook — NEXT
 
 A correct fact is not automatically worth learning.
 
@@ -390,7 +406,7 @@ Do not use Q4 imbalance as a reason to equalize everything before Q5.
 
 ---
 
-# 8. Q6 — Learning History — LATER
+# 10. Q6 — Learning History — LATER
 
 Future minimum history model:
 
@@ -412,49 +428,28 @@ Then derive:
 
 Raw accuracy alone should not be called mastery.
 
-Observed item difficulty can eventually be calibrated here once enough response data exists.
+Observed item difficulty can eventually be calibrated once sufficient response data exists.
 
 ---
 
-# 9. Technical / Research Debt Track
-
-## Runtime data
-
-`data/data-bundle.js` can drift from canonical source data.
-
-Recommended before broad data expansion:
-
-- deterministically generate runtime data from canonical source files, or
-- remove the fallback if unnecessary.
-
-## Q3 research debt
-
-- semantic clue-richness for SEASON_SUMMARY
-- observed difficulty calibration from future response data
-- PLAYER_POSITION difficulty model only if a defensible factor set emerges
-
-## Migration cleanup
-
-Archive/remove the one-time Q1.6/Q2 migration workflow after it no longer provides historical value.
-
----
-
-# 10. Sequence
+# 11. Sequence
 
 ```text
 Q0 Inventory                         DONE
 ↓
 Q1 Correctness / Eligibility         DONE
 ↓
-Q1.5 Claim Provenance               FOUNDATION DONE / PARTIAL COVERAGE
+Q1.5 Claim Provenance                FOUNDATION DONE / PARTIAL COVERAGE
 ↓
 Q1.6 Uniform Model Repair            DONE
 ↓
-Q2 Distractor Quality               DONE
+Q2 Distractor Quality                DONE
 ↓
-Q3 Structural Difficulty            DONE
+Q3 Structural Difficulty             DONE
 ↓
-Q4 Coverage / Balance               NOW
+Data Content Repair / Integrity      DONE / PASS
+↓
+Q4 Coverage / Balance                NOW
 ↓
 Q5 Significance / Memory Hook        NEXT
 ↓
@@ -467,6 +462,6 @@ History Browser Refinement
 
 ---
 
-# 11. Immediate Next Question
+# 12. Immediate Next Question
 
-> Under the current real generator-selection logic, what probability does each era, season, category, generator, and structural difficulty band have of reaching the user’s screen?
+> Under the repaired current generator-selection logic, what probability does each era, season, category, generator, and structural difficulty band have of reaching the user’s screen — and how much of that imbalance comes from data/provenance gaps rather than editorial intent?
