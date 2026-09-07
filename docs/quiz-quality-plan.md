@@ -8,15 +8,18 @@ Current status:
 
 - Q0 Inventory — **DONE**
 - Q1 Correctness / Eligibility — **DONE**
-- Q1.5 Provenance Recovery — **NOW**
+- Q1.5 Provenance Recovery — **PARTIAL PASS**
+- Q1.6 Uniform Model Repair — **NOW**
 - Q2 Distractor Quality — **NEXT**
 - Q3 Difficulty — LATER
 - Q4 Coverage / Balance — LATER
 - Q5 Significance / Memory Hook — LATER
 - Q6 Learning History — LATER
 
-Detailed Q0/Q1 result:
-`docs/quiz-trust-gate-report.md`
+Reports:
+
+- `docs/quiz-trust-gate-report.md`
+- `docs/provenance-recovery-report.md`
 
 ---
 
@@ -30,7 +33,7 @@ Quiz Engineを：
 
 `question is safe to show`
 
-へ進め、さらに：
+さらに：
 
 `question is worth learning`
 
@@ -40,346 +43,234 @@ Quiz Engineを：
 
 ---
 
-# 1. Q0 — Inventory — DONE
+# 1. Q0 / Q1 — DONE
 
-7 generatorの成立条件をmachine-checkableにした。
+Implemented:
 
-- PLAYER_NUMBER
-- PLAYER_POSITION
-- PLAYER_OVERLAP
-- MANAGER_SEASON
-- SEASON_RANK
-- SEASON_SUMMARY
-- KIT_DETAIL
+- fail closed
+- generator eligibility
+- reject reason taxonomy
+- semantic option uniqueness
+- manager ambiguity exclusion
+- league-rank bounds
+- answer leak detection
+- runtime QA diagnostics
+- repeatable CI audit
 
-Rules live in:
+Trust Gate:
 
 `prototype/quiz-trust.js`
 
-Each rule defines:
-- required evidence
-- fail-closed behavior
-- eligibility expectation
-
----
-
-# 2. Q1 — Correctness / Eligibility — DONE
-
-Implemented principles:
-
-## Fail closed
-
-成立を証明できないquestionは出さない。
-
-## Relationship evidence
-
-Entityにsourceがあっても、relationship factは別に確認する。
-
-Example:
-
-`player exists`
-
-≠
-
-`player wore #17 in 2006`
-
-## Semantic uniqueness
-
-4文字列が違うだけでは足りない。
-
-Normalized option uniquenessとcorrect occurrenceを検査する。
-
-## Safe wording
-
-Data certaintyより強い表現を使わない。
-
-## Observable rejection
-
-Runtime:
+Runtime QA:
 
 `window.URAWA_QUIZ_QA`
 
-CI:
+---
 
-`node scripts/quiz-trust-audit.mjs`
+# 2. Q1.5 — Provenance Recovery — PARTIAL PASS
 
-Workflow:
+## What changed
 
-`.github/workflows/quiz-trust-audit.yml`
+Introduced claim-level provenance:
+
+`data/provenance-claims.js`
+
+Why:
+
+An entity-level source does not necessarily prove:
+
+`player × season × shirt_number`
+
+or:
+
+`player × season × registered position`.
+
+Claim registry connects exact current values to exact sources.
+
+CI validates:
+
+- source ID exists in `data/sources.json`
+- claim value matches base data
+
+## Before → After
+
+- PLAYER_NUMBER: **0 → 2 / 34**
+- PLAYER_POSITION: **0 → 3 / 34**
+- KIT_DETAIL: **0 → 0 / 34**
+
+Other generators unchanged:
+
+- PLAYER_OVERLAP: 0 / 34
+- MANAGER_SEASON: 26 / 34
+- SEASON_RANK: 32 / 34
+- SEASON_SUMMARY: 33 / 34
+
+Quality invariants:
+
+- invariantFailures: 0
+- provenanceFailures: 0
+
+## Why only PARTIAL PASS
+
+PLAYER recovery model works.
+
+KIT research exposed that current `uniforms.json` uses one chest sponsor per season even when sponsor differs by competition.
+
+2007 official evidence:
+
+- domestic competitions = SAVAS
+- ACL / international = DHL
+
+Current base data has 2007 = DHL without competition context.
+
+Therefore KIT should remain fail-closed.
 
 ---
 
-# 3. Q0/Q1 Audit Result
-
-Initial CI:
-
-- PLAYER_NUMBER: 0 / 34 eligible
-- PLAYER_POSITION: 0 / 34 eligible
-- PLAYER_OVERLAP: 0 / 34 eligible
-- MANAGER_SEASON: 26 / 34 eligible
-- SEASON_RANK: 32 / 34 eligible
-- SEASON_SUMMARY: 33 / 34 eligible
-- KIT_DETAIL: 0 / 34 eligible
-
-Invariant failures: 0
-
-Interpretation:
-
-Trust layer works.
-Coverage不足はdata provenance不足を示している。
-
----
-
-# 4. Q1.5 — Provenance Recovery — NOW
+# 3. Q1.6 — Uniform Model Repair — NOW
 
 ## Purpose
 
-PLAYER / KITをTrust Gateを弱めず復活させる。
+Make kit sponsor facts semantically precise before restoring KIT_DETAIL.
 
-一括source付与は禁止。
+## Central question
 
-まずVertical Sliceでsource model自体を検証する。
+Is this sufficient?
 
----
+`season × HOME × chest_sponsor`
 
-## 4.1 Player relation slice
+Or do we need:
 
-Candidate anchor seasons:
+`season × HOME × competition_scope × chest_sponsor`
 
-- 1998
-- 2006
-- 2017
-- 2023
+Current evidence strongly supports the latter.
 
-Verify:
+## First slice
 
-- player-season membership
-- shirt number
-- registered position
+Audit and normalize:
 
-Prefer:
+- 2004
+- 2005
+- 2007
+- 2013
 
-- club official
-- league official
-- competition official
-- official annual records
+Known facts already established:
 
-Add relationship-level provenance only after checking the exact claim.
+- 2005 domestic chest = Vodafone
+- 2007 domestic chest = SAVAS
+- 2007 international chest = DHL
+- 2013 domestic chest = POLUS
 
-Schema candidate:
+2004 requires final normalization / source decision before use.
 
-```json
-{
-  "player_id": "...",
-  "season_id": "2006",
-  "shirt_number": 17,
-  "position": "MF",
-  "verification_status": "confirmed",
-  "source_ids": ["..."]
-}
-```
+## Required output
 
-Do not infer source from Player master.
+- competition-aware uniform schema decision
+- corrected / superseded ambiguous base values
+- claim-level provenance
+- exact domestic wording for KIT_DETAIL
+- minimum four distinct safe sponsor values if evidence permits
 
----
+## Pass
 
-## 4.2 Kit provenance slice
+Q1.6 passes only when:
 
-Goal:
+- no domestic / international conflation remains in quiz-eligible records
+- correct KIT answer is unique in stated context
+- at least 3 safe distractors exist
+- invariantFailures = 0
+- provenanceFailures = 0
 
-At least four distinct verified sponsor values available for safe distractor generation.
-
-Representative sponsor eras:
-
-- MITSUBISHI MOTORS
-- Vodafone
-- DHL
-- POLUS
-
-Verify actual HOME kit claims and attach source metadata.
-
-Schema candidate:
-
-```json
-{
-  "uniform_id": "...",
-  "season_id": "...",
-  "type": "HOME",
-  "chest_sponsor": "...",
-  "verification_status": "confirmed",
-  "source_ids": ["..."]
-}
-```
+If four distinct domestic values cannot be adequately sourced, keep KIT disabled.
 
 ---
 
-## 4.3 PLAYER_OVERLAP remains disabled
+# 4. PLAYER_OVERLAP remains disabled
 
-Current data does not prove actual overlap interval or roster completeness.
+Do not equate same season_id with actual simultaneous registration.
 
-Do not weaken the wording to make the existing generator appear safe.
-
-Future requirements:
+Future evidence requirement:
 
 - registration_start
 - registration_end
-- or equivalent official interval evidence
-- roster completeness rule
+- or equivalent interval evidence
+- roster completeness for distractor proof
 
 ---
 
-## 4.4 Manager ambiguity remains fail-closed
+# 5. Known base-data repair backlog
 
-Current gate rejects seasons whose notes suggest:
+Q1.5 surfaced at least:
 
-- mid-season replacement
-- dismissal
-- interim control
-- handover
+- Washington 2006 shirt number 30 → official 21
+- Nobuhisa Yamada 2006 position DF → official R-File MF
+- Ryota Tsuzuki 2006 shirt number 21 → official 23
+- Masayuki Okano 2006 shirt number 32 → official 30
+- 2007 domestic chest DHL → SAVAS
+- 2004 chest sponsor requires normalization
 
-Do not restore those questions until manager tenure records represent changes explicitly.
-
----
-
-# 5. Q1.5 Pass Gate
-
-Re-run Trust Audit.
-
-Required:
-
-- PLAYER_NUMBER eligible > 0
-- PLAYER_POSITION eligible > 0
-- KIT_DETAIL eligible > 0
-- invariantFailures = 0
-- no bulk unsupported source stamping
-
-If failed:
-source / schema modelを修正する。
-
-Q2へ急がない。
+Do not mark these erroneous current values as trusted claims.
 
 ---
 
 # 6. Q2 — Distractor Quality — NEXT
 
-Correctnessの次に「もっともらしい誤答」を改善する。
+Start only after Q1.6 decision.
 
-Principle:
+Principles:
 
-`plausible enough to require recall`
+- same domain
+- plausible
+- close enough to require recall
+- clearly false
+- data-derived
+- source-backed when the option itself implies a historical fact
+- no absurd option
+- no equivalent answer
 
-AND
-
-`clearly false from supported data`
-
----
-
-## MANAGER
-
-Current safe poolをglobal randomにせず：
-
-1. adjacent era
-2. nearby tenure
-3. same broad historical period
-
-を優先。
-
----
-
-## SEASON_RANK
-
-Current:
-valid league range内に限定済み。
-
-Next:
-correct rank近傍をdifficulty-awareに選ぶ。
-
-Example:
-
-correct 6th
-
-better distractors:
-4th / 5th / 7th
-
-rather than:
-1st / 14th / 18th
-
----
-
-## SEASON_SUMMARY
-
-Random distant yearをやめる。
-
-Candidate similarity:
-
-- nearby year
-- similar title profile
-- similar league rank
-- same manager era
-- similar historical phase
-
----
+Generator examples:
 
 ## PLAYER_NUMBER
 
-After provenance recovery:
+Prefer same-season verified players and, where useful, same-position candidates.
 
-- same season
-- same / nearby position
-- actual roster member
-- different verified shirt number
+## PLAYER_POSITION
 
-を優先。
+Fixed GK / DF / MF / FW remains acceptable if the registered-position fact is source-backed.
 
----
+## MANAGER
+
+Prefer adjacent-era managers rather than random historical managers.
+
+## SEASON_RANK
+
+Prefer valid nearby ranks within league size.
+
+## SEASON_SUMMARY
+
+Prefer nearby years or historically similar seasons rather than arbitrary distant years.
 
 ## KIT
 
-After provenance recovery:
-
-- nearby sponsor era
-- actual verified sponsor values
-
-を使う。
+Use verified sponsor values from comparable competition context only.
 
 ---
 
-# 7. Q2 Pass Gate
-
-Each eligible generator must satisfy:
-
-- all distractors source-defensible as false
-- no absurd option
-- no semantic duplicate
-- no obvious era giveaway where avoidable
-- correct answer not conspicuously more specific
-- minimum 4-option quality holds across representative seasons
-
----
-
-# 8. Q3 — Difficulty
-
-After Q2 only.
+# 7. Q3 — Difficulty — LATER
 
 Difficulty dimensions:
 
+- distractor similarity
 - temporal distance
-- option similarity
 - fact prominence
-- historical context clues
-- exposure count later
+- clue richness
+- user exposure
 
-Initial labels:
-
-- EASY
-- MEDIUM
-- HARD
-
-Do not define difficulty only by obscurity.
+Do not equate obscurity with good difficulty.
 
 ---
 
-# 9. Q4 — Coverage / Balance
+# 8. Q4 — Coverage / Balance — LATER
 
 Measure:
 
@@ -390,38 +281,28 @@ Measure:
 - player
 - knowledge cluster
 
-Avoid:
-
-- 2000s golden-era overload
-- famous-player overload
-- PLAYER overload
-- same knowledge paraphrase repetition
+Avoid over-concentration in famous 2000s seasons / famous players.
 
 ---
 
-# 10. Q5 — Significance / Memory Hook
+# 9. Q5 — Significance / Memory Hook — LATER
 
-Question must be both:
-
-1. true
-2. worth remembering
+A correct fact is not automatically worth learning.
 
 Memory Hook should connect:
 
-- season ↔ adjacent season
 - player ↔ era
-- kit ↔ season memory
-- manager ↔ historical phase
+- event ↔ season
+- kit ↔ historical period
+- manager ↔ result / transformation
 
-Avoid answer paraphrase only.
+Avoid unsupported dramatic copy and isolated trivia.
 
 ---
 
-# 11. Q6 — Learning History
+# 10. Q6 — Learning History — LATER
 
-Current aggregate stats are not enough for true mastery.
-
-Future question history minimum:
+Future minimum history model:
 
 - knowledge_id
 - question_type
@@ -435,47 +316,52 @@ Then derive:
 
 - recently_wrong
 - unseen
+- retry
 - recovery
-- exposure
+- exposure count
 
-Do not call raw accuracy mastery without sample context.
+Raw accuracy alone should not be called mastery.
 
 ---
 
-# 12. Production sequence
+# 11. Technical data pipeline note
+
+`data/data-bundle.js` can drift from canonical JSON.
+
+Q1.5 avoided manual bundle duplication by loading claim provenance separately.
+
+After the uniform model stabilizes, add deterministic bundle generation or remove the fallback if unnecessary.
+
+---
+
+# 12. Sequence
 
 ```text
-Q0 Inventory — DONE
+Q0 Inventory                         DONE
 ↓
-Q1 Correctness / Eligibility — DONE
+Q1 Correctness / Eligibility         DONE
 ↓
-Q1.5 Provenance Recovery — NOW
+Q1.5 Claim Provenance               PARTIAL PASS
 ↓
-Q2 Distractor Quality — NEXT
+Q1.6 Uniform Model Repair            NOW
+↓
+Q2 Distractor Quality               NEXT
 ↓
 Q3 Difficulty
 ↓
-Q4 Coverage
+Q4 Coverage / Balance
 ↓
-Q5 Memory Hook
+Q5 Significance / Memory Hook
 ↓
 Q6 Learning History
 ↓
-Answered Spine Production Integration
+Answered History Spine Integration
 ↓
-History Browser Research
+History Browser Refinement
 ```
-
-History Spine research remains preserved.
 
 ---
 
-# 13. Immediate Next Action
+# 13. Immediate Next Question
 
-**Run a provenance vertical slice instead of broad data expansion.**
-
-Start with representative player-season and kit claims.
-
-Next review question:
-
-> Can PLAYER / KIT become eligible because their evidence improved, rather than because the Trust Gate became looser?
+> Can domestic and international kit sponsor facts be represented without ambiguity, while preserving a simple quiz wording and fail-closed provenance?
