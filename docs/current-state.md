@@ -310,7 +310,7 @@ Raw accuracy is not treated as validated mastery.
 
 ## Quiz UX
 
-**3 / 5 — FUNCTIONAL**
+**3.5 / 5 — FUNCTIONAL + B+ ANSWERED STATE INTEGRATED**
 
 - unanswered
 - correct / incorrect
@@ -318,8 +318,17 @@ Raw accuracy is not treated as validated mastery.
 - Next
 - Explore Season
 - `SOURCE CHECKED`
+- Answered State B+ production integration
+  - 01 / 02 / 03 / 04 option grammar
+  - `MEMORY ECHO`
+  - maximum 3-season local History Spine revealed only after answer
+  - Red = current quiz year / Black = preview
+  - Next Question remains Primary / Explore Year remains Secondary
+- permanent B+ UI Contract Audit in normal CI
 
 Difficulty is intentionally not shown to the user yet.
+
+B+ has passed heuristic / accessibility / automated integration gates, but empirical user validation is still pending. See `ui-bplus-production-integration.md`.
 
 ## History Exploration
 
@@ -330,15 +339,17 @@ Production:
 - Timeline
 - Season Detail
 - Player Detail
+- Answered State B+ local History Spine
 
-Experiment:
+Experiment / research reference:
 
 - History Spine
 - Answered Spine Reveal
+- A / B / C Answered State comparison
 
 ## Visual / Brand System
 
-**3 / 5 — PRINCIPLES STRONG, PRODUCTION APPLICATION PARTIAL**
+**3.5 / 5 — NATIVE GRAMMAR PARTIALLY IN PRODUCTION**
 
 - White / Black / Red
 - Diamond semantic grammar
@@ -355,12 +366,13 @@ Large cosmetic work remains behind Quiz Quality gates.
 Normal Quiz CI now runs:
 
 1. production JS syntax
-2. canonical JSON ↔ runtime bundle sync
-3. Data Integrity Audit
-4. Quiz Trust Audit
-5. Q2 Quality Audit
-6. Q3 Structural Difficulty Audit
-7. Q3 baseline artifact upload
+2. Answered State B+ UI Contract Audit
+3. canonical JSON ↔ runtime bundle sync
+4. Data Integrity Audit
+5. Quiz Trust Audit
+6. Q2 Quality Audit
+7. Q3 Structural Difficulty Audit
+8. Q3 baseline artifact upload
 
 Files:
 
@@ -369,6 +381,7 @@ Files:
 - `scripts/quiz-trust-audit.mjs`
 - `scripts/quiz-quality-audit.mjs`
 - `scripts/quiz-difficulty-audit.mjs`
+- `scripts/ui-answered-state-audit.mjs`
 - `.github/workflows/quiz-trust-audit.yml`
 
 Data changes that reintroduce known repaired facts or bundle drift fail CI.

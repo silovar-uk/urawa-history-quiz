@@ -2,7 +2,7 @@
 
 Updated: 2026-09-07
 
-Status: **PASS — Variant B+ selected as production candidate**
+Status: **PASS — Variant B+ selected; subsequently integrated into production**
 
 Experiment comparison:
 
@@ -503,3 +503,22 @@ Production implementation must preserve:
 > When B+ is integrated into the real Quiz flow, does the extra three-year context improve historical orientation without reducing “Next Question” continuation or increasing mobile scroll friction?
 
 Measure before expanding the grammar to History / Season / Player screens.
+
+---
+
+# 18. Subsequent Production Integration
+
+B+ was later integrated into the production prototype without expanding the redesign to Today / History / You / Desktop.
+
+Production integration report:
+
+`docs/ui-bplus-production-integration.md`
+
+Permanent automated UI contract:
+
+`scripts/ui-answered-state-audit.mjs`
+
+Important distinction:
+
+- design / implementation gate: **PASS**
+- empirical user-behavior validation: **PENDING**
