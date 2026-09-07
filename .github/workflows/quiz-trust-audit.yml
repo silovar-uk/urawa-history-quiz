@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'prototype/app.js'
+      - 'prototype/styles.css'
       - 'prototype/quiz-trust.js'
       - 'prototype/kit-trust.js'
       - 'prototype/quiz-distractors.js'
@@ -15,10 +16,12 @@ on:
       - 'scripts/quiz-trust-audit.mjs'
       - 'scripts/quiz-quality-audit.mjs'
       - 'scripts/quiz-difficulty-audit.mjs'
+      - 'scripts/ui-answered-state-audit.mjs'
       - '.github/workflows/quiz-trust-audit.yml'
   pull_request:
     paths:
       - 'prototype/app.js'
+      - 'prototype/styles.css'
       - 'prototype/quiz-trust.js'
       - 'prototype/kit-trust.js'
       - 'prototype/quiz-distractors.js'
@@ -29,6 +32,7 @@ on:
       - 'scripts/quiz-trust-audit.mjs'
       - 'scripts/quiz-quality-audit.mjs'
       - 'scripts/quiz-difficulty-audit.mjs'
+      - 'scripts/ui-answered-state-audit.mjs'
       - '.github/workflows/quiz-trust-audit.yml'
 
 jobs:
@@ -44,6 +48,9 @@ jobs:
         run: |
           node --check prototype/app.js
           node --check prototype/quiz-difficulty.js
+
+      - name: Verify Answered State B+ UI contract
+        run: node scripts/ui-answered-state-audit.mjs
 
       - name: Verify canonical JSON and runtime bundle are synchronized
         run: node scripts/build-data-bundle.mjs --check
