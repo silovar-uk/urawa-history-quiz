@@ -94,6 +94,9 @@
   // 3. Quiz Trust Gate + Dynamic Generator
   // --------------------------------------------------
   const trust = window.URAWA_QUIZ_TRUST || null;
+  const kitTrust = window.URAWA_KIT_TRUST || null;
+  const distractorPolicy = window.URAWA_DISTRACTOR_POLICY || null;
+  const uniformContexts = () => (window.URAWA_UNIFORM_CONTEXTS && window.URAWA_UNIFORM_CONTEXTS.contexts) || [];
 
   const quizQA = {
     generated: 0,
@@ -174,7 +177,7 @@
       trust: {
         eligible: true,
         sourceChecked: true,
-        gateVersion: 'q1-2026-09-07'
+        gateVersion: 'q2-2026-09-07'
       }
     });
   }
@@ -206,15 +209,16 @@
         return noteReject(generatorId, 'INSUFFICIENT_DISTRACTORS', seasonData.season_id, 'Need 3 sourced same-season players with different numbers.');
       }
 
-      const samePos = otherPlayers.filter(x => x.rel.position === targetPS.position);
-      const pool = samePos.length >= 3 ? samePos : otherPlayers;
-      const distractors = shuffle(pool).slice(0, 3).map(x => x.player.name);
+      const orderedPlayers = distractorPolicy
+        ? distractorPolicy.playerNumber(targetPS, otherPlayers)
+        : otherPlayers;
+      const distractorNames = orderedPlayers.slice(0, 3).map(x => x.player.name);
 
       return finalizeQuestion(generatorId, seasonData, {
         category: 'PLAYER',
         year: seasonData.year,
         question: `${seasonData.year}年の浦和レッズで背番号「${targetPS.shirt_number}」を背負った選手は？`,
-        options: shuffle([targetPlayer.name, ...distractors]),
+        options: shuffle([targetPlayer.name, ...distractorNames]),
         correct: targetPlayer.name,
         memoryHook: targetPS.memory_hook || `${targetPlayer.name}（背番号${targetPS.shirt_number}・${targetPS.position}）`,
         seasonId: seasonData.season_id
@@ -286,20 +290,23 @@
       const check = trust.getSafeManagerForSeason(otherSeason.season_id, db);
       if (!check.ok || seen.has(check.manager.manager_id)) continue;
       seen.add(check.manager.manager_id);
-      otherSafeManagers.push(check.manager);
+      otherSafeManagers.push({ manager: check.manager, year: otherSeason.year });
     }
 
     if (otherSafeManagers.length < 3) {
       return noteReject(generatorId, 'INSUFFICIENT_DISTRACTORS', seasonData.season_id);
     }
 
-    const distractors = shuffle(otherSafeManagers).slice(0, 3).map(m => m.name);
+    const orderedManagers = distractorPolicy
+      ? distractorPolicy.manager(seasonData.year, otherSafeManagers)
+      : otherSafeManagers;
+    const distractorNames = orderedManagers.slice(0, 3).map(x => x.manager.name);
 
     return finalizeQuestion(generatorId, seasonData, {
       category: 'MANAGER',
       year: seasonData.year,
       question: `${seasonData.year}年の浦和レッズの監督として登録データに記録されているのは？`,
-      options: shuffle([manager.name, ...distractors]),
+      options: shuffle([manager.name, ...distractorNames]),
       correct: manager.name,
       memoryHook: tenure.notes || `${manager.name}監督がチームを指揮した。`,
       seasonId: seasonData.season_id
@@ -321,16 +328,17 @@
       return noteReject(generatorId, 'INSUFFICIENT_DISTRACTORS', seasonData.season_id);
     }
 
-    const byDistance = validRanks.sort((a, b) => Math.abs(a - correctRank) - Math.abs(b - correctRank));
-    const nearPool = byDistance.slice(0, Math.min(8, byDistance.length));
-    const distractors = shuffle(nearPool).slice(0, 3).map(r => `${r}位`);
+    const orderedRanks = distractorPolicy
+      ? distractorPolicy.rank(correctRank, Number(seasonData.total_teams))
+      : validRanks.sort((a, b) => Math.abs(a - correctRank) - Math.abs(b - correctRank));
+    const distractorNames = orderedRanks.slice(0, 3).map(r => `${r}位`);
     const correct = `${correctRank}位`;
 
     return finalizeQuestion(generatorId, seasonData, {
       category: 'SEASON',
       year: seasonData.year,
       question: `${seasonData.year}年シーズンの浦和レッズの${seasonData.league_name}最終順位は？`,
-      options: shuffle([correct, ...distractors]),
+      options: shuffle([correct, ...distractorNames]),
       correct,
       memoryHook: seasonData.memory_hook || `${seasonData.league_name}${correct}でシーズンを終えた。`,
       seasonId: seasonData.season_id
@@ -355,14 +363,17 @@
       return noteReject(generatorId, 'INSUFFICIENT_DISTRACTORS', seasonData.season_id);
     }
 
-    const distractors = shuffle(otherSeasons).slice(0, 3).map(s => `${s.year}年`);
+    const orderedSeasons = distractorPolicy
+      ? distractorPolicy.seasonSummary(seasonData, otherSeasons)
+      : otherSeasons;
+    const distractorNames = orderedSeasons.slice(0, 3).map(s => `${s.year}年`);
     const correct = `${seasonData.year}年`;
 
     return finalizeQuestion(generatorId, seasonData, {
       category: 'SEASON',
       year: seasonData.year,
       question: `「${seasonData.summary}」\nこのシーズンはいつ？`,
-      options: shuffle([correct, ...distractors]),
+      options: shuffle([correct, ...distractorNames]),
       correct,
       memoryHook: seasonData.memory_hook || seasonData.summary,
       seasonId: seasonData.season_id
@@ -371,33 +382,38 @@
 
   function generateKitDetail(seasonData) {
     const generatorId = 'KIT_DETAIL';
-    const kit = db.uniforms.find(u => u.season_id === seasonData.season_id && u.type === 'HOME');
-    if (!kit || !kit.chest_sponsor) {
-      return noteReject(generatorId, 'MISSING_REQUIRED_FIELD', seasonData.season_id, 'HOME kit/chest_sponsor missing.');
-    }
-    if (!trust.hasKnownSources(kit, db)) {
-      return noteReject(generatorId, 'MISSING_SOURCE', seasonData.season_id, 'uniform source_ids required before quiz eligibility.');
+    if (!kitTrust) {
+      return noteReject(generatorId, 'MISSING_KIT_TRUST', seasonData.season_id);
     }
 
-    const sponsorPool = [...new Set(
-      db.uniforms
-        .filter(u => u.type === 'HOME' && u.season_id !== seasonData.season_id && u.chest_sponsor && trust.hasKnownSources(u, db))
-        .map(u => u.chest_sponsor)
-    )].filter(s => s !== kit.chest_sponsor);
-
-    if (sponsorPool.length < 3) {
-      return noteReject(generatorId, 'INSUFFICIENT_DISTRACTORS', seasonData.season_id, 'Need 3 sourced sponsor values.');
+    const eligible = kitTrust.eligibleContextsForSeason(seasonData.season_id);
+    if (!eligible.length) {
+      return noteReject(generatorId, 'MISSING_KIT_CONTEXT', seasonData.season_id, 'No verified competition-aware HOME context.');
     }
 
-    const distractors = shuffle(sponsorPool).slice(0, 3);
+    const target = shuffle(eligible)[0];
+    const allContexts = kitTrust.allEligibleContexts();
+    const candidateContexts = allContexts.filter(ctx => ctx.context_id !== target.context_id);
+    const ordered = distractorPolicy
+      ? distractorPolicy.kit(target, candidateContexts)
+      : candidateContexts;
+    const distractorNames = [...new Set(ordered.map(ctx => ctx.chest_sponsor))]
+      .filter(name => name !== target.chest_sponsor)
+      .slice(0, 3);
+
+    if (distractorNames.length < 3) {
+      return noteReject(generatorId, 'INSUFFICIENT_DISTRACTORS', seasonData.season_id, 'Need 3 distinct verified sponsor values.');
+    }
+
     return finalizeQuestion(generatorId, seasonData, {
       category: 'KIT',
       year: seasonData.year,
-      question: `${seasonData.year}年シーズンのHOMEユニフォームの胸スポンサーは？`,
-      options: shuffle([kit.chest_sponsor, ...distractors]),
-      correct: kit.chest_sponsor,
-      memoryHook: kit.description || `${seasonData.year}年の胸スポンサーは${kit.chest_sponsor}。`,
-      seasonId: seasonData.season_id
+      question: `${seasonData.year}年シーズンの${target.competition_label}用HOMEユニフォームの胸スポンサーは？`,
+      options: shuffle([target.chest_sponsor, ...distractorNames]),
+      correct: target.chest_sponsor,
+      memoryHook: `${seasonData.year}年の${target.competition_label}用HOMEユニフォームは、胸に${target.chest_sponsor}を掲出した。`,
+      seasonId: seasonData.season_id,
+      kitContextId: target.context_id
     });
   }
 
@@ -523,6 +539,12 @@
       const tenure = db.managerTenures.find(m => m.season_id === s.season_id);
       const manager = tenure ? db.managers.find(m => m.manager_id === tenure.manager_id) : null;
       const kit = db.uniforms.find(u => u.season_id === s.season_id && u.type === 'HOME');
+      const verifiedKitContexts = kitTrust ? kitTrust.eligibleContextsForSeason(s.season_id) : [];
+      const domesticKitContext = verifiedKitContexts.find(ctx => ctx.competition_scope === 'domestic') || null;
+      const internationalKitContexts = verifiedKitContexts.filter(ctx => ctx.competition_scope === 'international');
+      const sponsorSummary = verifiedKitContexts.length
+        ? [domesticKitContext ? `国内 ${domesticKitContext.chest_sponsor}` : null, ...internationalKitContexts.map(ctx => `${ctx.competition_label} ${ctx.chest_sponsor}`)].filter(Boolean).join(' / ')
+        : '胸スポンサー未検証';
       const psList = db.playerSeasons.filter(ps => ps.season_id === s.season_id);
 
       return `
@@ -551,8 +573,8 @@
           <div style="display:flex; align-items:center; gap:12px;">
             <div style="width:38px; height:38px; background:${kit ? kit.main_color : '#E6002D'}; border:1px solid #ddd; border-radius:4px; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:10px; color:#fff;">KIT</div>
             <div>
-              <strong>${kit ? kit.supplier : 'Mizuno/Puma/Nike'} (${kit && kit.chest_sponsor ? kit.chest_sponsor : '—'})</strong>
-              <div style="font-size:0.8125rem; color:var(--muted);">${kit ? kit.description : '公式ユニフォーム'}</div>
+              <strong>${kit ? kit.supplier : 'Mizuno/Puma/Nike'} (${sponsorSummary})</strong>
+              <div style="font-size:0.8125rem; color:var(--muted);">${verifiedKitContexts.length ? '大会別の胸スポンサーを公式情報で確認済み。' : 'ユニフォーム自体は収録済み。胸スポンサーはQuiz Trust対象外。'}</div>
             </div>
           </div>
         </div>
