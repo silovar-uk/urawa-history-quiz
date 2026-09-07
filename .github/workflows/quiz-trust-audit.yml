@@ -6,15 +6,21 @@ on:
     paths:
       - 'prototype/app.js'
       - 'prototype/quiz-trust.js'
+      - 'prototype/kit-trust.js'
+      - 'prototype/quiz-distractors.js'
       - 'data/**'
       - 'scripts/quiz-trust-audit.mjs'
+      - 'scripts/quiz-quality-audit.mjs'
       - '.github/workflows/quiz-trust-audit.yml'
   pull_request:
     paths:
       - 'prototype/app.js'
       - 'prototype/quiz-trust.js'
+      - 'prototype/kit-trust.js'
+      - 'prototype/quiz-distractors.js'
       - 'data/**'
       - 'scripts/quiz-trust-audit.mjs'
+      - 'scripts/quiz-quality-audit.mjs'
       - '.github/workflows/quiz-trust-audit.yml'
 
 jobs:
@@ -25,5 +31,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Run quiz trust audit
+      - name: Syntax check production prototype
+        run: node --check prototype/app.js
+      - name: Run Q0/Q1/Q1.5 trust audit
         run: node scripts/quiz-trust-audit.mjs
+      - name: Run Q1.6/Q2 quality audit
+        run: node scripts/quiz-quality-audit.mjs
