@@ -13,8 +13,8 @@ Current status:
 - Q2 Distractor Quality — **DONE**
 - Q3 Difficulty — **DONE (structural estimate baseline)**
 - Data Content Repair / Integrity Gate — **DONE / PASS**
-- Q4 Coverage / Balance — **NOW**
-- Q5 Significance / Memory Hook — **NEXT**
+- Q4 Coverage / Balance — **DONE / PASS**
+- Q5 Significance / Memory Hook — **NOW**
 - Q6 Learning History — **LATER**
 
 Reports / plans:
@@ -28,6 +28,7 @@ Reports / plans:
 - `docs/data-integrity-report.md`
 - `docs/data-contract.md`
 - `docs/q4-coverage-balance-plan.md`
+- `docs/q4-coverage-report.md`
 
 ---
 
@@ -305,91 +306,71 @@ Every relevant data / quiz change now runs:
 3. historical Data Integrity Audit
 4. Quiz Trust Audit
 5. Q2 Quality Audit
-6. Q3 Structural Difficulty Audit
-7. Q3 artifact upload
+7. Q3 Structural Difficulty Audit
+8. Q4 deterministic Coverage / Exposure Audit
+9. Q3 artifact upload
+10. Q4 coverage artifact upload
 
 A known repaired historical fact cannot silently regress without failing CI.
 
 ---
 
-# 8. Q4 — Coverage / Balance — NOW
+# 8. Q4 — Coverage / Balance — DONE / PASS
 
-Q4 resumes after Data Integrity PASS.
+Permanent audit:
 
-Central question:
+`scripts/quiz-coverage-audit.mjs`
 
-> If a user repeatedly requests the next question under the current real engine, what Urawa history dominates and what history barely appears?
+CI artifact:
 
-Q4 must distinguish:
+`q4-coverage-baseline.json`
 
-1. **Data Availability**
-2. **Quiz Eligibility**
-3. **Runtime Exposure**
+Report:
 
-Do not treat these as the same metric.
+`docs/q4-coverage-report.md`
 
-Required dimensions:
+Latest safe construction census:
 
-- era
-- season
-- category
-- generator
-- structural difficulty
-- player / manager where applicable
-- KIT competition scope where applicable
+- total **131**
+- PLAYER_NUMBER **15**
+- PLAYER_POSITION **17**
+- PLAYER_OVERLAP **0**
+- MANAGER_SEASON **26**
+- SEASON_RANK **32**
+- SEASON_SUMMARY **33**
+- KIT_DETAIL **8**
 
-First implementation:
+Latest ALL runtime exposure, 200,000 deterministic requests:
 
-- deterministic eligibility-and-exposure census
-- recommended `scripts/quiz-coverage-audit.mjs`
-- CI artifact `q4-coverage-baseline.json`
-- `docs/q4-coverage-report.md`
+- SEASON **66.221%**
+- MANAGER **26.319%**
+- KIT **4.130%**
+- PLAYER **3.330%**
 
-Measure both:
+Structural difficulty exposure:
 
-### Eligibility census
+- HARD **77.037%**
+- MEDIUM **20.220%**
+- UNMODELED **2.154%**
+- EASY **0.591%**
 
-How many safe constructions exist?
+The season-selection layer itself is close to uniform. Famous-year test ratio is **0.997** against the season-uniform expectation.
 
-### Runtime exposure simulation
+The major imbalance is category / generator representation inside seasons, driven heavily by provenance concentration and amplified by season-first selection.
 
-Under the real selection algorithm, how often does each construction / season / category reach the screen?
+Known blind spots:
 
-Simulation must be reproducible.
+- 31 seasons with player rows but no eligible player generator
+- 29 seasons with legacy HOME kit data but no eligible KIT_DETAIL
+- 8 seasons with manager tenure data but no eligible MANAGER_SEASON
 
-It measures engine exposure, not user engagement.
+Decision:
 
-Biases to test:
-
-- famous-era bias
-- provenance bias toward better-sourced seasons
-- generator bias
-- difficulty bias
-- quiet-season invisibility
-- category starvation
-
-Do not force equal distribution yet.
-
-Q4 must label whether low exposure comes from:
-
-- historical/editorial policy
-- missing data
-- missing provenance
-- Trust rejection
-- generator selection policy
-
-Pass:
-
-- eligibility and runtime exposure are separately measurable
-- exposure simulation is deterministic
-- era / season / category / generator / difficulty bias is visible
-- data-quality debt is separated from editorial balance
-- low-visibility seasons are identified
-- Trust Gate remains unchanged
+**Do not force equal distribution yet.** Q5 defines significance before editorial exposure weighting.
 
 ---
 
-# 9. Q5 — Significance / Memory Hook — NEXT
+# 9. Q5 — Significance / Memory Hook — NOW
 
 A correct fact is not automatically worth learning.
 
@@ -449,9 +430,9 @@ Q3 Structural Difficulty             DONE
 ↓
 Data Content Repair / Integrity      DONE / PASS
 ↓
-Q4 Coverage / Balance                NOW
+Q4 Coverage / Balance                DONE / PASS
 ↓
-Q5 Significance / Memory Hook        NEXT
+Q5 Significance / Memory Hook        NOW
 ↓
 Q6 Learning History
 ↓
@@ -464,4 +445,4 @@ History Browser Refinement
 
 # 12. Immediate Next Question
 
-> Under the repaired current generator-selection logic, what probability does each era, season, category, generator, and structural difficulty band have of reaching the user’s screen — and how much of that imbalance comes from data/provenance gaps rather than editorial intent?
+> Which safe facts deserve prominence / repetition because they matter to Urawa history, and how should significance be represented separately from structural difficulty, provenance confidence, and current exposure?

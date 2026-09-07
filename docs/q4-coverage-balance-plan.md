@@ -2,12 +2,16 @@
 
 Updated: 2026-09-07
 
-Status: **NEXT / HEAD START ONLY**
+Status: **DONE / BASELINE PASS**
+
+Implemented result: `docs/q4-coverage-report.md`
+
+Permanent audit: `scripts/quiz-coverage-audit.mjs`
 
 Q3 result:
 
 - structural difficulty baseline exists
-- 107 modeled item constructions
+- 114 modeled item constructions
 - current construction is strongly Hard-skewed
 
 Q4 must answer what users are actually likely to see, not just what exists in the database.

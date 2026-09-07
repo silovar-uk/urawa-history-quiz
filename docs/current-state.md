@@ -258,7 +258,7 @@ Latest trust invariants:
 
 # 8. Quiz Content Quality
 
-**3.5 / 5 — DISTRACTOR + STRUCTURAL DIFFICULTY BASELINE DONE**
+**4 / 5 — DIFFICULTY + COVERAGE / EXPOSURE BASELINES DONE**
 
 Q2 introduced domain-aware distractors rather than random-first distractors.
 
@@ -287,6 +287,8 @@ By generator:
 The post-repair baseline increased because repaired player claims and new verified kit contexts create additional safe constructions.
 
 Do not normalize away the Hard skew merely to make the chart look balanced.
+
+Q4 now also measures deterministic runtime exposure. Under the current ALL policy, season selection is essentially uniform, while category exposure is strongly asymmetric: **SEASON 66.221% / MANAGER 26.319% / KIT 4.130% / PLAYER 3.330%**. Runtime structural exposure is **HARD 77.037%**. See `q4-coverage-report.md`.
 
 ---
 
@@ -372,7 +374,9 @@ Normal Quiz CI now runs:
 5. Quiz Trust Audit
 6. Q2 Quality Audit
 7. Q3 Structural Difficulty Audit
-8. Q3 baseline artifact upload
+8. Q4 deterministic Coverage / Exposure Audit
+9. Q3 baseline artifact upload
+10. Q4 coverage baseline artifact upload
 
 Files:
 
@@ -381,6 +385,7 @@ Files:
 - `scripts/quiz-trust-audit.mjs`
 - `scripts/quiz-quality-audit.mjs`
 - `scripts/quiz-difficulty-audit.mjs`
+- `scripts/quiz-coverage-audit.mjs`
 - `scripts/ui-answered-state-audit.mjs`
 - `.github/workflows/quiz-trust-audit.yml`
 
@@ -388,51 +393,76 @@ Data changes that reintroduce known repaired facts or bundle drift fail CI.
 
 ---
 
-# 12. NOW — Q4 Coverage / Balance
+# 12. Q4 Coverage / Balance — DONE / PASS
 
-Q4 resumes after the Data Integrity Gate PASS.
-
-Central question:
-
-> If a user simply presses “next” repeatedly today, what Urawa history are they statistically likely to see, and what history is nearly invisible?
-
-Q4 must distinguish:
+Q4 now separates:
 
 1. Data Availability
 2. Quiz Eligibility
 3. Runtime Exposure
 
-Measure at minimum:
+Permanent audit:
 
-- era
-- season
-- category
-- generator
-- structural difficulty
-- player / manager where applicable
+`scripts/quiz-coverage-audit.mjs`
 
-Do not impose an arbitrary equal distribution yet.
+CI artifact:
 
-First action:
+`q4-coverage-baseline.json`
 
-> Build a deterministic eligibility-and-exposure census for every season from 1992–2025 under the repaired current generator policy.
+Latest deterministic ALL simulation: **200,000 requests**.
 
-Q4 must keep the Data Integrity warnings visible so a data-coverage gap is not mistaken for an editorial preference.
+Key result:
+
+- season exposure is essentially uniform across the 34-season archive
+- famous-year test ratio: **0.997** versus season-uniform expectation
+- category exposure: **SEASON 66.221% / MANAGER 26.319% / KIT 4.130% / PLAYER 3.330%**
+- generator exposure: **SEASON_SUMMARY 33.895% / SEASON_RANK 32.327% / MANAGER_SEASON 26.319% / KIT_DETAIL 4.130% / PLAYER_POSITION 2.154% / PLAYER_NUMBER 1.177%**
+- runtime structural exposure: **HARD 77.037% / MEDIUM 20.220% / UNMODELED 2.154% / EASY 0.591%**
+- PLAYER blind spots: **31 seasons**
+- KIT blind spots: **29 seasons**
+- MANAGER blind spots: **8 seasons**
+
+Central interpretation:
+
+> The engine is not strongly biased toward famous years. The larger imbalance is inside seasons: sparse claim-level provenance makes PLAYER / KIT history nearly invisible, and season-first runtime selection amplifies that concentration.
+
+This is not permission to force equal category shares. Q5 must define significance before exposure weighting.
+
+Report:
+
+`docs/q4-coverage-report.md`
 
 ---
 
-# 13. NEXT / THEN
+# 13. NOW — Q5 Significance / Memory Hook
+
+Q5 asks a different question from Q4:
+
+> Which safe facts deserve repetition / prominence because they matter to Urawa history — rather than merely because a distribution is uneven?
+
+First action:
+
+> Define an explainable knowledge-significance model that is separate from evidence confidence, structural difficulty, and current runtime exposure.
+
+Minimum dimensions to investigate:
+
+- club-history importance
+- supporter cultural memory
+- turning-point value
+- player / manager identity value
+- title / failure context
+- tactical / organizational transformation
+- connectivity to other seasons / entities
+- era-representation value
 
 NEXT:
 
-1. Q5 Significance / Memory Hook
+1. Q6 Learning History
 
 THEN:
 
-2. Q6 Learning History
-3. Question Selection / adaptive-light logic only if justified
-4. Answered History Spine production integration
-5. History Browser refinement
+2. exposure weighting / adaptive-light selection only if Q5 + Q6 justify it
+3. broader History Grammar / History Browser refinement after UX validation
 
 ---
 
@@ -452,6 +482,6 @@ THEN:
 
 # 15. Next Review Gate
 
-Q4 may advance to Q5 only when:
+Q5 may advance to Q6 only when:
 
-> The project can separately explain what facts exist, what questions are safe, and what history the current engine actually exposes to a user over repeated sessions — broken down by era, season, category, generator, and structural difficulty — while distinguishing editorial exposure bias from unresolved data coverage debt.
+> The project can assign explainable historical / learning significance to safe knowledge units without conflating importance with structural difficulty, provenance confidence, or current exposure — and can state why a fact deserves repetition or prominence.
