@@ -3,8 +3,7 @@ name: Apply Answered State B+
 on:
   push:
     paths:
-      - 'scripts/apply-answered-state-bplus.mjs'
-      - 'scripts/fix-bplus-edge-context.mjs'
+      - 'scripts/document-bplus-status.mjs'
       - '.github/workflows/apply-answered-state-bplus.yml'
 
 permissions:
@@ -20,18 +19,16 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Apply final guarded B+ fix
-        run: node scripts/fix-bplus-edge-context.mjs
-      - name: Check production JS syntax
-        run: node --check prototype/app.js
-      - name: Verify migration scope
+      - name: Synchronize canonical UI documentation
+        run: node scripts/document-bplus-status.mjs
+      - name: Verify documentation scope
         run: |
-          git diff -- prototype/app.js
-          test -z "$(git status --short | grep -vE 'prototype/app\.js$')"
-      - name: Commit production fix
+          git diff -- docs/current-state.md docs/ui-answered-state-native-round.md
+          test -z "$(git status --short | grep -vE 'docs/(current-state\.md|ui-answered-state-native-round\.md)$')"
+      - name: Commit documentation sync
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add prototype/app.js
-          git commit -m "Keep B+ history context at three seasons on timeline edges" || exit 0
+          git add docs/current-state.md docs/ui-answered-state-native-round.md
+          git commit -m "Record Answered State B+ production integration" || exit 0
           git push
